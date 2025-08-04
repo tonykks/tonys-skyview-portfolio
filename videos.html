@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tony's SkyView Portfolio - 16:9 Videos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles to override or extend Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f2f2f2;
+        }
+        .header {
+            background-image: url('https://yt3.googleusercontent.com/JHTHRsm3_keOY7f6dLzgDkG7e_olnUvd9Nd0hNfcCbGDScdnOyKDFmuaARWFX05zWaPjwjsAJw=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj');
+            background-size: cover;
+            background-position: center;
+            height: 250px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .navbar {
+            background-color: #1f3556;
+        }
+        .nav-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 0 5px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        .nav-btn:hover {
+            background-color: #2980b9;
+        }
+        .intro {
+            background-color: #555;
+            color: white;
+            line-height: 1.6;
+        }
+        .video-section-title {
+            color: #1f3556;
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 700; /* font-bold */
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 한 줄에 4개씩, 반응형 */
+            gap: 2.5rem; /* gap-10 */
+            justify-items: center;
+            padding: 1rem; /* p-4 */
+        }
+        .video-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+            padding: 1rem;
+            width: 100%; /* Ensure it takes full grid column width */
+            max-width: 320px; /* Max width for each video box */
+        }
+        .video-box iframe {
+            width: 100%; /* Make iframe responsive within its container */
+            aspect-ratio: 16 / 9; /* Maintain 16:9 aspect ratio */
+            border-radius: 0.625rem; /* rounded-xl */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* shadow-sm */
+        }
+        .youtube-link {
+            margin-top: 0.5rem; /* Adjusted margin since title is removed */
+        }
+        .youtube-link a {
+            font-size: 0.875rem; /* text-sm */
+            color: #7b1fa2;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .youtube-link a:hover {
+            color: #5a147a;
+        }
+
+        /* Custom Modal for Contact */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            /* Ensure it's hidden by default in CSS */
+            display: none; /* Added this line */
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            max-width: 24rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 1024px) { /* For large screens (lg) */
+            .video-grid {
+                grid-template-columns: repeat(4, 1fr); /* 4 videos per row on large screens */
+            }
+        }
+        @media (max-width: 768px) { /* For medium screens (md) and smaller */
+            .header {
+                font-size: 28px;
+                height: 200px;
+            }
+            .intro {
+                width: 90%;
+                padding: 15px;
+            }
+            .navbar {
+                flex-wrap: wrap;
+                padding: 10px;
+            }
+            .nav-btn {
+                margin: 5px;
+                padding: 8px 12px;
+            }
+            .video-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjust for smaller screens */
+                gap: 1.5rem;
+            }
+            .video-box {
+                max-width: 90vw; /* Adjust max-width for mobile */
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Header Section -->
+    <div class="header">Tony's SkyView Portfolio</div>
+
+    <!-- Navigation Bar -->
+    <div class="navbar flex justify-center py-2 shadow-md">
+        <a href="index.html" class="nav-btn">Home</a>
+        <a href="videos.html" class="nav-btn">16:9 Videos</a>
+        <a href="shorts.html" class="nav-btn">9:16 Shorts</a>
+        <a href="https://smile21c.notion.site/my-profile" class="nav-btn" target="_blank">About Me</a>
+        <a href="#" class="nav-btn" id="contact-btn">Contact Me</a>
+    </div>
+
+    <!-- Introduction Section -->
+    <div class="intro mx-auto my-8 p-6 rounded-xl shadow-lg w-3/5 text-center">
+        행복은 삶의 질을 좋게 하는 수단이지 결코 그 자체가 목적이 되어서는 안 된다.
+    </div>
+
+    <hr class="border-t-2 border-gray-300 my-8 w-4/5 mx-auto">
+
+    <!-- 16:9 Videos Section -->
+    <div id="videos" class="video-section text-center py-8">
+        <h2 class="video-section-title">16:9 Videos</h2>
+        <div id="videos-container" class="video-grid">
+            <!-- 16:9 video content will be inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Custom Modal for Contact -->
+    <div id="contact-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold mb-4">Contact Information</h3>
+            <p class="text-gray-700 mb-6">Email: smile21c@korea.com</p>
+            <button id="close-modal-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // 16:9 영상 데이터 (16대9영상.txt 파일에서 파싱)
+        const videos16_9Data = `2025-08-01 | 송악산 빛과 그림자 – 우리는 무엇을 남길 것인가? | https://www.youtube.com/watch?v=22Wp4s2wXVs
+2025-07-31 | 소나무 많은 송악산 | 전설이 스며든 오름 | https://www.youtube.com/watch?v=YwPiwGR3-AM
+2025-07-26 | 섶섬 | 시간과 인내로 깎은 美 | https://www.youtube.com/watch?v=8q55ruguf1A
+2025-07-24 | 돌아갈 길을 막은 섬  차귀도 | 제주 서쪽 끝에서 만난 바람의 섬 | https://www.youtube.com/watch?v=j5QG_APh0Jk
+2025-07-21 | [당산봉 생이기정] 새들만 알고 있는 쉼터 | https://www.youtube.com/watch?v=Ql-Qlde85Wk
+2025-07-21 | 매바위 | 제주를 지키는 눈빛 | 차귀도 앞 전설의 수호자 | https://www.youtube.com/watch?v=j3rnU9tkx-s
+2025-07-11 | 계곡의 심장 그 속살을 마주하다 - Nature’s Hidden Heart | https://www.youtube.com/watch?v=7K9NeWcEJkU
+2025-07-10 | 송악의 수호신들: 주상절리의 군단을 만나다 - Nature’s Army: Stone Sentinels of Songak | https://www.youtube.com/watch?v=UApfY8GWE-Y
+2025-07-06 | 쇠소깍 바위에 새겨진 고요함: Whispering Water – Soesokkak’s Quiet Poetry | https://www.youtube.com/watch?v=h-PPyae7CFk
+2025-07-03 | 제주의 시작 용머리해안에서 깨어난 전설 | https://www.youtube.com/watch?v=I7ou69pHnhc
+2025-07-02 | 구름 위의 위로 Above the Clouds | https://www.youtube.com/watch?v=AhF87MuZ-e8
+2025-07-01 | 형제섬 고요한 바다 위에 선 형과 아우 | https://www.youtube.com/watch?v=k7Dmux1lOjs
+2025-07-01 | Hidden Paradises: Brother Islands Jeju | https://www.youtube.com/watch?v=mKVfmkugEYc
+2025-06-28 | 수월봉 – 속살을 드러낸 화산의 기억 | https://www.youtube.com/watch?v=ERVQgzpdiO0
+2025-06-27 | 무인도의 외가리 하늘의 침입자를 바라보다 | https://www.youtube.com/watch?v=VobsT9R1W8
+2025-06-24 | The mountain awakened beneath the clouds｜구름 아래 깨어난 산방산 | https://www.youtube.com/watch?v=w0JxvhqJI7k
+2025-06-22 | 구름 아래 산방산 — Beyond the Clouds I See You | https://www.youtube.com/watch?v=R_aJd4RxVSg
+2025-06-21 | 산방산의 전설 그 노래에 담긴 이야기 | https://www.youtube.com/watch?v=L0EZJQLo074
+2025-06-12 | 차귀도에 스며든 노을 그리고 전설 – 제주 서쪽 끝 수월봉에서 | https://www.youtube.com/watch?v=rUmG8QzS9qg
+2025-06-12 | 차귀도 위의 순간｜노을 위로 흐르는 감성 음악 4곡 (무나레이션 힐링영상) | https://www.youtube.com/watch?v=opOgF2-MKXc
+2025-06-11 | 나를 부르는 범섬(虎島) | https://www.youtube.com/watch?v=38XGkKZbNI4
+2025-06-11 | 인연을 잇다(세연교) – A Walk to Remember | https://www.youtube.com/watch?v=RziweCBLqj8
+2025-06-10 | 섶섬이 나를 부르네 – 바다 위 금강산 에메랄드빛 절경 | https://www.youtube.com/watch?v=MYrAir0If2g
+2025-06-09 | 나를 따라다니는 드론 Neo | 여행 초보도 쉽게 찍는 4가지 자동 촬영 모드 | https://www.youtube.com/watch?v=n6CNKdvFI-4
+2025-06-06 | 말없이 나란히 선 두 섬 형제섬 | https://www.youtube.com/watch?v=i7HuXWj3I6w
+2025-06-05 | 드론으로 걷는 청보리의 섬 가파도 | https://www.youtube.com/watch?v=_O9R8hITnVY
+2025-06-04 | 비양도 전경과 필수 관광지 소개(드론영상) | https://www.youtube.com/watch?v=QdWWbkmtZeg
+2025-06-03 | 비양도 드론 브이로그 | 제주 서쪽의 고요한 아침 루틴 | https://www.youtube.com/watch?v=4BGH-JAmAD8
+2025-05-30 | 제주 노을 드론뷰 | 20분의 사색 — 나답게 살아가기 위한 삶의 재해석 | https://www.youtube.com/watch?v=EcCA-WNJyxI
+2025-05-29 | 하루의 끝 제주의 한림에서 마주한 평온한 노을 | https://www.youtube.com/watch?v=-wOxOaz5-dg
+2025-05-14 | 알뜨르 비행장｜제주의 아래 평야 전쟁의 흔적을 품은 공간 | https://www.youtube.com/watch?v=nlDlRTpm9O8
+2025-05-01 | 비양도 놀멍1배속 | https://www.youtube.com/watch?v=fkoWPtxJp64
+2025-05-01 | 비양도 놀멍1 | https://www.youtube.com/watch?v=Xi8pJN4B0Pk
+2025-04-29 | 한림항에서본 일몰 | https://www.youtube.com/watch?v=RvDqWZqpYt4`;
+
+        // Function to parse video data
+        function parseVideoData(dataString) {
+            const videos = [];
+            const lines = dataString.trim().split('\n');
+            lines.forEach(line => {
+                const parts = line.split(' | ');
+                if (parts.length === 3) {
+                    const date = parts[0].trim();
+                    const title = parts[1].trim(); // Keep title for potential use or debugging
+                    const url = parts[2].trim();
+                    videos.push({ date, title, url });
+                }
+            });
+            return videos;
+        }
+
+        // Function to get YouTube video ID from URL
+        function getYouTubeVideoId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        // Function to render videos
+        function renderVideos(videoList, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            // Sort videos by date in descending order (latest first)
+            videoList.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            videoList.forEach(video => {
+                const videoId = getYouTubeVideoId(video.url);
+                if (!videoId) return; // Skip if video ID cannot be extracted
+
+                const videoBox = document.createElement('div');
+                videoBox.classList.add('video-box');
+
+                const iframe = document.createElement('iframe');
+                iframe.src = `https://www.youtube.com/embed/${videoId}`;
+                iframe.setAttribute('frameborder', '0');
+                iframe.setAttribute('allowfullscreen', 'true');
+                iframe.setAttribute('loading', 'lazy'); // Lazy load iframes
+                videoBox.appendChild(iframe);
+
+                // Removed video title as per request
+                // const videoTitle = document.createElement('div');
+                // videoTitle.classList.add('video-title');
+                // videoTitle.textContent = video.title;
+                // videoBox.appendChild(videoTitle);
+
+                const youtubeLink = document.createElement('div');
+                youtubeLink.classList.add('youtube-link');
+                const link = document.createElement('a');
+                link.href = video.url;
+                link.target = "_blank";
+                link.textContent = "[유튜브 바로가기]";
+                youtubeLink.appendChild(link);
+                videoBox.appendChild(youtubeLink);
+
+                container.appendChild(videoBox);
+            });
+        }
+
+        // Parse the 16:9 video data
+        const parsed16_9Videos = parseVideoData(videos16_9Data);
+
+        // Render 16:9 videos
+        renderVideos(parsed16_9Videos, 'videos-container');
+
+        // Contact Modal functionality
+        const contactBtn = document.getElementById('contact-btn');
+        const contactModal = document.getElementById('contact-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+        // Ensure modal elements exist before adding event listeners
+        if (contactBtn && contactModal && closeModalBtn) {
+            // Use 'DOMContentLoaded' to ensure all HTML is loaded before script runs
+            document.addEventListener('DOMContentLoaded', () => {
+                // Initially hide the modal using JavaScript to ensure it's hidden on load
+                // This is a fallback in case CSS 'display: none;' is overridden or not applied immediately
+                contactModal.style.display = 'none'; // Use style.display for direct control
+            });
+
+
+            contactBtn.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent default link behavior
+                contactModal.style.display = 'flex'; // Show the modal
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                contactModal.style.display = 'none'; // Hide the modal
+            });
+
+            // Close modal when clicking outside the content area
+            contactModal.addEventListener('click', (e) => {
+                if (e.target === contactModal) {
+                    contactModal.style.display = 'none'; // Hide the modal
+                }
+            });
+        }
+    </script>
+</body>
+</html>
