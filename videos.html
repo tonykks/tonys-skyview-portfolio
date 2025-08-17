@@ -1,193 +1,90 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tony's SkyView Portfolio - 16:9 Videos</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        /* Custom styles to override or extend Tailwind */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f2f2f2;
-        }
-        .header {
-            background-image: url('https://yt3.googleusercontent.com/JHTHRsm3_keOY7f6dLzgDkG7e_olnUvd9Nd0hNfcCbGDScdnOyKDFmuaARWFX05zWaPjwjsAJw=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj');
-            background-size: cover;
-            background-position: center;
-            height: 250px;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-            font-weight: bold;
-            text-align: center;
-        }
-        .navbar {
-            background-color: #1f3556;
-        }
-        .nav-btn {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            margin: 0 5px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-        }
-        .nav-btn:hover {
-            background-color: #2980b9;
-        }
-        .intro {
-            background-color: #555;
-            color: white;
-            line-height: 1.6;
-        }
-        .video-section-title {
-            color: #1f3556;
-            font-size: 2.25rem; /* text-4xl */
-            font-weight: 700; /* font-bold */
-            margin-bottom: 1.5rem; /* mb-6 */
-        }
-        .video-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 한 줄에 4개씩, 반응형 */
-            gap: 2.5rem; /* gap-10 */
-            justify-items: center;
-            padding: 1rem; /* p-4 */
-        }
-        .video-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: white;
-            border-radius: 0.75rem; /* rounded-xl */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
-            padding: 1rem;
-            width: 100%; /* Ensure it takes full grid column width */
-            max-width: 320px; /* Max width for each video box */
-        }
-        .video-box iframe {
-            width: 100%; /* Make iframe responsive within its container */
-            aspect-ratio: 16 / 9; /* Maintain 16:9 aspect ratio */
-            border-radius: 0.625rem; /* rounded-xl */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* shadow-sm */
-        }
-        .youtube-link {
-            margin-top: 0.5rem; /* Adjusted margin since title is removed */
-        }
-        .youtube-link a {
-            font-size: 0.875rem; /* text-sm */
-            color: #7b1fa2;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        .youtube-link a:hover {
-            color: #5a147a;
-        }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tony's SkyView Portfolio - 16:9 Videos</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --brand-dark:#1f3556; --brand:#2b5aa6; --brand-hover:#234b8b; --accent:#7b1fa2;
+         --card-bg:#ffffff; --page-bg:#f2f2f2; --text:#111827; --muted:#6b7280; }
+  @media (prefers-color-scheme: dark){
+    :root{ --card-bg:#111827; --page-bg:#0b1220; --text:#e5e7eb; --muted:#9ca3af;
+           --brand-dark:#162640; --brand:#2b5aa6; --brand-hover:#234b8b; --accent:#8b5cf6; }
+  }
+  body{ font-family:'Inter',sans-serif; background:var(--page-bg); color:var(--text); }
+  .header{ background-image:url('https://yt3.googleusercontent.com/JHTHRsm3_keOY7f6dLzgDkG7e_olnUvd9Nd0hNfcCbGDScdnOyKDFmuaARWFX05zWaPjwjsAJw=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj'); background-size:cover; background-position:center; height:250px; color:#fff; display:flex; align-items:center; justify-content:center; font-size:36px; font-weight:bold; text-align:center;}
+  .navbar{ background:var(--brand-dark); }
+  .nav-btn{ background:var(--brand); color:#fff; border:none; padding:10px 15px; margin:0 5px; border-radius:8px; text-decoration:none; font-size:14px; transition:background .25s ease;}
+  .nav-btn:hover{ background:var(--brand-hover); }
+  .intro{ background:linear-gradient(90deg, var(--brand-dark), #2c3e50); color:#fff; line-height:1.7; border-left:6px solid var(--brand); }
+  .video-section-title{ color:var(--brand-dark); font-size:2rem; font-weight:800; margin-bottom:1rem; }
+  @media (prefers-color-scheme:dark){ .video-section-title{ color:#cbd5e1; } }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:28px; padding:16px; justify-items:center; }
+  .card{ width:100%; max-width:320px; background:var(--card-bg); border-radius:14px; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,.08); transition:transform .25s ease, box-shadow .25s ease; }
+  .card:hover{ transform:translateY(-6px); box-shadow:0 10px 24px rgba(0,0,0,.15);}
+  .thumb{ position:relative; aspect-ratio:16/9; background:#000; display:block; }
+  .thumb img{ width:100%; height:100%; object-fit:cover; display:block;}
+  .play{ position:absolute; right:12px; bottom:12px; background:rgba(0,0,0,.6); color:#fff; font-size:12px; padding:6px 10px; border-radius:999px;}
+  .yt{ text-align:center; padding:10px 12px 14px;}
+  .yt a{ color:var(--accent); font-size:.9rem; text-decoration:none;}
+  .yt a:hover{ text-decoration:underline; }
 
-        /* Custom Modal for Contact */
-        .modal {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            /* Ensure it's hidden by default in CSS */
-            display: none; /* Added this line */
-        }
-        .modal-content {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-            max-width: 24rem;
-            width: 100%;
-            text-align: center;
-        }
+  /* 연락 모달 */
+  .modal{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:1000; }
+  .modal-content{ background:var(--card-bg); color:var(--text); padding:2rem; border-radius:.75rem; width:min(92vw,420px); text-align:center; box-shadow:0 10px 30px rgba(0,0,0,.35); }
+  .btn{ background:var(--brand); color:#fff; padding:.6rem 1rem; border-radius:.6rem; }
+  .btn:hover{ background:var(--brand-hover); }
 
-        /* Responsive adjustments */
-        @media (min-width: 1024px) { /* For large screens (lg) */
-            .video-grid {
-                grid-template-columns: repeat(4, 1fr); /* 4 videos per row on large screens */
-            }
-        }
-        @media (max-width: 768px) { /* For medium screens (md) and smaller */
-            .header {
-                font-size: 28px;
-                height: 200px;
-            }
-            .intro {
-                width: 90%;
-                padding: 15px;
-            }
-            .navbar {
-                flex-wrap: wrap;
-                padding: 10px;
-            }
-            .nav-btn {
-                margin: 5px;
-                padding: 8px 12px;
-            }
-            .video-grid {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjust for smaller screens */
-                gap: 1.5rem;
-            }
-            .video-box {
-                max-width: 90vw; /* Adjust max-width for mobile */
-            }
-        }
-    </style>
+  /* 라이트박스 */
+  .lightbox{ position:fixed; inset:0; background:rgba(0,0,0,.85); display:none; align-items:center; justify-content:center; z-index:1100; padding:24px; }
+  .lightbox-inner{ width:min(96vw,1100px); }
+  .lb-close{ position:absolute; top:16px; right:16px; background:rgba(255,255,255,.15); color:#fff; padding:8px 12px; border-radius:8px; cursor:pointer; }
+</style>
 </head>
-<body class="bg-gray-100">
+<body>
+  <div class="header">Tony's SkyView Portfolio</div>
 
-    <!-- Header Section -->
-    <div class="header">Tony's SkyView Portfolio</div>
+  <div class="navbar flex justify-center py-2 shadow-md">
+    <a href="index.html" class="nav-btn">Home</a>
+    <a href="videos.html" class="nav-btn">16:9 Videos</a>
+    <a href="shorts.html" class="nav-btn">9:16 Shorts</a>
+    <a href="https://smile21c.notion.site/my-profile" class="nav-btn" target="_blank" rel="noopener">About Me</a>
+    <a href="#" class="nav-btn" id="contact-btn">Contact Me</a>
+  </div>
 
-    <!-- Navigation Bar -->
-    <div class="navbar flex justify-center py-2 shadow-md">
-        <a href="index.html" class="nav-btn">Home</a>
-        <a href="videos.html" class="nav-btn">16:9 Videos</a>
-        <a href="shorts.html" class="nav-btn">9:16 Shorts</a>
-        <a href="https://smile21c.notion.site/my-profile" class="nav-btn" target="_blank">About Me</a>
-        <a href="#" class="nav-btn" id="contact-btn">Contact Me</a>
+  <div class="intro mx-auto my-8 p-6 rounded-xl shadow-lg w-3/5 text-center">
+    행복은 삶의 질을 좋게 하는 수단이지 결코 그 자체가 목적이 되어서는 안 된다.
+  </div>
+
+  <hr class="border-t-2 border-gray-300 my-8 w-4/5 mx-auto">
+
+  <div id="videos" class="text-center py-6">
+    <h2 class="video-section-title">16:9 Videos</h2>
+    <div id="videos-container" class="grid"></div>
+  </div>
+
+  <!-- Contact Modal -->
+  <div id="contact-modal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <h3 class="text-xl font-bold mb-4">Contact Information</h3>
+      <p class="text-gray-700 mb-6" style="color:var(--muted)">Email: smile21c@korea.com</p>
+      <button id="close-modal-btn" class="btn">Close</button>
     </div>
+  </div>
 
-    <!-- Introduction Section -->
-    <div class="intro mx-auto my-8 p-6 rounded-xl shadow-lg w-3/5 text-center">
-        행복은 삶의 질을 좋게 하는 수단이지 결코 그 자체가 목적이 되어서는 안 된다.
+  <!-- Lightbox Player -->
+  <div id="lightbox" class="lightbox" aria-hidden="true">
+    <div class="lightbox-inner">
+      <button class="lb-close" id="lb-close" aria-label="Close video">Close ✕</button>
+      <div id="lb-target"></div>
     </div>
+  </div>
 
-    <hr class="border-t-2 border-gray-300 my-8 w-4/5 mx-auto">
-
-    <!-- 16:9 Videos Section -->
-    <div id="videos" class="video-section text-center py-8">
-        <h2 class="video-section-title">16:9 Videos</h2>
-        <div id="videos-container" class="video-grid">
-            <!-- 16:9 video content will be inserted here by JavaScript -->
-        </div>
-    </div>
-
-    <!-- Custom Modal for Contact -->
-    <div id="contact-modal" class="modal">
-        <div class="modal-content">
-            <h3 class="text-xl font-bold mb-4">Contact Information</h3>
-            <p class="text-gray-700 mb-6">Email: smile21c@korea.com</p>
-            <button id="close-modal-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Close</button>
-        </div>
-    </div>
-
-    <script>
-        // 16:9 영상 데이터 (16대9영상.txt 파일에서 파싱)
-        const videos16_9Data = `2025-08-12 | 어머니의 고향, 저지오름 | https://www.youtube.com/watch?v=ApBN89y6S_k
-2025-08-10 | 범섬아~, 다음에는 햇살 아래서 만나요~~ | https://www.youtube.com/watch?v=bSPOxiQ6gh0
-2025-08-01 | 송악산 빛과 그림자 – 우리는 무엇을 남길 것인가? | https://www.youtube.com/watch?v=22Wp4s2wXVs
+<script>
+  // 원본 데이터(그대로)
+  const videos16_9Data = `2025-08-01 | 송악산 빛과 그림자 – 우리는 무엇을 남길 것인가? | https://www.youtube.com/watch?v=22Wp4s2wXVs
 2025-07-31 | 소나무 많은 송악산 - 전설이 스며든 오름 | https://www.youtube.com/watch?v=YwPiwGR3-AM
 2025-07-26 | 섶섬 - 시간과 인내로 깎은 美 | https://www.youtube.com/watch?v=8q55ruguf1A
 2025-07-24 | 돌아갈 길을 막은 섬  차귀도 - 제주 서쪽 끝에서 만난 바람의 섬 | https://www.youtube.com/watch?v=j5QG_APh0Jk
@@ -222,107 +119,89 @@
 2025-05-01 | 비양도 놀멍1 | https://www.youtube.com/watch?v=Xi8pJN4B0Pk
 2025-04-29 | 한림항에서본 일몰 | https://www.youtube.com/watch?v=RvDqWZqpYt4`;
 
-        // Function to parse video data
-        function parseVideoData(dataString) {
-            const videos = [];
-            const lines = dataString.trim().split('\n');
-            lines.forEach(line => {
-                const parts = line.split(' | ');
-                if (parts.length === 3) {
-                    const date = parts[0].trim();
-                    const title = parts[1].trim(); // Keep title for potential use or debugging
-                    const url = parts[2].trim();
-                    videos.push({ date, title, url });
-                }
-            });
-            return videos;
-        }
+  function parseVideoData(s){
+    return s.trim().split('\n').map(line=>{
+      const p=line.split(' | '); if(p.length!==3) return null;
+      return {date:p[0].trim(), title:p[1].trim(), url:p[2].trim()};
+    }).filter(Boolean);
+  }
 
-        // Function to get YouTube video ID from URL
-        function getYouTubeVideoId(url) {
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : null;
-        }
+  // ✅ 견고한 ID 추출 (watch?v=, youtu.be/, embed/ 모두 처리)
+  function getId(url){
+    try{
+      const u = new URL(url);
+      const v = u.searchParams.get('v');
+      if (v && v.length === 11) return v;
+      // youtu.be/<id> or /embed/<id> or /v/<id>
+      const parts = u.pathname.split('/');
+      for (let i = parts.length - 1; i >= 0; i--) {
+        const seg = parts[i];
+        if (seg && seg.length === 11) return seg;
+      }
+    }catch(e){
+      // URL 생성이 실패하면 간단 폴백
+      const m = url.match(/(?:watch\?v=|youtu\.be\/|embed\/|v\/)([A-Za-z0-9_-]{11})/);
+      if (m) return m[1];
+    }
+    return null;
+  }
 
-        // Function to render videos
-        function renderVideos(videoList, containerId) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
+  // Lightbox
+  const lb = document.getElementById('lightbox');
+  const lbClose = document.getElementById('lb-close');
+  const lbTarget = document.getElementById('lb-target');
 
-            // Sort videos by date in descending order (latest first)
-            videoList.sort((a, b) => new Date(b.date) - new Date(a.date));
+  // (수정 1) index.html과 동일 정책: 자동재생+무음+인라인
+  function openLB(id){
+    lbTarget.innerHTML = `<iframe title="YouTube video player" style="width:100%;aspect-ratio:16/9;border:0;border-radius:12px;" src="https://www.youtube.com/embed/${id}?autoplay=1&mute=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    lb.style.display='flex'; lb.setAttribute('aria-hidden','false');
+  }
+  function closeLB(){ lb.style.display='none'; lb.setAttribute('aria-hidden','true'); lbTarget.innerHTML=''; }
+  lbClose.addEventListener('click', closeLB);
+  lb.addEventListener('click', e=>{ if(e.target===lb) closeLB(); });
+  window.addEventListener('keydown', e=>{ if(e.key==='Escape') closeLB(); });
 
-            videoList.forEach(video => {
-                const videoId = getYouTubeVideoId(video.url);
-                if (!videoId) return; // Skip if video ID cannot be extracted
+  function render(list, containerId){
+    const el=document.getElementById(containerId); if(!el) return;
+    list.sort((a,b)=> new Date(b.date)-new Date(a.date));
+    list.forEach(v=>{
+      const id=getId(v.url); if(!id) return;
+      const card=document.createElement('div'); card.className='card'; card.setAttribute('role','button'); card.tabIndex=0;
+      card.innerHTML=`
+        <a class="thumb"><img loading="lazy" src="https://img.youtube.com/vi/${id}/hqdefault.jpg" alt="${v.title} 썸네일"><span class="play">Play</span></a>
+        <div class="yt"><a href="${v.url}" target="_blank" rel="noopener">[유튜브 바로가기]</a></div>
+      `;
+      // (수정 2-1) 카드 클릭 시, yt 영역 클릭이면 라이트박스 열지 않음(소리 겹침 방지)
+      const act=(e)=>{ const isYt = e.target.closest('.yt'); if(!isYt){ openLB(id); } };
+      card.addEventListener('click', act);
+      card.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openLB(id); }});
+      el.appendChild(card);
+    });
+  }
 
-                const videoBox = document.createElement('div');
-                videoBox.classList.add('video-box');
+  const parsed=parseVideoData(videos16_9Data);
+  render(parsed,'videos-container');
 
-                const iframe = document.createElement('iframe');
-                iframe.src = `https://www.youtube.com/embed/${videoId}`;
-                iframe.setAttribute('frameborder', '0');
-                iframe.setAttribute('allowfullscreen', 'true');
-                iframe.setAttribute('loading', 'lazy'); // Lazy load iframes
-                videoBox.appendChild(iframe);
+  // 연락 모달
+  const contactBtn=document.getElementById('contact-btn');
+  const contactModal=document.getElementById('contact-modal');
+  const closeModalBtn=document.getElementById('close-modal-btn');
+  if(contactBtn && contactModal && closeModalBtn){
+    contactBtn.addEventListener('click',e=>{ e.preventDefault(); contactModal.style.display='flex'; contactModal.setAttribute('aria-hidden','false');});
+    closeModalBtn.addEventListener('click',()=>{ contactModal.style.display='none'; contactModal.setAttribute('aria-hidden','true');});
+    contactModal.addEventListener('click',e=>{ if(e.target===contactModal){ contactModal.style.display='none'; contactModal.setAttribute('aria-hidden','true');}});
+  }
 
-                // Removed video title as per request
-                // const videoTitle = document.createElement('div');
-                // videoTitle.classList.add('video-title');
-                // videoTitle.textContent = video.title;
-                // videoBox.appendChild(videoTitle);
-
-                const youtubeLink = document.createElement('div');
-                youtubeLink.classList.add('youtube-link');
-                const link = document.createElement('a');
-                link.href = video.url;
-                link.target = "_blank";
-                link.textContent = "[유튜브 바로가기]";
-                youtubeLink.appendChild(link);
-                videoBox.appendChild(youtubeLink);
-
-                container.appendChild(videoBox);
-            });
-        }
-
-        // Parse the 16:9 video data
-        const parsed16_9Videos = parseVideoData(videos16_9Data);
-
-        // Render 16:9 videos
-        renderVideos(parsed16_9Videos, 'videos-container');
-
-        // Contact Modal functionality
-        const contactBtn = document.getElementById('contact-btn');
-        const contactModal = document.getElementById('contact-modal');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-
-        // Ensure modal elements exist before adding event listeners
-        if (contactBtn && contactModal && closeModalBtn) {
-            // Use 'DOMContentLoaded' to ensure all HTML is loaded before script runs
-            document.addEventListener('DOMContentLoaded', () => {
-                // Initially hide the modal using JavaScript to ensure it's hidden on load
-                // This is a fallback in case CSS 'display: none;' is overridden or not applied immediately
-                contactModal.style.display = 'none'; // Use style.display for direct control
-            });
-
-
-            contactBtn.addEventListener('click', (e) => {
-                e.preventDefault(); // Prevent default link behavior
-                contactModal.style.display = 'flex'; // Show the modal
-            });
-
-            closeModalBtn.addEventListener('click', () => {
-                contactModal.style.display = 'none'; // Hide the modal
-            });
-
-            // Close modal when clicking outside the content area
-            contactModal.addEventListener('click', (e) => {
-                if (e.target === contactModal) {
-                    contactModal.style.display = 'none'; // Hide the modal
-                }
-            });
-        }
-    </script>
+  // (수정 2-2) [유튜브 바로가기]는 새 창 전체크기로 열기
+  document.addEventListener('click', (e)=>{
+    const link = e.target.closest('.yt a');
+    if(!link) return;
+    e.preventDefault();
+    const url = link.href;
+    const w = window.screen.width, h = window.screen.height;
+    const win = window.open(url, '_blank', `scrollbars=yes,width=${w},height=${h},top=0,left=0`);
+    if(win && win.focus) win.focus();
+  });
+</script>
 </body>
 </html>
