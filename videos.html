@@ -16,7 +16,20 @@
   body{ font-family:'Inter',sans-serif; background:var(--page-bg); color:var(--text); }
   .header{ background-image:url('https://yt3.googleusercontent.com/JHTHRsm3_keOY7f6dLzgDkG7e_olnUvd9Nd0hNfcCbGDScdnOyKDFmuaARWFX05zWaPjwjsAJw=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj'); background-size:cover; background-position:center; height:250px; color:#fff; display:flex; align-items:center; justify-content:center; font-size:36px; font-weight:bold; text-align:center;}
   .navbar{ background:var(--brand-dark); }
-  .nav-btn{ background:var(--brand); color:#fff; border:none; padding:10px 15px; margin:0 5px; border-radius:8px; text-decoration:none; font-size:14px; transition:background .25s ease;}
+  .nav-btn{
+  background:var(--brand);
+  color:#fff;
+  border:none;
+  padding:10px 20px;
+  margin:0 5px;
+  border-radius:8px;
+  text-decoration:none;
+  font-size:14px;
+  transition:background .25s ease;
+  min-width:110px;      /* 버튼 최소 너비 고정 */
+  text-align:center;    /* 글자 중앙 정렬 */
+  display:inline-block; /* 인라인 블록 정렬 */
+}
   .nav-btn:hover{ background:var(--brand-hover); }
   .intro{ background:linear-gradient(90deg, var(--brand-dark), #2c3e50); color:#fff; line-height:1.7; border-left:6px solid var(--brand); }
   .video-section-title{ color:var(--brand-dark); font-size:2rem; font-weight:800; margin-bottom:1rem; }
@@ -47,11 +60,11 @@
   <div class="header">Tony's SkyView Portfolio</div>
 
   <div class="navbar flex justify-center py-2 shadow-md">
-    <a href="index.html" class="nav-btn">Home</a>
-    <a href="videos.html" class="nav-btn">16:9 Videos</a>
-    <a href="shorts.html" class="nav-btn">9:16 Shorts</a>
-    <a href="https://smile21c.notion.site/my-profile" class="nav-btn" target="_blank" rel="noopener">About Me</a>
-    <a href="#" class="nav-btn" id="contact-btn">Contact Me</a>
+  <a href="index.html" class="nav-btn">Home</a>
+  <a href="videos.html" class="nav-btn">Videos</a>   <!-- 16:9 Videos → Videos -->
+  <a href="shorts.html" class="nav-btn">Shorts</a>   <!-- 9:16 Shorts → Shorts -->
+  <a href="https://smile21c.notion.site/my-profile" class="nav-btn" target="_blank" rel="noopener">About Me</a>
+  <a href="#" class="nav-btn" id="contact-btn">Contact Me</a>
   </div>
 
   <div class="intro mx-auto my-8 p-6 rounded-xl shadow-lg w-3/5 text-center">
