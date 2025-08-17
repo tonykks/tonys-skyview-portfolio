@@ -46,7 +46,29 @@
     display:inline-block;
   }
   .nav-btn:hover{ background:var(--brand-hover); }
-  .intro{ background:linear-gradient(90deg, var(--brand-dark), #2c3e50); color:#fff; line-height:1.7; border-left:6px solid var(--brand); }
+    .intro{
+    /* 배경을 더 선명한 그라데이션으로 */
+    background: linear-gradient(90deg, var(--brand), var(--accent));
+
+    /* 글자 가독성 강화 */
+    color: #ffffff;
+    font-size: 1.25rem;   /* 20px 정도: 기존보다 크게 */
+    font-weight: 700;     /* 굵게 */
+    line-height: 1.8;     /* 줄 간격 넉넉하게 */
+
+    /* 박스 자체를 카드처럼 돋보이게 */
+    padding: 1.5rem;      /* 안쪽 여백(HTML의 p-6과 동일, 중복되어도 괜찮습니다) */
+    border-radius: 12px;  /* 둥근 모서리 */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+  
+    /* 레이아웃(HTML의 유틸 클래스를 보완/강화) */
+    text-align: center;
+    max-width: 70%;
+    margin: 2rem auto;
+  
+    /* 좌측 보더는 제거(깔끔하게) */
+    border: 0;
+  }
   .video-section-title{ color:var(--brand-dark); font-size:2rem; font-weight:800; margin-bottom:1rem; }
   @media (prefers-color-scheme:dark){ .video-section-title{ color:#cbd5e1; } }
   .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:28px; padding:16px; justify-items:center; }
