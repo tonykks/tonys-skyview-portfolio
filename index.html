@@ -18,60 +18,29 @@
     }
   }
   body{font-family:'Inter',sans-serif; background:var(--page-bg); color:var(--text);}
+
   .header{
     background-image:url('https://yt3.googleusercontent.com/JHTHRsm3_keOY7f6dLzgDkG7e_olnUvd9Nd0hNfcCbGDScdnOyKDFmuaARWFX05zWaPjwjsAJw=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj');
-    background-size:cover;
-    background-position:center;
-    height:250px;
-    color:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:48px;       /* 크고 선명하게 */
-    font-weight:900;      /* Extra Bold */
-    text-align:center;
-
-    /* 깔끔한 강조: 그림자만 적용, 외곽선 없음 */
+    background-size:cover; background-position:center; height:250px; color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:48px; font-weight:900; text-align:center;
     text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
   }
+
   .navbar{ background:var(--brand-dark); }
   .nav-btn{
-    background:var(--brand); 
-    color:#fff; 
-    border:none; 
-    padding:10px 20px; 
-    margin:0 5px; 
-    border-radius:8px;
-    text-decoration:none; 
-    font-size:14px; 
-    transition:background .25s ease;
-    min-width:110px;         /* 버튼 최소 너비 고정 */
-    text-align:center;       /* 글자 중앙 정렬 */
-    display:inline-block;
+    background:var(--brand); color:#fff; border:none; padding:10px 20px; margin:0 5px; border-radius:8px;
+    text-decoration:none; font-size:14px; transition:background .25s ease;
+    min-width:110px; text-align:center; display:inline-block;
   }
   .nav-btn:hover{ background:var(--brand-hover); }
+
+  /* 인트로: 가독성 강화(색·크기·줄간격) */
   .intro{
-    /* 배경을 더 선명한 그라데이션으로 */
     background: linear-gradient(90deg, var(--brand), var(--accent));
-
-    /* 글자 가독성 강화 */
-    color: #ffffff;
-    font-size: 1.25rem;   /* 20px 정도: 기존보다 크게 */
-    font-weight: 700;     /* 굵게 */
-    line-height: 1.8;     /* 줄 간격 넉넉하게 */
-
-    /* 박스 자체를 카드처럼 돋보이게 */
-    padding: 1.5rem;      /* 안쪽 여백(HTML의 p-6과 동일, 중복되어도 괜찮습니다) */
-    border-radius: 12px;  /* 둥근 모서리 */
-    box-shadow: 0 8px 20px rgba(0,0,0,0.18);
-  
-    /* 레이아웃(HTML의 유틸 클래스를 보완/강화) */
-    text-align: center;
-    max-width: 70%;
-    margin: 2rem auto;
-  
-    /* 좌측 보더는 제거(깔끔하게) */
-    border: 0;
+    color:#fff; font-size:1.25rem; font-weight:700; line-height:1.8;
+    padding:1.5rem; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.18);
+    text-align:center; max-width:70%; margin:2rem auto; border:0;
   }
 
   .section{ text-align:center; margin-top:24px; }
@@ -80,11 +49,20 @@
     background:#34495e; color:#fff; padding:8px 16px; border-radius:8px; font-size:14px; text-decoration:none; transition:opacity .25s ease;
   }
   .epilogue-btn:hover{ opacity:.9;}
-  .video-container{ display:flex; justify-content:center; gap:28px; margin-bottom:30px; flex-wrap:wrap; }
+
+  /* ✔ 그리드 레이아웃(반응형) */
+  .video-container{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap:28px;
+    margin-bottom:30px;
+    align-items:start;
+    padding: 0 16px;
+  }
 
   /* 카드 & 썸네일 */
   .video-card{
-    width:480px; max-width:90vw; background:var(--card-bg); border-radius:14px; overflow:hidden;
+    background:var(--card-bg); border-radius:14px; overflow:hidden;
     box-shadow:0 6px 18px rgba(0,0,0,.08); transition:transform .25s ease, box-shadow .25s ease;
   }
   .video-card:hover{ transform:translateY(-6px); box-shadow:0 10px 24px rgba(0,0,0,.15); }
@@ -108,11 +86,21 @@
   .lightbox{ position:fixed; inset:0; background:rgba(0,0,0,.85); display:none; align-items:center; justify-content:center; z-index:1100; padding:24px; }
   .lightbox-inner{ width:min(96vw,1100px); }
   .lb-close{ position:absolute; top:16px; right:16px; background:rgba(255,255,255,.15); color:#fff; padding:8px 12px; border-radius:8px; cursor:pointer; }
+
+  /* ▶ 맨 위로 이동 버튼 */
+  #back-to-top{
+    position:fixed; right:16px; bottom:16px; z-index:1200;
+    background:var(--brand); color:#fff; border:none; border-radius:999px; padding:10px 14px;
+    box-shadow:0 8px 20px rgba(0,0,0,.25); cursor:pointer; display:none;
+  }
+  #back-to-top:hover{ background:var(--brand-hover); }
+
   @media (max-width:768px){
     .header{ font-size:28px; height:200px;}
     .intro{ width:90%; padding:16px;}
     .navbar{ flex-wrap:wrap; padding:10px;}
     .nav-btn{ margin:5px; padding:8px 12px;}
+    .video-container{ gap:16px; }
   }
 </style>
 </head>
@@ -122,21 +110,20 @@
   <div class="header">Tony's SkyView Portfolio</div>
 
   <!-- Nav -->
-<div class="navbar flex justify-center py-2 shadow-md">
-  <a href="index.html" class="nav-btn">Home</a>
-  <a href="videos.html" class="nav-btn">Videos</a>
-  <a href="shorts.html" class="nav-btn">Shorts</a>
-  <a href="https://smile21c.notion.site/my-profile" class="nav-btn" target="_blank" rel="noopener">About Me</a>
-  <a href="#" class="nav-btn" id="contact-btn">Contact Me</a>
-</div>
+  <div class="navbar flex justify-center py-2 shadow-md">
+    <a href="index.html" class="nav-btn">Home</a>
+    <a href="videos.html" class="nav-btn">Videos</a>
+    <a href="shorts.html" class="nav-btn">Shorts</a>
+    <a href="https://smile21c.notion.site/my-profile" class="nav-btn" target="_blank" rel="noopener">About Me</a>
+    <a href="#" class="nav-btn" id="contact-btn">Contact Me</a>
+  </div>
 
   <!-- Intro -->
-<div class="intro mx-auto my-8 p-6 rounded-xl shadow-lg w-3/5 text-center">
+  <div class="intro mx-auto my-8 p-6 rounded-xl shadow-lg w-3/5 text-center">
     환갑을 넘긴 나이에 드론을 만나, 궁금했던 풍경을 직접 담을 수 있는 기쁨을 알게 되었고<br>
     그 감동을 영상뿐만이 아닌, 노래로도 표현하고 싶어졌습니다.<br>
     이제는 세상을 여행하며 제가 느낀 소소한 감동을 나누는 "디지털 노마드"로 살아가고자 합니다.
-</div>
-
+  </div>
 
   <!-- 섹션 1 -->
   <div class="section">
@@ -205,6 +192,9 @@
     </div>
   </div>
 
+  <!-- ▶ 맨 위로 이동 버튼 -->
+  <button id="back-to-top" aria-label="맨 위로">▲</button>
+
 <script>
   // 연락 모달
   const contactBtn=document.getElementById('contact-btn');
@@ -216,30 +206,17 @@
     contactModal.addEventListener('click',e=>{ if(e.target===contactModal){ contactModal.style.display='none'; contactModal.setAttribute('aria-hidden','true'); }});
   }
 
-  // 라이트박스 플레이어 (썸네일 → 클릭 시 iframe 주입, 자동 재생)
+  // 라이트박스(자동 재생, 무음)
   const lb = document.getElementById('lightbox');
   const lbClose = document.getElementById('lb-close');
   const lbTarget = document.getElementById('lb-target');
 
   function openLightbox(videoId){
     const url = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&playsinline=1`;
-    lbTarget.innerHTML = `
-      <iframe
-        title="YouTube video player"
-        width="100%"
-        height="auto"
-        style="aspect-ratio:16/9;border:0;border-radius:12px;"
-        src="${url}"
-        allow="autoplay; encrypted-media"
-        allowfullscreen
-      ></iframe>`;
-    lb.style.display='flex';
-    lb.setAttribute('aria-hidden','false');
+    lbTarget.innerHTML = `<iframe title="YouTube video player" width="100%" height="auto" style="aspect-ratio:16/9;border:0;border-radius:12px;" src="${url}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    lb.style.display='flex'; lb.setAttribute('aria-hidden','false');
   }
-
-  function closeLightbox(){
-    lb.style.display='none'; lb.setAttribute('aria-hidden','true'); lbTarget.innerHTML='';
-  }
+  function closeLightbox(){ lb.style.display='none'; lb.setAttribute('aria-hidden','true'); lbTarget.innerHTML=''; }
   lbClose.addEventListener('click', closeLightbox);
   lb.addEventListener('click', e=>{ if(e.target===lb) closeLightbox(); });
   window.addEventListener('keydown',e=>{ if(e.key==='Escape') closeLightbox(); });
@@ -249,27 +226,28 @@
     const vid = card.getAttribute('data-video-id');
     const activate = (event) => {
       const isYtLink = event.target.closest('.yt-link');
-      if (!isYtLink) {
-        openLightbox(vid);
-      }
+      if (!isYtLink) openLightbox(vid);
     };
     card.addEventListener('click', activate);
     card.addEventListener('keydown', e=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); activate(e); }});
   });
 
-  // 유튜브 바로가기 전체창 열기
+  // 유튜브 바로가기: 새 창 전체크기
   document.querySelectorAll('.yt-link a').forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
       const url = link.href;
-      const newWindow = window.open(
-        url,
-        "_blank",
-        `scrollbars=yes, width=${screen.width}, height=${screen.height}, top=0, left=0`
-      );
+      const newWindow = window.open(url, "_blank", `scrollbars=yes,width=${screen.width},height=${screen.height},top=0,left=0`);
       if (newWindow && newWindow.focus) newWindow.focus();
     });
   });
+
+  // ▶ 맨 위로 이동 버튼 동작
+  const toTopBtn = document.getElementById('back-to-top');
+  window.addEventListener('scroll', () => {
+    toTopBtn.style.display = window.scrollY > 400 ? 'block' : 'none';
+  });
+  toTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 </script>
 </body>
 </html>
