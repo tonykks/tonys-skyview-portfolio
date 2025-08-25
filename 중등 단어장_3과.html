@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<!--
+================================================================================
+  GEMINI AI 영어 단어 퀴즈 마스터 템플릿 (최종 버전)
+================================================================================
+  템플릿 이름: 중등 필수 단어/숙어 퀴즈 (최종 템플릿)
+  제작 요청자: 선생님
+  최종 업데이트: 2025년 8월 25일
+
+  ## 핵심 기능 및 규칙 (AI 필독!) ##
+  1. 제공되는 단어 목록 이미지(사진)를 분석하여 아래 'const words' 배열을 교체한다.
+     1.1. (중요!) '교과서 어휘' 섹션의 'Words', 'Phrases', 'English-English Dictionary'에 
+          있는 모든 단어와 숙어를 빠짐없이 포함해야 합니다.
+  2. 모든 퀴즈는 표제어의 품사와 상관없이, 예문 속 '동사'의 올바른 형태를 묻는 문제로 출제해야 한다.
+     (예: 표제어가 명사 'restaurant'라도, 예문 "Let's (go) to a restaurant."에서 'go'를 퀴즈로 출제)
+  2.1. (매우 중요!) 위 2번 규칙은 표제어가 명사, 형용사, 부사일 경우에도 반드시 지켜져야 합니다. 
+       표제어 자체를 정답으로 만드는 오류를 반복하지 않도록 각별히 주의하세요.
+  3. 4지선다 보기는 동사의 원형, 3인칭 단수형, 과거형, 진행형 등 다양한 형태로 구성한다.
+  4. 동사는 3단 변화형, 명사는 단/복수형을 'word-forms' 영역에 표시한다.
+  5. 모든 음성 재생(단어, 문장)은 기기 내장 TTS가 아닌 Google TTS 링크를 사용해 기기 간 편차 없이 안정적으로 제공한다.
+  6. 점수판은 상단에 고정(sticky)되어 스크롤해도 항상 보여야 한다.
+  7. '다시 풀기' 버튼은 모든 문제를 다 풀기 전까지 비활성화 상태를 유지한다.
+
+================================================================================
+  ## 추천 프롬프트 (이 템플릿과 함께 사용하세요) ##
+
+  프롬프트: 이 코드를 템플릿으로 사용하고, 함께 제공된 사진 속 '교과서 어휘'의 모든 단어와 숙어를 이용해 단어 퀴즈를 만들어 줘. 모든 퀴즈는 표제어의 품사와 관계없이, 예문 속 '동사'의 올바른 형태를 묻는 문제여야 해.
+================================================================================
+-->
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>중등 필수 단어/숙어 퀴즈 (3과 - 최종 템플릿)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+        .card-container {
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-front {
+            background-color: #93c5fd; /* bg-blue-300 */
+            color: #1e3a8a; /* text-blue-900 */
+        }
+        .card-back {
+            background-color: #eff6ff; /* bg-blue-50 */
+            color: #1e40af; /* text-blue-800 */
+            transform: rotateY(180deg);
+            flex-direction: column;
+            padding: 1rem;
+            justify-content: space-around;
+            align-items: center;
+            text-align: center;
+        }
+        .play-btn {
+            background-color: #60a5fa; /* bg-blue-400 */
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .play-btn:hover {
+            background-color: #3b82f6; /* bg-blue-500 */
+        }
+        /* 단어 변화형 스타일 */
+        .word-forms {
+            background-color: #dbeafe;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-style: italic;
+        }
+        /* 4지선다형 퀴즈 스타일 */
+        .quiz-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0 1rem;
+        }
+        .option-btn {
+            background-color: white;
+            border: 2px solid #60a5fa;
+            color: #1e40af;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #dbeafe;
+        }
+        .option-btn.correct {
+            background-color: #34d399; /* bg-emerald-400 */
+            border-color: #059669; /* border-emerald-600 */
+            color: white;
+        }
+        .option-btn.incorrect {
+            background-color: #f87171; /* bg-red-400 */
+            border-color: #dc2626; /* border-red-600 */
+            color: white;
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        /* 점수판 스타일 */
+        #score-board {
+            background-color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: nowrap; /* 줄바꿈 방지 */
+        }
+        #reset-btn {
+            background-color: #fb923c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            flex-shrink: 0; /* 버튼 크기 유지 */
+        }
+        #reset-btn:hover:not(:disabled) {
+            background-color: #f97316;
+        }
+        #reset-btn:disabled {
+            background-color: #9ca3af; /* gray-400 */
+            cursor: not-allowed;
+        }
+        /* 문장 읽기 버튼 스타일 */
+        .sentence-play-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            vertical-align: middle;
+            margin-left: 0.25rem;
+            display: none; /* 초기에는 숨김 */
+            color: #2563eb;
+            transition: color 0.2s;
+        }
+        .sentence-play-btn:hover {
+            color: #1d4ed8;
+        }
+    </style>
+</head>
+<body class="bg-blue-100">
+
+    <header class="sticky top-0 z-10 bg-blue-100 py-4 shadow-sm">
+        <div class="max-w-5xl mx-auto text-center px-4">
+            <h1 class="text-3xl sm:text-4xl font-bold text-blue-800" style="font-family: 'Noto Sans KR', sans-serif;">중등 필수 단어/숙어 퀴즈 ✍️</h1>
+            <p class="text-gray-600 mt-2 mb-6">카드 뒷면의 보기 중 알맞은 동사를 선택해보세요!</p>
+            <div id="score-board" class="max-w-xl mx-auto">
+                <span id="score-text" class="text-lg font-bold text-blue-800 whitespace-nowrap">점수: 0점 / 0점</span>
+                <span id="percentage-text" class="text-sm text-gray-600 whitespace-nowrap">정답률: 0.0% (0/0)</span>
+                <button id="reset-btn">다시 풀기 🔄</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="p-4 sm:p-8">
+        <div id="card-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <!-- 단어 카드는 JavaScript로 생성됩니다 -->
+        </div>
+    </main>
+
+    <script>
+        const words = [
+            // Words
+            { eng: 'bake', pos: '동사', kor: '굽다', ipa: '[beɪk]', kor_pron: '베이크', forms: 'bake - baked - baked', sentence_parts: { p1: 'My mom', verb: 'bakes', p2: 'delicious cookies.' }, options: ['bake', 'bakes', 'baked', 'baking'], sentence_kor: '우리 엄마는 맛있는 쿠키를 구우신다.' },
+            { eng: 'prepare', pos: '동사', kor: '준비하다', ipa: '[prɪˈper]', kor_pron: '프리페어', forms: 'prepare - prepared - prepared', sentence_parts: { p1: 'You should', verb: 'prepare', p2: 'for the exam.' }, options: ['prepare', 'prepares', 'prepared', 'preparing'], sentence_kor: '너는 시험을 준비해야 한다.' },
+            { eng: 'boil', pos: '동사', kor: '끓다, 삶다', ipa: '[bɔɪl]', kor_pron: '보일', forms: 'boil - boiled - boiled', sentence_parts: { p1: 'The water is', verb: 'boiling', p2: 'in the pot.' }, options: ['boil', 'boils', 'boiled', 'boiling'], sentence_kor: '냄비에서 물이 끓고 있다.' },
+            { eng: 'shine', pos: '동사', kor: '빛나다', ipa: '[ʃaɪn]', kor_pron: '샤인', forms: 'shine - shone - shone', sentence_parts: { p1: 'The sun', verb: 'shone', p2: 'brightly yesterday.' }, options: ['shine', 'shines', 'shone', 'shining'], sentence_kor: '어제는 해가 밝게 빛났다.' },
+            { eng: 'blow', pos: '동사', kor: '불다', ipa: '[bloʊ]', kor_pron: '블로우', forms: 'blow - blew - blown', sentence_parts: { p1: 'The wind', verb: 'blew', p2: 'all night long.' }, options: ['blow', 'blows', 'blew', 'blowing'], sentence_kor: '바람이 밤새도록 불었다.' },
+            { eng: 'serve', pos: '동사', kor: '제공하다', ipa: '[sɜːrv]', kor_pron: '서브', forms: 'serve - served - served', sentence_parts: { p1: 'They', verb: 'serve', p2: 'breakfast until 10 AM.' }, options: ['serve', 'serves', 'served', 'serving'], sentence_kor: '그들은 오전 10시까지 아침 식사를 제공한다.' },
+            { eng: 'enough', pos: '형용사', kor: '충분한', ipa: '[ɪˈnʌf]', kor_pron: '이너프', forms: 'enough (adj.)', sentence_parts: { p1: 'I think we', verb: 'have', p2: 'enough time.' }, options: ['have', 'has', 'had', 'having'], sentence_kor: '내 생각에 우리는 시간이 충분하다.' },
+            { eng: 'delicious', pos: '형용사', kor: '아주 맛있는', ipa: '[dɪˈlɪʃəs]', kor_pron: '딜리셔스', forms: 'delicious (adj.)', sentence_parts: { p1: 'This pizza', verb: 'tastes', p2: 'so delicious.' }, options: ['taste', 'tastes', 'tasted', 'tasting'], sentence_kor: '이 피자는 정말 맛있는 맛이 난다.' },
+            { eng: 'spicy', pos: '형용사', kor: '양념 맛이 강한', ipa: '[ˈspaɪsi]', kor_pron: '스파이시', forms: 'spicy (adj.)', sentence_parts: { p1: 'I', verb: 'like', p2: 'spicy food.' }, options: ['like', 'likes', 'liked', 'liking'], sentence_kor: '나는 매운 음식을 좋아한다.' },
+            { eng: 'extreme', pos: '형용사', kor: '극심한, 심각한', ipa: '[ɪkˈstriːm]', kor_pron: '익스트림', forms: 'extreme (adj.)', sentence_parts: { p1: 'The heat in the desert', verb: 'was', p2: 'extreme.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '사막의 더위는 극심했다.' },
+            { eng: 'lovely', pos: '형용사', kor: '사랑스러운', ipa: '[ˈlʌvli]', kor_pron: '러블리', forms: 'lovely (adj.)', sentence_parts: { p1: 'It', verb: 'is', p2: 'a lovely day for a picnic.' }, options: ['is', 'are', 'was', 'be'], sentence_kor: '소풍 가기에 정말 사랑스러운 날씨다.' },
+            { eng: 'cool', pos: '형용사', kor: '시원한, 멋진', ipa: '[kuːl]', kor_pron: '쿨', forms: 'cool (adj.)', sentence_parts: { p1: 'A cool breeze', verb: 'is blowing', p2: 'from the sea.' }, options: ['blow', 'blows', 'blew', 'is blowing'], sentence_kor: '바다에서 시원한 바람이 불어오고 있다.' },
+            { eng: 'bright', pos: '형용사', kor: '밝은, 똑똑한', ipa: '[braɪt]', kor_pron: '브라이트', forms: 'bright (adj.)', sentence_parts: { p1: 'Your future', verb: 'looks', p2: 'very bright.' }, options: ['look', 'looks', 'looked', 'looking'], sentence_kor: '너의 미래는 매우 밝아 보인다.' },
+            { eng: 'fresh', pos: '형용사', kor: '신선한', ipa: '[freʃ]', kor_pron: '프레쉬', forms: 'fresh (adj.)', sentence_parts: { p1: 'I', verb: 'want', p2: 'to get some fresh air.' }, options: ['want', 'wants', 'wanted', 'wanting'], sentence_kor: '나는 신선한 공기를 좀 쐬고 싶다.' },
+            { eng: 'warm', pos: '형용사', kor: '따뜻한', ipa: '[wɔːrm]', kor_pron: '웜', forms: 'warm (adj.)', sentence_parts: { p1: 'Please', verb: 'keep', p2: 'this soup warm.' }, options: ['keep', 'keeps', 'kept', 'keeping'], sentence_kor: '이 수프를 따뜻하게 유지해주세요.' },
+            { eng: 'heavy', pos: '형용사', kor: '무거운', ipa: '[ˈhɛvi]', kor_pron: '헤비', forms: 'heavy (adj.)', sentence_parts: { p1: 'This box', verb: 'is', p2: 'too heavy to lift.' }, options: ['is', 'are', 'was', 'be'], sentence_kor: '이 상자는 너무 무거워서 들 수 없다.' },
+            { eng: 'sudden', pos: '형용사', kor: '갑작스러운', ipa: '[ˈsʌdn]', kor_pron: '서든', forms: 'sudden (adj.)', sentence_parts: { p1: 'There', verb: 'was', p2: 'a sudden change in the weather.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '날씨에 갑작스러운 변화가 있었다.' },
+            { eng: 'restaurant', pos: '명사', kor: '식당', ipa: '[ˈrestrɑːnt]', kor_pron: '레스트런트', forms: 'restaurant / restaurants', sentence_parts: { p1: 'Let\'s', verb: 'go', p2: 'to a new restaurant.' }, options: ['go', 'goes', 'went', 'going'], sentence_kor: '새로운 식당에 가자.' },
+            { eng: 'bowl', pos: '명사', kor: '그릇', ipa: '[boʊl]', kor_pron: '보울', forms: 'bowl / bowls', sentence_parts: { p1: 'He', verb: 'ate', p2: 'a bowl of soup.' }, options: ['eat', 'eats', 'ate', 'eating'], sentence_kor: '그는 수프 한 그릇을 먹었다.' },
+            { eng: 'plate', pos: '명사', kor: '접시', ipa: '[pleɪt]', kor_pron: '플레이트', forms: 'plate / plates', sentence_parts: { p1: 'Please', verb: 'put', p2: 'the plate on the table.' }, options: ['put', 'puts', 'putted', 'putting'], sentence_kor: '접시를 테이블 위에 놓아주세요.' },
+            { eng: 'vegetable', pos: '명사', kor: '채소', ipa: '[ˈvedʒtəbl]', kor_pron: '베지터블', forms: 'vegetable / vegetables', sentence_parts: { p1: 'You should', verb: 'eat', p2: 'more vegetables.' }, options: ['eat', 'eats', 'ate', 'eating'], sentence_kor: '너는 채소를 더 많이 먹어야 한다.' },
+            { eng: 'dish', pos: '명사', kor: '접시, 요리', ipa: '[dɪʃ]', kor_pron: '디쉬', forms: 'dish / dishes', sentence_parts: { p1: 'My favorite dish', verb: 'is', p2: 'pasta.' }, options: ['is', 'are', 'was', 'be'], sentence_kor: '내가 가장 좋아하는 요리는 파스타이다.' },
+            { eng: 'flour', pos: '명사', kor: '밀가루', ipa: '[ˈflaʊər]', kor_pron: '플라워', forms: 'flour (n.)', sentence_parts: { p1: 'You need flour to', verb: 'make', p2: 'bread.' }, options: ['make', 'makes', 'made', 'making'], sentence_kor: '빵을 만들려면 밀가루가 필요하다.' },
+            { eng: 'dessert', pos: '명사', kor: '디저트', ipa: '[dɪˈzɜːrt]', kor_pron: '디저트', forms: 'dessert / desserts', sentence_parts: { p1: 'What do you', verb: 'want', p2: 'for dessert?' }, options: ['want', 'wants', 'wanted', 'wanting'], sentence_kor: '디저트로 무엇을 원하세요?' },
+            { eng: 'recipe', pos: '명사', kor: '요리법', ipa: '[ˈresəpi]', kor_pron: '레서피', forms: 'recipe / recipes', sentence_parts: { p1: 'She', verb: 'is looking', p2: 'for a cake recipe.' }, options: ['look', 'looks', 'looked', 'is looking'], sentence_kor: '그녀는 케이크 요리법을 찾고 있다.' },
+            { eng: 'grocery', pos: '명사', kor: '식료품 잡화점', ipa: '[ˈɡroʊsəri]', kor_pron: '그로서리', forms: 'grocery / groceries', sentence_parts: { p1: 'I need to', verb: 'buy', p2: 'some groceries.' }, options: ['buy', 'buys', 'bought', 'buying'], sentence_kor: '나는 식료품을 좀 사야 한다.' },
+            { eng: 'taste', pos: '동사', kor: '맛이 나다, 맛보다', ipa: '[teɪst]', kor_pron: '테이스트', forms: 'taste - tasted - tasted', sentence_parts: { p1: 'The soup', verb: 'tastes', p2: 'a little salty.' }, options: ['taste', 'tastes', 'tasted', 'tasting'], sentence_kor: '그 수프는 약간 짠 맛이 난다.' },
+            { eng: 'weather', pos: '명사', kor: '날씨', ipa: '[ˈweðər]', kor_pron: '웨더', forms: 'weather (n.)', sentence_parts: { p1: 'The weather', verb: 'is', p2: 'nice today.' }, options: ['is', 'are', 'was', 'be'], sentence_kor: '오늘 날씨가 좋다.' },
+            { eng: 'snowflake', pos: '명사', kor: '눈송이', ipa: '[ˈsnoʊfleɪk]', kor_pron: '스노우플레이크', forms: 'snowflake / snowflakes', sentence_parts: { p1: 'Snowflakes', verb: 'are falling', p2: 'from the sky.' }, options: ['fall', 'falls', 'fell', 'are falling'], sentence_kor: '하늘에서 눈송이가 떨어지고 있다.' },
+            { eng: 'maybe', pos: '부사', kor: '어쩌면', ipa: '[ˈmeɪbi]', kor_pron: '메이비', forms: 'maybe (adv.)', sentence_parts: { p1: 'Maybe it', verb: 'will rain', p2: 'tomorrow.' }, options: ['rain', 'rains', 'rained', 'will rain'], sentence_kor: '어쩌면 내일 비가 올지도 모른다.' },
+            // Phrases
+            { eng: 'eat out', pos: '숙어', kor: '외식하다', ipa: '[iːt aʊt]', kor_pron: '잇 아웃', forms: 'eat out - ate out - eaten out', sentence_parts: { p1: 'We often', verb: 'eat out', p2: 'on Fridays.' }, options: ['eat out', 'eats out', 'ate out', 'eating out'], sentence_kor: '우리는 금요일마다 자주 외식한다.' },
+            { eng: 'do the dishes', pos: '숙어', kor: '설거지하다', ipa: '[du ðə ˈdɪʃɪz]', kor_pron: '두 더 디시즈', forms: 'do - did - done', sentence_parts: { p1: 'He', verb: 'did', p2: 'the dishes after dinner.' }, options: ['do', 'does', 'did', 'doing'], sentence_kor: '그는 저녁 식사 후에 설거지를 했다.' },
+            { eng: 'help yourself', pos: '숙어', kor: '마음껏 먹다', ipa: '[hɛlp jərˈsɛlf]', kor_pron: '헬프 유어셀프', forms: 'help - helped - helped', sentence_parts: { p1: 'Please', verb: 'help', p2: 'yourself to some cookies.' }, options: ['help', 'helps', 'helped', 'helping'], sentence_kor: '쿠키를 마음껏 드세요.' },
+            { eng: 'set the table', pos: '숙어', kor: '상을 차리다', ipa: '[sɛt ðə ˈteɪbl]', kor_pron: '셋 더 테이블', forms: 'set - set - set', sentence_parts: { p1: 'Can you', verb: 'set', p2: 'the table for dinner?' }, options: ['set', 'sets', 'setting', 'was setting'], sentence_kor: '저녁 식사 상 좀 차려줄래?' },
+            { eng: 'at once', pos: '숙어', kor: '즉시', ipa: '[æt wʌns]', kor_pron: '앳 원스', forms: 'at once (adv.)', sentence_parts: { p1: 'You must', verb: 'come', p2: 'home at once.' }, options: ['come', 'comes', 'came', 'coming'], sentence_kor: '너는 즉시 집으로 와야 한다.' },
+            { eng: 'hurry up', pos: '숙어', kor: '서두르다', ipa: '[ˈhɜːri ʌp]', kor_pron: '허리 업', forms: 'hurry up - hurried up - hurried up', sentence_parts: { p1: 'You need to', verb: 'hurry up', p2: 'or you\'ll be late.' }, options: ['hurry up', 'hurries up', 'hurried up', 'hurrying up'], sentence_kor: '서두르지 않으면 늦을 거야.' },
+            // English-English Dictionary
+            { eng: 'windy', pos: '형용사', kor: '바람이 많이 부는', ipa: '[ˈwɪndi]', kor_pron: '윈디', forms: 'windy (adj.)', sentence_parts: { p1: 'It', verb: 'was', p2: 'very windy yesterday.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '어제는 바람이 많이 불었다.' },
+            { eng: 'cloudy', pos: '형용사', kor: '구름이 잔뜩 낀', ipa: '[ˈklaʊdi]', kor_pron: '클라우디', forms: 'cloudy (adj.)', sentence_parts: { p1: 'The sky', verb: 'is getting', p2: 'cloudy.' }, options: ['get', 'gets', 'got', 'is getting'], sentence_kor: '하늘에 구름이 끼고 있다.' },
+            { eng: 'thirsty', pos: '형용사', kor: '목이 마른', ipa: '[ˈθɜːrsti]', kor_pron: '써스티', forms: 'thirsty (adj.)', sentence_parts: { p1: 'I', verb: 'am', p2: 'so thirsty after the run.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '달리기 후에 너무 목이 마르다.' },
+            { eng: 'hungry', pos: '형용사', kor: '배고픈', ipa: '[ˈhʌŋɡri]', kor_pron: '헝그리', forms: 'hungry (adj.)', sentence_parts: { p1: 'The children', verb: 'were', p2: 'hungry and tired.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '아이들은 배고프고 지쳤다.' }
+        ];
+
+        const cardGrid = document.getElementById('card-grid');
+        const scoreText = document.getElementById('score-text');
+        const percentageText = document.getElementById('percentage-text');
+        const resetButton = document.getElementById('reset-btn');
+        
+        let currentScore = 0;
+        let answeredCount = 0;
+        const totalProblems = words.length;
+        const maxScore = totalProblems * 10;
+        
+        function speak(text) {
+            const existingAudio = document.getElementById('tts-audio-player');
+            if (existingAudio) {
+                existingAudio.pause();
+                document.body.removeChild(existingAudio);
+            }
+            const encodedText = encodeURIComponent(text);
+            const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en-US&client=tw-ob&q=${encodedText}`;
+            const audio = new Audio(audioUrl);
+            audio.id = 'tts-audio-player';
+            document.body.appendChild(audio);
+            audio.play();
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        function updateScoreDisplay() {
+            const correctAnswers = currentScore / 10;
+            const percentage = answeredCount > 0 ? (correctAnswers / answeredCount * 100).toFixed(1) : 0;
+            scoreText.textContent = `점수: ${currentScore}점 / ${maxScore}점`;
+            percentageText.textContent = `정답률: ${percentage}% (${correctAnswers}/${answeredCount})`;
+        }
+
+        function createCard(wordData, index) {
+            const cardContainer = document.createElement('div');
+            cardContainer.className = 'card-container h-80';
+            const { p1, verb, p2 } = wordData.sentence_parts;
+
+            const formsHTML = wordData.forms ? `<div class="word-forms text-base text-blue-700 font-semibold">
+                                                  <p>${wordData.forms}</p>
+                                               </div>` : '';
+            
+            const shuffledOptions = [...wordData.options];
+            shuffleArray(shuffledOptions);
+
+            const optionsHTML = shuffledOptions.map(option => 
+                `<button class="option-btn">${option}</button>`
+            ).join('');
+
+            cardContainer.innerHTML = `
+                <div class="card">
+                    <div class="card-face card-front">
+                        <h2 class="text-4xl sm:text-5xl font-bold p-2">${wordData.eng}</h2>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="flex items-center gap-4">
+                            <div>
+                                <h3 class="text-2xl sm:text-3xl font-bold">${wordData.eng} <span class="text-xl font-normal text-blue-700">[${wordData.pos}] ${wordData.kor}</span></h3>
+                                <p class="text-lg sm:text-xl font-semibold text-blue-600">${wordData.ipa} (${wordData.kor_pron})</p>
+                            </div>
+                            <button class="play-btn" data-word="${wordData.eng}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </button>
+                        </div>
+                        
+                        ${formsHTML}
+
+                        <hr class="w-full border-t border-blue-200">
+
+                        <div class="text-base sm:text-lg w-full">
+                            <p class="mb-2 sentence-container flex items-center justify-center">
+                                <span>${p1}</span>
+                                <span class="font-bold text-xl quiz-placeholder">&nbsp;&nbsp;(...)&nbsp;&nbsp;</span>
+                                <span>${p2}</span>
+                                <button class="sentence-play-btn">🔊</button>
+                            </p>
+                            <div class="quiz-options">
+                                ${optionsHTML}
+                            </div>
+                            <p class="text-gray-500 mt-2">${wordData.sentence_kor}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            cardGrid.appendChild(cardContainer);
+
+            const card = cardContainer.querySelector('.card');
+            const playButton = cardContainer.querySelector('.play-btn');
+            const optionButtons = cardContainer.querySelectorAll('.option-btn');
+            const quizPlaceholder = cardContainer.querySelector('.quiz-placeholder');
+            const sentencePlayButton = cardContainer.querySelector('.sentence-play-btn');
+            
+            cardContainer.addEventListener('click', (e) => {
+                if (!e.target.closest('.option-btn') && !e.target.closest('.play-btn') && !e.target.closest('.sentence-play-btn')) {
+                    card.classList.toggle('flipped');
+                }
+            });
+
+            optionButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    
+                    const selectedAnswer = button.textContent;
+                    const correctAnswer = wordData.sentence_parts.verb;
+
+                    if (selectedAnswer === correctAnswer) {
+                        button.classList.add('correct');
+                        currentScore += 10;
+                    } else {
+                        button.classList.add('incorrect');
+                        optionButtons.forEach(btn => {
+                            if (btn.textContent === correctAnswer) {
+                                btn.classList.add('correct');
+                            }
+                        });
+                    }
+                    
+                    answeredCount++;
+                    updateScoreDisplay();
+                    
+                    quizPlaceholder.innerHTML = `&nbsp;&nbsp;${correctAnswer}&nbsp;&nbsp;`;
+                    quizPlaceholder.classList.add('text-fuchsia-500');
+                    sentencePlayButton.style.display = 'inline-block';
+
+                    optionButtons.forEach(btn => {
+                        btn.disabled = true;
+                    });
+
+                    if (answeredCount === totalProblems) {
+                        resetButton.disabled = false;
+                    }
+                });
+            });
+
+            playButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                speak(e.currentTarget.dataset.word);
+            });
+
+            sentencePlayButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const fullSentence = p1 + ' ' + verb + ' ' + p2;
+                speak(fullSentence);
+            });
+        }
+
+        function initializeQuiz() {
+            cardGrid.innerHTML = '';
+            currentScore = 0;
+            answeredCount = 0;
+            updateScoreDisplay();
+            resetButton.disabled = true;
+            words.forEach(createCard);
+        }
+
+        resetButton.addEventListener('click', initializeQuiz);
+
+        // 초기 실행
+        initializeQuiz();
+    </script>
+</body>
+</html>

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>초등 필수 단어 퀴즈</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+        .card-container {
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-front {
+            background-color: #6ee7b7; /* bg-emerald-300 */
+            color: #065f46; /* text-emerald-800 */
+        }
+        .card-back {
+            background-color: #ecfdf5; /* bg-emerald-50 */
+            color: #064e3b; /* text-emerald-900 */
+            transform: rotateY(180deg);
+            flex-direction: column;
+            padding: 1rem;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+        }
+        .play-btn {
+            background-color: #34d399; /* bg-emerald-400 */
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .play-btn:hover {
+            background-color: #10b981; /* bg-emerald-500 */
+        }
+        /* 단어 변화형 스타일 */
+        .word-forms {
+            background-color: #d1fae5;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-style: italic;
+        }
+        /* 4지선다형 퀴즈 스타일 */
+        .quiz-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0 1rem;
+        }
+        .option-btn {
+            background-color: white;
+            border: 2px solid #34d399;
+            color: #065f46;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #d1fae5;
+        }
+        .option-btn.correct {
+            background-color: #34d399; /* bg-emerald-400 */
+            border-color: #059669; /* border-emerald-600 */
+            color: white;
+        }
+        .option-btn.incorrect {
+            background-color: #f87171; /* bg-red-400 */
+            border-color: #dc2626; /* border-red-600 */
+            color: white;
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        /* 점수판 스타일 */
+        #score-board {
+            background-color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: nowrap; /* 줄바꿈 방지 */
+        }
+        #reset-btn {
+            background-color: #fb923c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            flex-shrink: 0; /* 버튼 크기 유지 */
+        }
+        #reset-btn:hover:not(:disabled) {
+            background-color: #f97316;
+        }
+        #reset-btn:disabled {
+            background-color: #9ca3af; /* gray-400 */
+            cursor: not-allowed;
+        }
+        /* 문장 읽기 버튼 스타일 */
+        .sentence-play-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            vertical-align: middle;
+            margin-left: 0.25rem;
+            display: none; /* 초기에는 숨김 */
+            color: #059669;
+            transition: color 0.2s;
+        }
+        .sentence-play-btn:hover {
+            color: #047857;
+        }
+        /* 해설 버튼 스타일 */
+        .explanation-btn {
+            background-color: #818cf8; /* bg-indigo-400 */
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: none; /* 초기에는 숨김 */
+            margin-top: auto; /* 변경: 버튼을 하단에 붙이도록 수정 */
+        }
+        .explanation-btn:hover {
+            background-color: #6366f1; /* bg-indigo-500 */
+        }
+        /* 팝업 모달 스타일 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.open .modal-content {
+            transform: scale(1);
+        }
+        .modal-content h3 {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 700;
+            color: #4f46e5;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .modal-content p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #374151;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .modal-content .close-btn {
+            background-color: #60a5fa; /* bg-blue-400 */
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .modal-content .close-btn:hover {
+            background-color: #3b82f6; /* bg-blue-500 */
+        }
+        .show-btn-animation {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!--
+    ====================================================================
+    GEMINI AI 영어 단어 퀴즈 마스터 템플릿 (최종 완성본)
+    ====================================================================
+    템플릿 이름: 초등 필수 단어 퀴즈 (최종 완성본)
+    제작 요청자: 선생님
+    최종 업데이트: 2025년 8월 25일
+    --------------------------------------------------------------------
+    ## 핵심 기능 및 규칙 (AI 필독!) ##
+    1. 제공되는 단어 목록 이미지(사진)를 분석하여 아래 'const words' 배열을 교체한다.
+       - '교과서 어휘' 섹션의 'Words', 'Phrases', 'English-English Dictionary'에
+         있는 모든 단어와 숙어를 빠짐없이 포함해야 한다.
+    2. 각 단어 객체에 'explanation' 키를 추가하고, 규칙 기반의 검증된 해설을 미리 작성한다.
+       - 해설은 초등학생이 이해하기 쉽게 한두 문장으로 간결하게 작성한다.
+    3. 'word-forms' 영역은 동사(3단 변화), 명사(단/복수), 동사 포함 숙어에만 표시하고,
+       그 외 품사는 생략하여 프롬프트의 품사와 상관없이, 예문 속 '동사'의 올바른 형태를
+       묻는 문제로 출제해야 한다.
+       - (예: 품사가 형용사 'final'일지라도, 예문 'This (is) the final chapter.'에서 'is'를 퀴즈로 출제)
+    4. 4지선다 보기는 동사의 원형, 3인칭 단수형, 과거형, 진행형 등 다양한 형태로 구성한다.
+    5. 문제 풀이 후 '해설 보기' 버튼이 나타나며, 클릭 시 팝업(모달) 창으로 해설을 보여준다.
+       - 해설은 AI 호출 없이 미리 저장된 내용을 즉시 보여주어 로딩 시간을 없앤다.
+    6. 화면 크기에 따라 카드는 유연하게 배치된다. (작은 화면: 1개, 큰 화면: 2개)
+    ====================================================================
+
+    ## 추천 프롬프트 (이 템플릿과 함께 사용하세요) ##
+    - 프롬프트: 이 코드를 템플릿으로 사용하고, 함께 제공된 사진 속 '교과서 어휘'의 모든 단어와 숙어를 이용해 단어 퀴즈를 만들어 줘. 각 문제의 정답 동사를 찾는 형식으로 출제하고, 단어 목록에는 품사, 뜻, 발음 기호, 한국어 발음, 단어 형태(3단 변화 등), 그리고 예문과 그에 대한 한국어 해석을 반드시 포함해 줘. 또한, 예문에 사용된 동사 형태에 대한 문법적 해설도 미리 작성해서 'explanation' 키에 저장해 줘. 해설은 초등학생이 이해하기 쉽게 한두 문장으로 간단하게 작성해줘.
+    ====================================================================
+    -->
+
+    <header class="sticky top-0 z-10 bg-emerald-100 py-4 shadow-sm">
+        <div class="max-w-5xl mx-auto text-center px-4">
+            <h1 class="text-3xl sm:text-4xl font-bold text-emerald-800" style="font-family: 'Noto Sans KR', sans-serif;">초등 필수 단어 퀴즈 🌳</h1>
+            <p class="text-gray-600 mt-2 mb-6">카드 뒷면의 보기 중 알맞은 동사를 선택해보세요!</p>
+            <div id="score-board" class="max-w-xl mx-auto">
+                <span id="score-text" class="text-lg font-bold text-emerald-800 whitespace-nowrap">점수: 0점 / 0점</span>
+                <span id="percentage-text" class="text-sm text-gray-600 whitespace-nowrap">정답률: 0.0% (0/0)</span>
+                <button id="reset-btn">다시 풀기 🔄</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="p-4 sm:p-8">
+        <div id="card-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <!-- 단어 카드는 JavaScript로 생성됩니다 -->
+        </div>
+    </main>
+    
+    <!-- 정답 해설 팝업 모달 -->
+    <div id="explanation-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div id="modal-body">
+                <h3>정답 해설 💡</h3>
+                <p id="explanation-text">
+                    <!-- 해설 내용이 여기에 로드됩니다. -->
+                </p>
+                <button class="close-btn" id="modal-close-btn">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const words = [
+            { eng: 'girl', pos: '명사', kor: '소녀', ipa: '[gɜːrl]', kor_pron: '걸', forms: 'girl / girls', sentence_parts: { p1: 'She ', verb: 'is', p2: ' a kind girl.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그녀는 친절한 소녀입니다.', explanation: "주어 'She'는 '그녀'라는 뜻으로 3인칭 단수이므로 be동사 'is'가 정답입니다." },
+            { eng: 'man', pos: '명사', kor: '남자', ipa: '[mæn]', kor_pron: '맨', forms: 'man / men', sentence_parts: { p1: 'He ', verb: 'is', p2: ' a tall man.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그는 키가 큰 남자입니다.', explanation: "주어 'He'는 '그'라는 뜻으로 3인칭 단수이므로 be동사 'is'가 정답입니다." },
+            { eng: 'house', pos: '명사', kor: '집', ipa: '[haʊs]', kor_pron: '하우스', forms: 'house / houses', sentence_parts: { p1: 'The house ', verb: 'was', p2: ' big.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 집은 컸습니다.', explanation: "주어 'The house'는 단수 명사이고 과거의 상태를 나타내므로 be동사의 과거형인 'was'가 정답입니다." },
+            { eng: 'park', pos: '명사', kor: '공원', ipa: '[pɑːrk]', kor_pron: '파크', forms: 'park / parks', sentence_parts: { p1: 'We ', verb: 'are', p2: ' at the park.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '우리는 공원에 있습니다.', explanation: "주어 'We'는 '우리'라는 뜻으로 복수이므로 be동사 'are'가 정답입니다." },
+            { eng: 'bag', pos: '명사', kor: '가방', ipa: '[bæɡ]', kor_pron: '백', forms: 'bag / bags', sentence_parts: { p1: 'My bag ', verb: 'is', p2: ' heavy.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '내 가방은 무겁습니다.', explanation: "주어 'My bag'은 단수 명사이므로 be동사 'is'가 정답입니다." },
+            { eng: 'tree', pos: '명사', kor: '나무', ipa: '[triː]', kor_pron: '트리', forms: 'tree / trees', sentence_parts: { p1: 'The trees ', verb: 'were', p2: ' green.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 나무들은 초록색이었습니다.', explanation: "주어 'The trees'는 복수 명사이고 과거의 상태를 나타내므로 be동사의 과거형인 'were'가 정답입니다." },
+            { eng: 'love', pos: '명사', kor: '사랑', ipa: '[lʌv]', kor_pron: '러브', forms: 'love (단수)', sentence_parts: { p1: 'Love ', verb: 'is', p2: ' a beautiful thing.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '사랑은 아름다운 것입니다.', explanation: "주어 'Love'는 셀 수 없는 명사로 단수 취급하므로 be동사 'is'가 정답입니다." },
+            { eng: 'idea', pos: '명사', kor: '생각', ipa: '[aɪˈdiːə]', kor_pron: '아이디어', forms: 'idea / ideas', sentence_parts: { p1: 'That ', verb: 'was', p2: ' a great idea.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그것은 훌륭한 생각이었습니다.', explanation: "주어 'That'는 단수이고 과거의 상태를 나타내므로 be동사의 과거형인 'was'가 정답입니다." },
+            { eng: 'boy', pos: '명사', kor: '소년', ipa: '[bɔɪ]', kor_pron: '보이', forms: 'boy / boys', sentence_parts: { p1: 'I ', verb: 'am', p2: ' a boy.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '나는 소년입니다.', explanation: "주어 'I'는 '나'라는 뜻으로 be동사 'am'과 함께 사용됩니다." },
+            { eng: 'woman', pos: '명사', kor: '여자', ipa: '[ˈwʊmən]', kor_pron: '우먼', forms: 'woman / women', sentence_parts: { p1: 'The woman ', verb: 'is', p2: ' a doctor.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '그 여자는 의사입니다.', explanation: "주어 'The woman'은 단수 명사이므로 be동사 'is'가 정답입니다." },
+            { eng: 'room', pos: '명사', kor: '방', ipa: '[ruːm]', kor_pron: '룸', forms: 'room / rooms', sentence_parts: { p1: 'My room ', verb: 'is', p2: ' clean.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '내 방은 깨끗합니다.', explanation: "주어 'My room'은 단수 명사이므로 be동사 'is'가 정답입니다." },
+            { eng: 'city', pos: '명사', kor: '도시', ipa: '[ˈsɪti]', kor_pron: '시티', forms: 'city / cities', sentence_parts: { p1: 'The cities ', verb: 'were', p2: ' busy.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 도시들은 분주했습니다.', explanation: "주어 'The cities'는 복수 명사이고 과거의 상태를 나타내므로 be동사의 과거형인 'were'가 정답입니다." },
+            { eng: 'book', pos: '명사', kor: '책', ipa: '[bʊk]', kor_pron: '북', forms: 'book / books', sentence_parts: { p1: 'The books ', verb: 'are', p2: ' on the desk.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 책들은 책상 위에 있습니다.', explanation: "주어 'The books'는 복수 명사이므로 be동사 'are'가 정답입니다." },
+            { eng: 'pencil', pos: '명사', kor: '연필', ipa: '[ˈpensl]', kor_pron: '펜슬', forms: 'pencil / pencils', sentence_parts: { p1: 'This ', verb: 'is', p2: ' my pencil.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '이것은 내 연필입니다.', explanation: "주어 'This'는 단수이므로 be동사 'is'가 정답입니다." },
+            { eng: 'flower', pos: '명사', kor: '꽃', ipa: '[ˈflaʊər]', kor_pron: '플라워', forms: 'flower / flowers', sentence_parts: { p1: 'The flowers ', verb: 'were', p2: ' beautiful.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 꽃들은 아름다웠습니다.', explanation: "주어 'The flowers'는 복수 명사이고 과거의 상태를 나타내므로 be동사의 과거형인 'were'가 정답입니다." },
+            { eng: 'time', pos: '명사', kor: '시간', ipa: '[taɪm]', kor_pron: '타임', forms: 'time (단수)', sentence_parts: { p1: 'It ', verb: 'is', p2: ' time for lunch.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '점심 시간입니다.', explanation: "주어 'It'는 단수이므로 be동사 'is'가 정답입니다." },
+            { eng: 'water', pos: '명사', kor: '물', ipa: '[ˈwɔːtər]', kor_pron: '워터', forms: 'water (단수)', sentence_parts: { p1: 'The water ', verb: 'was', p2: ' cold.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '물이 차가웠습니다.', explanation: "주어 'The water'는 셀 수 없는 명사로 단수 취급하므로 be동사의 과거형인 'was'가 정답입니다." },
+            { eng: 'snow', pos: '명사', kor: '눈', ipa: '[snoʊ]', kor_pron: '스노우', forms: 'snow (단수)', sentence_parts: { p1: 'The snow ', verb: 'is', p2: ' white.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '눈은 하얗습니다.', explanation: "주어 'The snow'는 셀 수 없는 명사로 단수 취급하므로 be동사 'is'가 정답입니다." },
+            { eng: 'paper', pos: '명사', kor: '종이', ipa: '[ˈpeɪpər]', kor_pron: '페이퍼', forms: 'paper / papers', sentence_parts: { p1: 'These ', verb: 'are', p2: ' my papers.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '이것들은 내 종이들입니다.', explanation: "주어 'These'는 복수 대명사이므로 be동사 'are'가 정답입니다." },
+            { eng: 'milk', pos: '명사', kor: '우유', ipa: '[mɪlk]', kor_pron: '밀크', forms: 'milk (단수)', sentence_parts: { p1: 'The milk ', verb: 'was', p2: ' fresh.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 우유는 신선했습니다.', explanation: "주어 'The milk'는 셀 수 없는 명사로 단수 취급하므로 be동사의 과거형인 'was'가 정답입니다." }
+        ];
+
+        const cardGrid = document.getElementById('card-grid');
+        const scoreText = document.getElementById('score-text');
+        const percentageText = document.getElementById('percentage-text');
+        const resetButton = document.getElementById('reset-btn');
+        const synth = window.speechSynthesis;
+        let voices = [];
+        
+        let currentScore = 0;
+        let answeredCount = 0;
+        const totalProblems = words.length;
+        const maxScore = totalProblems * 10;
+
+        const explanationModal = document.getElementById('explanation-modal');
+        const explanationText = document.getElementById('explanation-text');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+
+        function loadVoices() { 
+            voices = synth.getVoices(); 
+        }
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = loadVoices;
+        }
+        loadVoices();
+
+        function speak(text) {
+            if (synth.speaking) {
+                synth.cancel();
+            }
+            const utterThis = new SpeechSynthesisUtterance(text);
+            
+            let selectedVoice = voices.find(voice => voice.name === 'Google US English');
+            if (!selectedVoice) {
+                selectedVoice = voices.find(voice => voice.lang === 'en-US');
+            }
+            
+            utterThis.voice = selectedVoice;
+            utterThis.rate = 0.9;
+            synth.speak(utterThis);
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        function updateScoreDisplay() {
+            const correctAnswers = currentScore / 10;
+            const percentage = answeredCount > 0 ? (correctAnswers / answeredCount * 100).toFixed(1) : 0;
+            scoreText.textContent = `점수: ${currentScore}점 / ${maxScore}점`;
+            percentageText.textContent = `정답률: ${percentage}% (${correctAnswers}/${answeredCount})`;
+        }
+        
+        // 미리 저장된 해설을 사용하여 모달을 여는 함수
+        function openExplanationModal(wordData) {
+            explanationText.textContent = wordData.explanation;
+            explanationModal.classList.add('open');
+        }
+
+        function closeExplanationModal() {
+            explanationModal.classList.remove('open');
+        }
+
+        modalCloseBtn.addEventListener('click', closeExplanationModal);
+        explanationModal.addEventListener('click', (e) => {
+            if (e.target === explanationModal) {
+                closeExplanationModal();
+            }
+        });
+
+        function createCard(wordData, index) {
+            const cardContainer = document.createElement('div');
+            cardContainer.className = 'card-container h-80';
+            const { p1, verb, p2 } = wordData.sentence_parts;
+
+            const formsHTML = wordData.forms ? `<div class="word-forms text-base text-emerald-700 font-semibold">
+                                                  <p>${wordData.forms}</p>
+                                               </div>` : '';
+            
+            const shuffledOptions = [...wordData.options];
+            shuffleArray(shuffledOptions);
+
+            const optionsHTML = shuffledOptions.map(option => 
+                `<button class="option-btn">${option}</button>`
+            ).join('');
+
+            cardContainer.innerHTML = `
+                <div class="card">
+                    <div class="card-face card-front">
+                        <h2 class="text-4xl sm:text-5xl font-bold">${wordData.eng}</h2>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="flex items-center gap-4">
+                            <div>
+                                <h3 class="text-2xl sm:text-3xl font-bold">${wordData.eng} <span class="text-xl font-normal text-emerald-700">[${wordData.pos}] ${wordData.kor}</span></h3>
+                                <p class="text-lg sm:text-xl font-semibold text-emerald-600">${wordData.ipa} (${wordData.kor_pron})</p>
+                            </div>
+                            <button class="play-btn" data-word="${wordData.eng}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </button>
+                        </div>
+                        
+                        ${formsHTML}
+
+                        <div class="text-base sm:text-lg w-full">
+                            <p class="mb-2 sentence-container flex items-center justify-center">
+                                <span>${p1}</span>
+                                <span class="font-bold text-xl quiz-placeholder">( ... )</span>
+                                <span>${p2}</span>
+                                <button class="sentence-play-btn">🔊</button>
+                            </p>
+                            <div class="quiz-options">
+                                ${optionsHTML}
+                            </div>
+                            <p class="text-gray-500 mt-2">${wordData.sentence_kor}</p>
+                            <div class="flex justify-center mt-auto">
+                                <button class="explanation-btn">해설 보기</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            cardGrid.appendChild(cardContainer);
+
+            const card = cardContainer.querySelector('.card');
+            const playButton = cardContainer.querySelector('.play-btn');
+            const optionButtons = cardContainer.querySelectorAll('.option-btn');
+            const quizPlaceholder = cardContainer.querySelector('.quiz-placeholder');
+            const sentencePlayButton = cardContainer.querySelector('.sentence-play-btn');
+            const explanationBtn = cardContainer.querySelector('.explanation-btn');
+            
+            cardContainer.addEventListener('click', (e) => {
+                if (!e.target.closest('.option-btn') && !e.target.closest('.play-btn') && !e.target.closest('.sentence-play-btn') && !e.target.closest('.explanation-btn')) {
+                    card.classList.toggle('flipped');
+                }
+            });
+
+            optionButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    
+                    const selectedAnswer = button.textContent;
+                    const correctAnswer = wordData.sentence_parts.verb;
+
+                    if (selectedAnswer === correctAnswer) {
+                        button.classList.add('correct');
+                        currentScore += 10;
+                    } else {
+                        button.classList.add('incorrect');
+                        optionButtons.forEach(btn => {
+                            if (btn.textContent === correctAnswer) {
+                                btn.classList.add('correct');
+                            }
+                        });
+                    }
+                    
+                    answeredCount++;
+                    updateScoreDisplay();
+                    
+                    quizPlaceholder.innerHTML = `&nbsp;&nbsp;${correctAnswer}&nbsp;&nbsp;`;
+                    quizPlaceholder.classList.add('text-fuchsia-500');
+                    sentencePlayButton.style.display = 'inline-block';
+                    explanationBtn.classList.add('show-btn-animation');
+                    explanationBtn.style.display = 'block';
+
+                    optionButtons.forEach(btn => {
+                        btn.disabled = true;
+                    });
+
+                    if (answeredCount === totalProblems) {
+                        resetButton.disabled = false;
+                    }
+                });
+            });
+
+            playButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (voices.length === 0) {
+                    setTimeout(() => speak(e.currentTarget.dataset.word), 100);
+                } else {
+                    speak(e.currentTarget.dataset.word);
+                }
+            });
+
+            sentencePlayButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const fullSentence = p1 + verb + p2;
+                if (voices.length === 0) {
+                     setTimeout(() => speak(fullSentence), 100);
+                } else {
+                    speak(fullSentence);
+                }
+            });
+
+            explanationBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openExplanationModal(wordData);
+            });
+        }
+
+        function initializeQuiz() {
+            cardGrid.innerHTML = '';
+            currentScore = 0;
+            answeredCount = 0;
+            updateScoreDisplay();
+            resetButton.disabled = true;
+            words.forEach(createCard);
+        }
+
+        resetButton.addEventListener('click', initializeQuiz);
+
+        // 초기 실행
+        initializeQuiz();
+    </script>
+</body>
+</html>
