@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>초등 필수 단어/숙어 퀴즈 (1과)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+        .card-container {
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-front {
+            background-color: #a7f3d0; /* bg-emerald-200 */
+            color: #065f46; /* text-emerald-900 */
+        }
+        .card-back {
+            background-color: #f0fdf4; /* bg-emerald-50 */
+            color: #047857; /* text-emerald-800 */
+            transform: rotateY(180deg);
+            flex-direction: column;
+            padding: 1rem;
+            justify-content: space-around;
+            align-items: center;
+            text-align: center;
+        }
+        .play-btn {
+            background-color: #34d399;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .play-btn:hover {
+            background-color: #10b981;
+        }
+        .word-forms {
+            background-color: #d1fae5;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-style: italic;
+            height: 2.25rem; /* 높이 고정 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .quiz-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0 1rem;
+        }
+        .option-btn {
+            background-color: white;
+            border: 2px solid #34d399;
+            color: #065f46;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #d1fae5;
+        }
+        .option-btn.correct {
+            background-color: #34d399;
+            border-color: #059669;
+            color: white;
+        }
+        .option-btn.incorrect {
+            background-color: #f87171;
+            border-color: #dc2626;
+            color: white;
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        #score-board {
+            background-color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: nowrap;
+        }
+        #reset-btn {
+            background-color: #fb923c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+        }
+        #reset-btn:hover:not(:disabled) {
+            background-color: #f97316;
+        }
+        #reset-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .sentence-play-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            vertical-align: middle;
+            margin-left: 0.25rem;
+            display: none;
+            color: #059669;
+            transition: color 0.2s;
+        }
+        .sentence-play-btn:hover {
+            color: #047857;
+        }
+        .explanation-btn {
+            display: none;
+            margin-top: 8px;
+            padding: 6px 14px;
+            background-color: #a5b4fc;
+            color: white;
+            font-weight: bold;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .explanation-btn:hover {
+            background-color: #818cf8;
+        }
+        #explanation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        #explanation-modal.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+        #explanation-modal.visible .modal-content {
+            transform: scale(1);
+        }
+        .modal-close-btn {
+            margin-top: 1.5rem;
+            padding: 0.5rem 1.5rem;
+            background-color: #60a5fa;
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .modal-close-btn:hover {
+            background-color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-emerald-100">
+
+    <header class="sticky top-0 z-10 bg-emerald-100 py-4 shadow-sm">
+        <div class="max-w-5xl mx-auto text-center px-4">
+            <h1 class="text-3xl sm:text-4xl font-bold text-emerald-800" style="font-family: 'Noto Sans KR', sans-serif;">초등 필수 단어 퀴즈 (1과) 🌳</h1>
+            <p class="text-gray-600 mt-2 mb-6">카드 뒷면의 보기 중 알맞은 동사를 선택해보세요!</p>
+            <div id="score-board" class="max-w-xl mx-auto">
+                <span id="score-text" class="text-lg font-bold text-emerald-800 whitespace-nowrap">점수: 0점 / 0점</span>
+                <span id="percentage-text" class="text-sm text-gray-600 whitespace-nowrap">정답률: 0.0% (0/0)</span>
+                <button id="reset-btn">다시 풀기 🔄</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="p-4 sm:p-8">
+        <div id="card-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-6xl mx-auto">
+            <!-- 단어 카드는 JavaScript로 생성됩니다 -->
+        </div>
+    </main>
+
+    <div id="explanation-modal">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4">정답 해설 💡</h2>
+            <p id="explanation-text" class="text-gray-700"></p>
+            <button id="modal-close-btn" class="modal-close-btn">닫기</button>
+        </div>
+    </div>
+
+    <script>
+        const words = [
+            { eng: 'eleven', pos: '수사', kor: '열하나, 11', forms: '', sentence_parts: { p1: 'There ', verb: 'are', p2: ' eleven students.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '학생이 11명 있습니다.', explanation: '주어가 eleven students(11명의 학생들)로 여러 명을 나타내는 복수이므로 be동사는 are를 사용해요.' },
+            { eng: 'twelve', pos: '수사', kor: '열둘, 12', forms: '', sentence_parts: { p1: 'It ', verb: 'is', p2: ' twelve o\'clock.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '12시 정각입니다.', explanation: '시간을 나타낼 때 주어 It은 단수 취급하므로 be동사는 is를 사용해요.' },
+            { eng: 'thirteen', pos: '수사', kor: '열셋, 13', forms: '', sentence_parts: { p1: 'She ', verb: 'is', p2: ' thirteen years old.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '그녀는 13살입니다.', explanation: '주어가 She(그녀)인 3인칭 단수이므로 be동사는 is를 사용해요.' },
+            { eng: 'fourteen', pos: '수사', kor: '열넷, 14', forms: '', sentence_parts: { p1: 'They ', verb: 'are', p2: ' fourteen.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그들은 14살입니다.', explanation: '주어가 They(그들)로 여러 명을 나타내는 복수이므로 be동사는 are를 사용해요.' },
+            { eng: 'fifteen', pos: '수사', kor: '열다섯, 15', forms: '', sentence_parts: { p1: 'I ', verb: 'am', p2: ' fifteen.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '나는 15살입니다.', explanation: '주어가 I(나)인 1인칭 단수이므로 be동사는 am을 사용해요.' },
+            { eng: 'sixteen', pos: '수사', kor: '열여섯, 16', forms: '', sentence_parts: { p1: 'He ', verb: 'was', p2: ' sixteen last year.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그는 작년에 16살이었습니다.', explanation: 'last year(작년)는 과거를 나타내고, 주어가 He(그)인 3인칭 단수이므로 과거형 be동사 was를 사용해요.' },
+            { eng: 'seventeen', pos: '수사', kor: '열일곱, 17', forms: '', sentence_parts: { p1: 'We ', verb: 'were', p2: ' seventeen then.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '우리는 그때 17살이었습니다.', explanation: 'then(그때)은 과거를 나타내고, 주어가 We(우리)로 여러 명을 나타내는 복수이므로 과거형 be동사 were를 사용해요.' },
+            { eng: 'eighteen', pos: '수사', kor: '열여덟, 18', forms: '', sentence_parts: { p1: 'My brother ', verb: 'is', p2: ' eighteen.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '나의 오빠는 18살입니다.', explanation: '주어가 My brother(나의 오빠)인 3인칭 단수이므로 be동사는 is를 사용해요.' },
+            { eng: 'nineteen', pos: '수사', kor: '열아홉, 19', forms: '', sentence_parts: { p1: 'You ', verb: 'are', p2: ' nineteen now.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '너는 이제 19살이다.', explanation: '주어가 You(너)인 2인칭이므로 be동사는 are를 사용해요.' },
+            { eng: 'twenty', pos: '수사', kor: '스물, 20', forms: '', sentence_parts: { p1: 'There ', verb: 'are', p2: ' twenty birds.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '새가 20마리 있습니다.', explanation: '주어가 twenty birds(20마리의 새들)로 여러 마리를 나타내는 복수이므로 be동사는 are를 사용해요.' },
+            { eng: 'dog', pos: '명사', kor: '개', forms: 'dog / dogs', sentence_parts: { p1: 'The dog ', verb: 'is', p2: ' cute.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그 개는 귀엽다.', explanation: '주어가 The dog(그 개)로 한 마리를 나타내는 단수이므로 be동사는 is를 사용해요.' },
+            { eng: 'cat', pos: '명사', kor: '고양이', forms: 'cat / cats', sentence_parts: { p1: 'My cat ', verb: 'is', p2: ' sleeping.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '내 고양이는 자고 있다.', explanation: '주어가 My cat(나의 고양이)으로 한 마리를 나타내는 단수이므로 be동사는 is를 사용해요.' },
+            { eng: 'bird', pos: '명사', kor: '새', forms: 'bird / birds', sentence_parts: { p1: 'The birds ', verb: 'are', p2: ' singing.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '새들이 노래하고 있다.', explanation: '주어가 The birds(그 새들)로 여러 마리를 나타내는 복수이므로 be동사는 are를 사용해요.' },
+            { eng: 'fish', pos: '명사', kor: '물고기', forms: 'fish / fish', sentence_parts: { p1: 'This fish ', verb: 'is', p2: ' small.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '이 물고기는 작다.', explanation: '주어가 This fish(이 물고기)로 한 마리를 나타내는 단수이므로 be동사는 is를 사용해요.' },
+            { eng: 'lemon', pos: '명사', kor: '레몬', forms: 'lemon / lemons', sentence_parts: { p1: 'A lemon ', verb: 'is', p2: ' yellow.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '레몬은 노랗다.', explanation: '주어가 A lemon(레몬 한 개)으로 단수이므로 be동사는 is를 사용해요.' },
+            { eng: 'zebra', pos: '명사', kor: '얼룩말', forms: 'zebra / zebras', sentence_parts: { p1: 'That zebra ', verb: 'is', p2: ' running.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '저 얼룩말은 달리고 있다.', explanation: '주어가 That zebra(저 얼룩말)로 한 마리를 나타내는 단수이므로 be동사는 is를 사용해요.' },
+            { eng: 'tiger', pos: '명사', kor: '호랑이', forms: 'tiger / tigers', sentence_parts: { p1: 'Tigers ', verb: 'are', p2: ' strong.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '호랑이들은 강하다.', explanation: '주어가 Tigers(호랑이들)로 여러 마리를 나타내는 복수이므로 be동사는 are를 사용해요.' },
+            { eng: 'cow', pos: '명사', kor: '암소, 젖소', forms: 'cow / cows', sentence_parts: { p1: 'The cow ', verb: 'is', p2: ' eating grass.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '그 암소는 풀을 먹고 있다.', explanation: '주어가 The cow(그 암소)로 한 마리를 나타내는 단수이므로 be동사는 is를 사용해요.' },
+            { eng: 'rabbit', pos: '명사', kor: '토끼', forms: 'rabbit / rabbits', sentence_parts: { p1: 'A rabbit ', verb: 'is', p2: ' fast.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '토끼는 빠르다.', explanation: '주어가 A rabbit(토끼 한 마리)으로 단수이므로 be동사는 is를 사용해요.' },
+            { eng: 'lion', pos: '명사', kor: '사자', forms: 'lion / lions', sentence_parts: { p1: 'The lion ', verb: 'is', p2: ' the king of the jungle.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '사자는 정글의 왕이다.', explanation: '주어가 The lion(사자)으로 한 마리를 나타내는 단수이므로 be동사는 is를 사용해요.' }
+        ];
+
+        const cardGrid = document.getElementById('card-grid');
+        const scoreText = document.getElementById('score-text');
+        const percentageText = document.getElementById('percentage-text');
+        const resetButton = document.getElementById('reset-btn');
+        const modal = document.getElementById('explanation-modal');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const explanationText = document.getElementById('explanation-text');
+        
+        const synth = window.speechSynthesis;
+        let voices = [];
+
+        let currentScore = 0;
+        let answeredCount = 0;
+        const totalProblems = words.length;
+        const maxScore = totalProblems * 10;
+
+        function loadVoices() { 
+            voices = synth.getVoices(); 
+        }
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = loadVoices;
+        }
+        loadVoices();
+
+        function speak(text) {
+            if (synth.speaking) {
+                synth.cancel();
+            }
+            const utterThis = new SpeechSynthesisUtterance(text);
+            
+            let selectedVoice = voices.find(voice => voice.name === 'Google US English');
+            if (!selectedVoice) {
+                selectedVoice = voices.find(voice => voice.lang === 'en-US');
+            }
+            
+            utterThis.voice = selectedVoice;
+            utterThis.rate = 0.9;
+            synth.speak(utterThis);
+        }
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        function updateScoreDisplay() {
+            const correctAnswers = currentScore / 10;
+            const percentage = answeredCount > 0 ? (correctAnswers / answeredCount * 100).toFixed(1) : 0;
+            scoreText.textContent = `점수: ${currentScore}점 / ${maxScore}점`;
+            percentageText.textContent = `정답률: ${percentage}% (${correctAnswers}/${answeredCount})`;
+        }
+
+        function createCard(wordData, index) {
+            const cardContainer = document.createElement('div');
+            cardContainer.className = 'card-container h-80';
+            const { p1, verb, p2 } = wordData.sentence_parts;
+
+            const formsHTML = (wordData.forms && (wordData.forms.includes('-') || wordData.forms.includes('/'))) ? `<div class="word-forms text-base text-emerald-700 font-semibold">
+                                                  <p>${wordData.forms}</p>
+                                               </div>` : '<div class="word-forms"></div>';
+            
+            const shuffledOptions = [...wordData.options];
+            shuffleArray(shuffledOptions);
+
+            const optionsHTML = shuffledOptions.map(option => 
+                `<button class="option-btn">${option}</button>`
+            ).join('');
+
+            cardContainer.innerHTML = `
+                <div class="card">
+                    <div class="card-face card-front">
+                        <h2 class="text-4xl sm:text-5xl font-bold p-2">${wordData.eng}</h2>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="flex items-center gap-4">
+                            <div>
+                                <h3 class="text-2xl sm:text-3xl font-bold">${wordData.eng} <span class="text-xl font-normal text-emerald-700">[${wordData.pos}] ${wordData.kor}</span></h3>
+                            </div>
+                            <button class="play-btn" data-word="${wordData.eng}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </button>
+                        </div>
+                        
+                        ${formsHTML}
+
+                        <hr class="w-full border-t border-emerald-200">
+
+                        <div class="text-base sm:text-lg w-full">
+                            <p class="mb-2 sentence-container flex items-center justify-center">
+                                <span>${p1}</span>
+                                <span class="font-bold text-xl quiz-placeholder">&nbsp;&nbsp;(...)&nbsp;&nbsp;</span>
+                                <span>${p2}</span>
+                                <button class="sentence-play-btn">🔊</button>
+                            </p>
+                            <div class="quiz-options">
+                                ${optionsHTML}
+                            </div>
+                            <p class="text-gray-500 mt-2">${wordData.sentence_kor}</p>
+                            <button class="explanation-btn">해설 보기</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            cardGrid.appendChild(cardContainer);
+
+            const card = cardContainer.querySelector('.card');
+            const playButton = cardContainer.querySelector('.play-btn');
+            const optionButtons = cardContainer.querySelectorAll('.option-btn');
+            const quizPlaceholder = cardContainer.querySelector('.quiz-placeholder');
+            const sentencePlayButton = cardContainer.querySelector('.sentence-play-btn');
+            const explanationBtn = cardContainer.querySelector('.explanation-btn');
+            
+            cardContainer.addEventListener('click', (e) => {
+                if (!e.target.closest('.option-btn') && !e.target.closest('.play-btn') && !e.target.closest('.sentence-play-btn') && !e.target.closest('.explanation-btn')) {
+                    card.classList.toggle('flipped');
+                }
+            });
+
+            optionButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    
+                    const selectedAnswer = button.textContent;
+                    const correctAnswer = wordData.sentence_parts.verb;
+
+                    if (selectedAnswer === correctAnswer) {
+                        button.classList.add('correct');
+                        currentScore += 10;
+                    } else {
+                        button.classList.add('incorrect');
+                        optionButtons.forEach(btn => {
+                            if (btn.textContent === correctAnswer) {
+                                btn.classList.add('correct');
+                            }
+                        });
+                    }
+                    
+                    answeredCount++;
+                    updateScoreDisplay();
+                    
+                    quizPlaceholder.innerHTML = `&nbsp;&nbsp;${correctAnswer}&nbsp;&nbsp;`;
+                    quizPlaceholder.classList.add('text-fuchsia-500');
+                    sentencePlayButton.style.display = 'inline-block';
+                    explanationBtn.style.display = 'inline-block';
+
+                    optionButtons.forEach(btn => {
+                        btn.disabled = true;
+                    });
+
+                    if (answeredCount === totalProblems) {
+                        resetButton.disabled = false;
+                    }
+                });
+            });
+
+            playButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (voices.length === 0) {
+                    setTimeout(() => speak(e.currentTarget.dataset.word), 100);
+                } else {
+                    speak(e.currentTarget.dataset.word);
+                }
+            });
+
+            sentencePlayButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const fullSentence = p1 + ' ' + verb + ' ' + p2;
+                if (voices.length === 0) {
+                     setTimeout(() => speak(fullSentence), 100);
+                } else {
+                    speak(fullSentence);
+                }
+            });
+
+            explanationBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                explanationText.textContent = wordData.explanation;
+                modal.classList.add('visible');
+            });
+        }
+
+        function initializeQuiz() {
+            cardGrid.innerHTML = '';
+            currentScore = 0;
+            answeredCount = 0;
+            updateScoreDisplay();
+            resetButton.disabled = true;
+            words.forEach(createCard);
+        }
+        
+        modalCloseBtn.addEventListener('click', () => {
+            modal.classList.remove('visible');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('visible');
+            }
+        });
+
+        resetButton.addEventListener('click', initializeQuiz);
+
+        // 초기 실행
+        initializeQuiz();
+    </script>
+</body>
+</html>
