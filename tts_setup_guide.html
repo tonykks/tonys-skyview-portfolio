@@ -105,10 +105,17 @@
   .modal-content{ background:var(--card-bg); color:var(--text); padding:2rem; border-radius:.75rem; width:min(92vw,420px); text-align:center; box-shadow:0 10px 30px rgba(0,0,0,.35); }
   .btn{ background:var(--brand); color:#fff; padding:.6rem 1rem; border-radius:.6rem; }
   .btn:hover{ background:var(--brand-hover); }
+  
+  /* 스마트폰 화면을 위한 미디어 쿼리 */
+  @media (max-width:768px){
+    .header{ font-size:28px; height:200px;}
+    .navbar{ flex-wrap:wrap; padding:10px;}
+    .nav-btn{ margin:5px; padding:8px 12px;}
+  }
 </style>
 </head>
 <body>
-  <div class="header">원어민 발음 설정 안내</div>
+  <div class="header">Tony's SkyView Portfolio</div>
 
   <!-- Nav -->
   <div class="navbar flex justify-center py-2 shadow-md">
