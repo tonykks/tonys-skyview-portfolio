@@ -104,17 +104,6 @@
     width:2px;
     background-color:var(--muted);
   }
-  @media (max-width:768px){
-    .divider{
-      height:2px;
-      width:80%;
-      margin: 0 auto 2rem auto;
-    }
-    .content-container{
-      flex-direction:column;
-      padding: 1rem;
-    }
-  }
   
   .help-button {
     display: inline-block;
@@ -137,6 +126,23 @@
   .modal-content{ background:var(--card-bg); color:var(--text); padding:2rem; border-radius:.75rem; width:min(92vw,420px); text-align:center; box-shadow:0 10px 30px rgba(0,0,0,.35); }
   .btn{ background:var(--brand); color:#fff; padding:.6rem 1rem; border-radius:.6rem; }
   .btn:hover{ background:var(--brand-hover); }
+
+  /* [수정] 스마트폰 화면을 위한 미디어 쿼리 추가 */
+  @media (max-width:768px){
+    .header{ font-size:36px; height:200px; }
+    .intro{ width:90%; max-width:90%; }
+    .navbar{ flex-wrap:wrap; padding:10px; }
+    .nav-btn{ min-width:auto; padding:8px 12px; margin:5px; }
+    .divider{
+      height:2px;
+      width:80%;
+      margin: 0 auto 2rem auto;
+    }
+    .content-container{
+      flex-direction:column;
+      padding: 1rem;
+    }
+  }
 </style>
 </head>
 <body>
@@ -155,7 +161,6 @@
   <div class="intro mx-auto my-8 p-6 rounded-xl shadow-lg w-3/5 text-center">
     학습 레벨에 맞는 단어 카드를 선택하여 퀴즈를 풀어보세요.
     <br>
-    <!-- [수정] 음성 설정 안내 페이지로 가는 링크 버튼 추가 -->
     <a href="tts_setup_guide.html" class="help-button" target="_blank" rel="noopener">🔊 원어민 발음이 안 나오나요? (설정 안내)</a>
   </div>
 
