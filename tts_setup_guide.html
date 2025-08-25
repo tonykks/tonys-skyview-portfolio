@@ -18,16 +18,32 @@
     background-image:url('https://yt3.googleusercontent.com/JHTHRsm3_keOY7f6dLzgDkG7e_olnUvd9Nd0hNfcCbGDScdnOyKDFmuaARWFX05zWaPjwjsAJw=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj');
     background-size:cover;
     background-position:center;
-    height:200px;
+    height:250px;
     color:#fff;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:2.5rem;
+    font-size:48px;
     font-weight:900;
     text-align:center;
     text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
   }
+  .navbar{ background:var(--brand-dark); }
+  .nav-btn{
+    background:var(--brand); 
+    color:#fff; 
+    border:none; 
+    padding:10px 20px; 
+    margin:0 5px; 
+    border-radius:8px;
+    text-decoration:none; 
+    font-size:14px; 
+    transition:background .25s ease;
+    min-width:110px;
+    text-align:center;
+    display:inline-block;
+  }
+  .nav-btn:hover{ background:var(--brand-hover); }
   .container {
     max-width: 800px;
     margin: 2rem auto;
@@ -84,10 +100,25 @@
         color: #dbeafe;
     }
   }
+  /* 연락 모달 */
+  .modal{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:1000; }
+  .modal-content{ background:var(--card-bg); color:var(--text); padding:2rem; border-radius:.75rem; width:min(92vw,420px); text-align:center; box-shadow:0 10px 30px rgba(0,0,0,.35); }
+  .btn{ background:var(--brand); color:#fff; padding:.6rem 1rem; border-radius:.6rem; }
+  .btn:hover{ background:var(--brand-hover); }
 </style>
 </head>
 <body>
-  <div class="header">원어민 발음 설정 안내 🔊</div>
+  <div class="header">원어민 발음 설정 안내</div>
+
+  <!-- Nav -->
+  <div class="navbar flex justify-center py-2 shadow-md">
+    <a href="index.html" class="nav-btn">Home</a>
+    <a href="videos.html" class="nav-btn">Videos</a>
+    <a href="shorts.html" class="nav-btn">Shorts</a>
+    <a href="word_card.html" class="nav-btn">Word Card</a>
+    <a href="https://smile21c.notion.site/my-profile" class="nav-btn" target="_blank" rel="noopener">About Me</a>
+    <a href="#" class="nav-btn" id="contact-btn">Contact Me</a>
+  </div>
 
   <div class="container">
     <div class="guide-box">
@@ -126,5 +157,26 @@
       </ol>
     </div>
   </div>
+
+  <!-- Contact Modal -->
+  <div id="contact-modal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <h3 class="text-xl font-bold mb-4">Contact Information</h3>
+      <p class="text-gray-700 mb-6" style="color:var(--muted)">Email: smile21c@korea.com</p>
+      <button id="close-modal-btn" class="btn">Close</button>
+    </div>
+  </div>
+
+<script>
+  // 연락 모달
+  const contactBtn=document.getElementById('contact-btn');
+  const contactModal=document.getElementById('contact-modal');
+  const closeModalBtn=document.getElementById('close-modal-btn');
+  if(contactBtn && contactModal && closeModalBtn){
+    contactBtn.addEventListener('click',e=>{ e.preventDefault(); contactModal.style.display='flex'; contactModal.setAttribute('aria-hidden','false');});
+    closeModalBtn.addEventListener('click',()=>{ contactModal.style.display='none'; contactModal.setAttribute('aria-hidden','true');});
+    contactModal.addEventListener('click',e=>{ if(e.target===contactModal){ contactModal.style.display='none'; contactModal.setAttribute('aria-hidden','true');}});
+  }
+</script>
 </body>
 </html>
