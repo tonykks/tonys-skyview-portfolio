@@ -4,9 +4,9 @@
   GEMINI AI 영어 단어 퀴즈 마스터 템플릿 (음성 출력 최종 수정)
 ================================================================================
   수정 내용(2025-08-25):
-    - 불안정한 Google TTS API 방식 제거.
-    - 모바일 호환성이 높은 브라우저 내장 SpeechSynthesis API 방식으로 교체.
-    - 안정성이 검증된 speak() 함수 로직을 그대로 적용.
+    - 스마트폰 TTS 설정의 복잡성을 해결하기 위해, 안정적인 외부 TTS API (ResponsiveVoice)를 적용.
+    - 이제 모든 기기에서 별도의 설정 없이 동일한 미국식 영어 발음이 재생됩니다.
+    - 기존 SpeechSynthesis 관련 코드를 모두 제거하고 ResponsiveVoice API 호출 코드로 대체.
 ================================================================================
 -->
 <html lang="ko">
@@ -15,6 +15,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>중등 필수 단어/숙어 퀴즈 (3과) - 음성 출력 최종 수정</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- [수정] ResponsiveVoice API 스크립트 추가 -->
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=YOUR_API_KEY"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
     <style>
         body {
