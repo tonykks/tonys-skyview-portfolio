@@ -127,12 +127,13 @@
   .btn{ background:var(--brand); color:#fff; padding:.6rem 1rem; border-radius:.6rem; }
   .btn:hover{ background:var(--brand-hover); }
 
-  /* [수정] 스마트폰 화면을 위한 미디어 쿼리 추가 */
+  /* 스마트폰 화면을 위한 미디어 쿼리 */
   @media (max-width:768px){
-    .header{ font-size:36px; height:200px; }
-    .intro{ width:90%; max-width:90%; }
-    .navbar{ flex-wrap:wrap; padding:10px; }
-    .nav-btn{ min-width:auto; padding:8px 12px; margin:5px; }
+    .header{ font-size:28px; height:200px;}
+    .intro{ width:90%; padding:16px;}
+    /* [수정] index.html과 동일하게 버튼 레이아웃 수정 */
+    .navbar{ flex-wrap:wrap; padding:10px;}
+    .nav-btn{ margin:5px; padding:8px 12px;}
     .divider{
       height:2px;
       width:80%;
