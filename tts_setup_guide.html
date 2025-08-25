@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Tony's SkyView Portfolio - Word Card</title>
+<title>단어장 원어민 발음 설정 안내</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -13,193 +13,118 @@
     :root{ --card-bg:#111827; --page-bg:#0b1220; --text:#e5e7eb; --muted:#9ca3af;
            --brand-dark:#162640; --brand:#2b5aa6; --brand-hover:#234b8b; --accent:#8b5cf6; }
   }
-  body{ font-family:'Noto Sans KR',sans-serif; background:var(--page-bg); color:var(--text); }
+  body{ font-family:'Noto Sans KR', sans-serif; background:var(--page-bg); color:var(--text); }
   .header{
     background-image:url('https://yt3.googleusercontent.com/JHTHRsm3_keOY7f6dLzgDkG7e_olnUvd9Nd0hNfcCbGDScdnOyKDFmuaARWFX05zWaPjwjsAJw=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj');
     background-size:cover;
     background-position:center;
-    height:250px;
+    height:200px;
     color:#fff;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:48px;
+    font-size:2.5rem;
     font-weight:900;
     text-align:center;
     text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
   }
-  .navbar{ background:var(--brand-dark); }
-  .nav-btn{
-    background:var(--brand); 
-    color:#fff; 
-    border:none; 
-    padding:10px 20px; 
-    margin:0 5px; 
-    border-radius:8px;
-    text-decoration:none; 
-    font-size:14px; 
-    transition:background .25s ease;
-    min-width:110px;
-    text-align:center;
-    display:inline-block;
+  .container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
   }
-  .nav-btn:hover{ background:var(--brand-hover); }
-    .intro{
-    background: linear-gradient(90deg, var(--brand), var(--accent));
-    color: #ffffff;
+  .guide-box {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+  .guide-box h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--brand);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--brand-dark);
+    display: inline-block;
+  }
+  .guide-box h3 {
     font-size: 1.25rem;
     font-weight: 700;
+    color: var(--accent);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  .guide-box p, .guide-box li {
+    font-size: 1rem;
     line-height: 1.8;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.18);
-    text-align: center;
-    max-width: 70%;
-    margin: 2rem auto;
-    border: 0;
+    color: var(--muted);
   }
-  .content-container{
-    display:flex;
-    justify-content:center;
-    gap:2rem;
-    padding:2rem;
-    flex-wrap:wrap;
+  .guide-box ol {
+    list-style-type: decimal;
+    padding-left: 1.5rem;
   }
-  .content-section{
-    background-color: var(--card-bg);
-    border-radius:12px;
-    padding:2rem;
-    box-shadow:0 4px 12px rgba(0,0,0,0.05);
-    flex:1;
-    min-width:300px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
+  .guide-box li {
+    margin-bottom: 0.75rem;
   }
-  .section-title{
-    font-size:1.5rem;
-    font-weight:700;
-    margin-bottom:1rem;
-    color:var(--brand-dark);
+  .guide-box strong {
+    color: var(--text);
+    font-weight: 700;
   }
-  @media (prefers-color-scheme: dark){ .section-title{ color: #e5e7eb; } }
-  .link-button{
-    display:block;
-    width:100%;
-    max-width: 280px;
-    background-color: var(--brand);
-    color:white;
-    padding:0.75rem 1.5rem;
-    border-radius:9999px;
-    font-weight:bold;
-    text-align:center;
-    text-decoration:none;
-    margin-bottom:1rem;
-    transition:background-color 0.2s;
+  .highlight {
+    background-color: #dbeafe;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #1e40af;
   }
-  .link-button:hover{
-    background-color:var(--brand-hover);
-  }
-  .divider{
-    width:2px;
-    background-color:var(--muted);
-  }
-  @media (max-width:768px){
-    .divider{
-      height:2px;
-      width:80%;
-      margin: 0 auto 2rem auto;
-    }
-    .content-container{
-      flex-direction:column;
-      padding: 1rem;
+  @media (prefers-color-scheme: dark){
+    .highlight {
+        background-color: #1e3a8a;
+        color: #dbeafe;
     }
   }
-  
-  .help-button {
-    display: inline-block;
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
-    background-color: #f59e0b; /* amber-500 */
-    color: white;
-    font-weight: bold;
-    font-size: 0.9rem;
-    border-radius: 9999px;
-    text-decoration: none;
-    transition: background-color 0.2s;
-  }
-  .help-button:hover {
-    background-color: #d97706; /* amber-600 */
-  }
-
-  /* 연락 모달 */
-  .modal{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:1000; }
-  .modal-content{ background:var(--card-bg); color:var(--text); padding:2rem; border-radius:.75rem; width:min(92vw,420px); text-align:center; box-shadow:0 10px 30px rgba(0,0,0,.35); }
-  .btn{ background:var(--brand); color:#fff; padding:.6rem 1rem; border-radius:.6rem; }
-  .btn:hover{ background:var(--brand-hover); }
 </style>
 </head>
 <body>
-  <div class="header">Tony's SkyView Portfolio</div>
+  <div class="header">원어민 발음 설정 안내 🔊</div>
 
-  <!-- Nav -->
-  <div class="navbar flex justify-center py-2 shadow-md">
-    <a href="index.html" class="nav-btn">Home</a>
-    <a href="videos.html" class="nav-btn">Videos</a>
-    <a href="shorts.html" class="nav-btn">Shorts</a>
-    <a href="word_card.html" class="nav-btn">Word Card</a>
-    <a href="https://smile21c.notion.site/my-profile" class="nav-btn" target="_blank" rel="noopener">About Me</a>
-    <a href="#" class="nav-btn" id="contact-btn">Contact Me</a>
-  </div>
+  <div class="container">
+    <div class="guide-box">
+      <h2 id="samsung-galaxy">🤖 삼성 갤럭시 스마트폰</h2>
+      <p class="mb-6">최신 삼성 스마트폰은 설정이 조금 복잡해요. 아래 순서를 천천히 따라 해보세요!</p>
 
-  <div class="intro mx-auto my-8 p-6 rounded-xl shadow-lg w-3/5 text-center">
-    학습 레벨에 맞는 단어 카드를 선택하여 퀴즈를 풀어보세요.
-    <br>
-    <!-- [수정] 음성 설정 안내 페이지로 가는 링크 버튼 추가 -->
-    <a href="tts_setup_guide.html" class="help-button" target="_blank" rel="noopener">🔊 원어민 발음이 안 나오나요? (설정 안내)</a>
-  </div>
-
-  <hr class="border-t-2 border-gray-300 my-8 w-4/5 mx-auto">
-
-  <div class="content-container">
-    <!-- 초등용 섹션 -->
-    <div class="content-section">
-      <h2 class="section-title">초등용</h2>
-      <a href="초등 단어장_2과.html" class="link-button">초등 단어장 (2과)</a>
-      <a href="초등 단어장_3과.html" class="link-button">초등 단어장 (3과)</a>
+      <h3>⭐ 핵심 경로 요약</h3>
+      <p class="mb-6"><strong>설정 검색</strong> → "글자 읽어주기" 입력 → (빅스비 화면에서) <strong>뒤로가기(←) 두 번</strong> → <strong>접근성</strong> 카테고리의 <strong>글자 읽어주기</strong> 선택 → <strong>TalkBack 설정</strong> → <strong>글자 읽어주기</strong> → <strong>기본 엔진</strong>을 <strong>Google</strong>로 변경!</p>
+      
+      <h3>📝 자세한 따라하기</h3>
+      <ol>
+        <li>스마트폰 화면 위에서 아래로 쓸어내려 톱니바퀴 모양의 <strong>'설정'</strong>으로 들어가세요.</li>
+        <li>오른쪽 위 **돋보기(🔍) 아이콘**을 눌러 **"글자 읽어주기"**라고 검색하세요.</li>
+        <li>검색 결과 중 하나를 누르면 아마 **'빅스비 비전 설정'** 화면으로 이동할 거예요. **당황하지 마세요!**</li>
+        <li>화면 왼쪽 위의 **뒤로가기 화살표(←)**를 **두 번** 눌러주세요.</li>
+        <li>그러면 '글자 읽어주기'와 관련된 **숨겨진 전체 검색 결과**가 나타납니다.</li>
+        <li>목록에서 초록색 사람 아이콘이 있는 **'접근성'** 카테고리 아래의 <strong class="highlight">글자 읽어주기 (TalkBack > TalkBack 설정)</strong> 항목을 선택하세요.</li>
+        <li>**'TalkBack 설정'** 화면이 나타나면, '오디오' 섹션에 있는 **'글자 읽어주기'** 메뉴를 누르세요.</li>
+        <li>드디어 진짜 설정 화면입니다! **'기본 엔진'**을 누르고, 목록에서 <strong class="highlight">Google 음성 인식 및 합성</strong>을 선택해주세요.</li>
+        <li>바로 아래 **'언어'**가 **'영어(미국)'**으로 되어있는지 확인하면 모든 설정 끝! 이제 단어장에서 원어민 발음을 들을 수 있어요.</li>
+      </ol>
     </div>
 
-    <!-- 가운데 선 -->
-    <div class="divider"></div>
-
-    <!-- 중등용 섹션 -->
-    <div class="content-section">
-      <h2 class="section-title">중등용</h2>
-      <a href="중등 단어장_1과.html" class="link-button">중등 단어장 (1과)</a>
-      <a href="중등 단어장_2과.html" class="link-button">중등 단어장 (2과)</a>
-      <a href="중등 단어장_3과.html" class="link-button">중등 단어장 (3과)</a>
+    <div class="guide-box">
+      <h2 id="iphone">🍎 아이폰</h2>
+      <p class="mb-6">아이폰은 설정이 비교적 간단해요. 아래 순서대로 따라 해보세요.</p>
+      
+      <h3>📝 자세한 따라하기</h3>
+      <ol>
+        <li>홈 화면에서 톱니바퀴 모양의 <strong>'설정'</strong> 앱을 여세요.</li>
+        <li>**'손쉬운 사용'** 메뉴를 찾아 들어가세요.</li>
+        <li>**'콘텐츠 말하기'**를 누르세요.</li>
+        <li>**'음성'**을 누른 후, 언어 목록에서 **'영어'**를 선택하세요.</li>
+        <li>다양한 목소리 이름(예: Samantha, Alex, Siri 등) 중에서 마음에 드는 것을 선택하세요. 이름 옆에 구름(☁️) 아이콘이 있다면 눌러서 고품질 음성을 다운로드할 수 있습니다.</li>
+        <li>선택한 이름 옆에 **파란색 체크(✓)** 표시가 나타나면 설정 완료! 이제 단어장에서 멋진 원어민 발음을 들을 수 있어요.</li>
+      </ol>
     </div>
   </div>
-
-  <!-- Contact Modal -->
-  <div id="contact-modal" class="modal" aria-hidden="true">
-    <div class="modal-content">
-      <h3 class="text-xl font-bold mb-4">Contact Information</h3>
-      <p class="text-gray-700 mb-6" style="color:var(--muted)">Email: smile21c@korea.com</p>
-      <button id="close-modal-btn" class="btn">Close</button>
-    </div>
-  </div>
-
-<script>
-  // 연락 모달
-  const contactBtn=document.getElementById('contact-btn');
-  const contactModal=document.getElementById('contact-modal');
-  const closeModalBtn=document.getElementById('close-modal-btn');
-  if(contactBtn && contactModal && closeModalBtn){
-    contactBtn.addEventListener('click',e=>{ e.preventDefault(); contactModal.style.display='flex'; contactModal.setAttribute('aria-hidden','false');});
-    closeModalBtn.addEventListener('click',()=>{ contactModal.style.display='none'; contactModal.setAttribute('aria-hidden','true');});
-    contactModal.addEventListener('click',e=>{ if(e.target===contactModal){ contactModal.style.display='none'; contactModal.setAttribute('aria-hidden','true');}});
-  }
-</script>
 </body>
 </html>
