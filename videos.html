@@ -23,11 +23,9 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:48px;       /* 크고 선명하게 */
-    font-weight:900;      /* Extra Bold */
+    font-size:48px;
+    font-weight:900;
     text-align:center;
-
-    /* 깔끔한 강조: 그림자만 적용, 외곽선 없음 */
     text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
   }
   .navbar{ background:var(--brand-dark); }
@@ -41,32 +39,23 @@
     text-decoration:none; 
     font-size:14px; 
     transition:background .25s ease;
-    min-width:110px;         /* 버튼 최소 너비 고정 */
-    text-align:center;       /* 글자 중앙 정렬 */
+    min-width:110px;
+    text-align:center;
     display:inline-block;
   }
   .nav-btn:hover{ background:var(--brand-hover); }
     .intro{
-    /* 배경을 더 선명한 그라데이션으로 */
     background: linear-gradient(90deg, var(--brand), var(--accent));
-
-    /* 글자 가독성 강화 */
     color: #ffffff;
-    font-size: 1.25rem;   /* 20px 정도: 기존보다 크게 */
-    font-weight: 700;     /* 굵게 */
-    line-height: 1.8;     /* 줄 간격 넉넉하게 */
-
-    /* 박스 자체를 카드처럼 돋보이게 */
-    padding: 1.5rem;      /* 안쪽 여백(HTML의 p-6과 동일, 중복되어도 괜찮습니다) */
-    border-radius: 12px;  /* 둥근 모서리 */
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.8;
+    padding: 1.5rem;
+    border-radius: 12px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.18);
-  
-    /* 레이아웃(HTML의 유틸 클래스를 보완/강화) */
     text-align: center;
     max-width: 70%;
     margin: 2rem auto;
-  
-    /* 좌측 보더는 제거(깔끔하게) */
     border: 0;
   }
   .video-section-title{ color:var(--brand-dark); font-size:2rem; font-weight:800; margin-bottom:1rem; }
@@ -91,6 +80,14 @@
   .lightbox{ position:fixed; inset:0; background:rgba(0,0,0,.85); display:none; align-items:center; justify-content:center; z-index:1100; padding:24px; }
   .lightbox-inner{ width:min(96vw,1100px); }
   .lb-close{ position:absolute; top:16px; right:16px; background:rgba(255,255,255,.15); color:#fff; padding:8px 12px; border-radius:8px; cursor:pointer; }
+  
+  /* [수정] 스마트폰 화면을 위한 미디어 쿼리 추가 */
+  @media (max-width:768px){
+    .header{ font-size:28px; height:200px;}
+    .intro{ width:90%; padding:16px;}
+    .navbar{ flex-wrap:wrap; padding:10px;}
+    .nav-btn{ margin:5px; padding:8px 12px;}
+  }
 </style>
 </head>
 <body>
@@ -185,20 +182,17 @@
     }).filter(Boolean);
   }
 
-  // ✅ 견고한 ID 추출 (watch?v=, youtu.be/, embed/ 모두 처리)
   function getId(url){
     try{
       const u = new URL(url);
       const v = u.searchParams.get('v');
       if (v && v.length === 11) return v;
-      // youtu.be/<id> or /embed/<id> or /v/<id>
       const parts = u.pathname.split('/');
       for (let i = parts.length - 1; i >= 0; i--) {
         const seg = parts[i];
         if (seg && seg.length === 11) return seg;
       }
     }catch(e){
-      // URL 생성이 실패하면 간단 폴백
       const m = url.match(/(?:watch\?v=|youtu\.be\/|embed\/|v\/)([A-Za-z0-9_-]{11})/);
       if (m) return m[1];
     }
@@ -210,7 +204,6 @@
   const lbClose = document.getElementById('lb-close');
   const lbTarget = document.getElementById('lb-target');
 
-  // (수정 1) index.html과 동일 정책: 자동재생+무음+인라인
   function openLB(id){
     lbTarget.innerHTML = `<iframe title="YouTube video player" style="width:100%;aspect-ratio:16/9;border:0;border-radius:12px;" src="https://www.youtube.com/embed/${id}?autoplay=1&mute=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
     lb.style.display='flex'; lb.setAttribute('aria-hidden','false');
@@ -230,7 +223,6 @@
         <a class="thumb"><img loading="lazy" src="https://img.youtube.com/vi/${id}/hqdefault.jpg" alt="${v.title} 썸네일"><span class="play">Play</span></a>
         <div class="yt"><a href="${v.url}" target="_blank" rel="noopener">[유튜브 바로가기]</a></div>
       `;
-      // (수정 2-1) 카드 클릭 시, yt 영역 클릭이면 라이트박스 열지 않음(소리 겹침 방지)
       const act=(e)=>{ const isYt = e.target.closest('.yt'); if(!isYt){ openLB(id); } };
       card.addEventListener('click', act);
       card.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openLB(id); }});
@@ -251,7 +243,6 @@
     contactModal.addEventListener('click',e=>{ if(e.target===contactModal){ contactModal.style.display='none'; contactModal.setAttribute('aria-hidden','true');}});
   }
 
-  // (수정 2-2) [유튜브 바로가기]는 새 창 전체크기로 열기
   document.addEventListener('click', (e)=>{
     const link = e.target.closest('.yt a');
     if(!link) return;
