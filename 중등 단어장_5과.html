@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<!--
+================================================================================
+  GEMINI AI 영어 단어 퀴즈 마스터 템플릿 (2025-08-29 최종 수정)
+================================================================================
+  수정 내용:
+    - 퀴즈 제작 규칙 강화: 'land'와 같이 여러 품사와 뜻을 가진 단어의 경우,
+      카드에 표시되는 뜻과 품사가 반드시 예문에서의 쓰임과 일치해야 한다는
+      규칙을 추가하고 관련 오류를 모두 수정.
+================================================================================
+  ## (필독!) AI 퀴즈 제작 4대 핵심 원칙 ##
+
+  1.  '동사' 중심 출제: 표제어(eng)의 품사가 무엇이든, 퀴즈는 반드시
+      예문(sentence_parts)에서 사용된 '동사'를 문제로 내야 합니다.
+      - (오류 예시) 표제어가 'trip'(명사)일 때, 정답(verb)을 'trip'으로 설정하면 안 됩니다.
+      - (정상 예시) 예문 "How (was) your trip?"에서 동사인 'was'를 정답(verb)으로
+        설정하고, 선택지(options)는 ['is', 'are', 'was', 'were'] 등으로 구성해야 합니다.
+
+  2.  '뜻과 예문 일치'의 원칙: 표제어에 여러 뜻이 있을 경우, 카드에 표시되는
+      품사(pos)와 뜻(kor)은 반드시 예문에서의 쓰임과 일치해야 합니다.
+      - (오류 예시) 'land'를 [명사] 땅, 육지로 설명하고, 예문은 동사로 쓰인
+        "The plane will (land)..."를 사용하면 안 됩니다.
+      - (정상 예시) 예문이 동사로 쓰였다면, 카드 설명도 [동사] 착륙하다로 맞춰야 합니다.
+
+  3.  'forms' 데이터 입력 규칙:
+      - 동사: '동사원형 - 과거형 - 과거분사형' 형태로 반드시 입력합니다. (예: 'spend - spent - spent')
+      - 명사: '단수형 / 복수형' 형태로 반드시 입력합니다. (예: 'hobby / hobbies')
+             셀 수 없는 명사는 '(n.)'을 붙입니다. (예: 'leisure (n.)')
+      - 그 외 품사: 빈 문자열('')로 둡니다.
+
+  4.  'sentence_parts' 구조의 철저한 준수:
+      - p1: 퀴즈 동사 앞부분 문장
+      - verb: 정답이 되는 '동사' (반드시 동사여야 함)
+      - p2: 퀴즈 동사 뒷부분 문장
+================================================================================
+-->
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>중등 필수 단어/숙어 퀴즈 (5과) - 최종 수정본</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+        .card-container {
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-front {
+            background-color: #c4b5fd; /* bg-violet-300 */
+            color: #5b21b6; /* text-violet-900 */
+        }
+        .card-back {
+            background-color: #f5f3ff; /* bg-violet-50 */
+            color: #6d28d9; /* text-violet-800 */
+            transform: rotateY(180deg);
+            flex-direction: column;
+            padding: 1rem;
+            justify-content: space-around;
+            align-items: center;
+            text-align: center;
+        }
+        .play-btn {
+            background-color: #a78bfa;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .play-btn:hover {
+            background-color: #8b5cf6;
+        }
+        .word-forms {
+            background-color: #ddd6fe;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-style: italic;
+            height: 2.25rem; /* 높이 고정 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .quiz-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0 1rem;
+        }
+        .option-btn {
+            background-color: white;
+            border: 2px solid #a78bfa;
+            color: #5b21b6;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #ddd6fe;
+        }
+        .option-btn.correct {
+            background-color: #34d399;
+            border-color: #059669;
+            color: white;
+        }
+        .option-btn.incorrect {
+            background-color: #f87171;
+            border-color: #dc2626;
+            color: white;
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        #score-board {
+            background-color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: nowrap;
+        }
+        #reset-btn {
+            background-color: #fb923c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+        }
+        #reset-btn:hover:not(:disabled) {
+            background-color: #f97316;
+        }
+        #reset-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .sentence-play-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            vertical-align: middle;
+            margin-left: 0.25rem;
+            display: none;
+            color: #7c3aed;
+            transition: color 0.2s;
+        }
+        .sentence-play-btn:hover {
+            color: #6d28d9;
+        }
+        .explanation-btn {
+            display: none;
+            margin-top: 8px;
+            padding: 6px 14px;
+            background-color: #a5b4fc;
+            color: white;
+            font-weight: bold;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .explanation-btn:hover {
+            background-color: #818cf8;
+        }
+        #explanation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        #explanation-modal.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+        #explanation-modal.visible .modal-content {
+            transform: scale(1);
+        }
+        .modal-close-btn {
+            margin-top: 1.5rem;
+            padding: 0.5rem 1.5rem;
+            background-color: #60a5fa;
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .modal-close-btn:hover {
+            background-color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-violet-100">
+
+    <header class="sticky top-0 z-10 bg-violet-100 py-4 shadow-sm">
+        <div class="max-w-5xl mx-auto text-center px-4">
+            <h1 class="text-3xl sm:text-4xl font-bold text-violet-800" style="font-family: 'Noto Sans KR', sans-serif;">중등 필수 단어/숙어 퀴즈 (5과) ✈️</h1>
+            <p class="text-gray-600 mt-2 mb-6">카드 뒷면의 보기 중 알맞은 동사를 선택해보세요!</p>
+            <div id="score-board" class="max-w-xl mx-auto">
+                <span id="score-text" class="text-lg font-bold text-violet-800 whitespace-nowrap">점수: 0점 / 0점</span>
+                <span id="percentage-text" class="text-sm text-gray-600 whitespace-nowrap">정답률: 0.0% (0/0)</span>
+                <button id="reset-btn">다시 풀기 🔄</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="p-4 sm:p-8">
+        <div id="card-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-6xl mx-auto">
+            <!-- 단어 카드는 JavaScript로 생성됩니다 -->
+        </div>
+    </main>
+
+    <!-- 해설 팝업(모달) -->
+    <div id="explanation-modal">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4">정답 해설 💡</h2>
+            <p id="explanation-text" class="text-gray-700"></p>
+            <button id="modal-close-btn" class="modal-close-btn">닫기</button>
+        </div>
+    </div>
+
+
+    <script>
+        const words = [
+            // Words
+            { eng: 'stay', pos: '동사', kor: '머무르다, 계속 있다', ipa: '[steɪ]', kor_pron: '스테이', forms: 'stay - stayed - stayed', sentence_parts: { p1: 'How long will you', verb: 'stay', p2: 'in Seoul?' }, options: ['stay', 'stays', 'stayed', 'staying'], sentence_kor: '서울에 얼마나 오래 머무를 건가요?', explanation: "미래 시제를 나타내는 조동사 'will' 다음에는 동사 원형이 와야 하므로 'stay'가 정답입니다." },
+            { eng: 'travel', pos: '동사', kor: '여행하다', ipa: '[ˈtrævl]', kor_pron: '트래블', forms: 'travel - traveled - traveled', sentence_parts: { p1: 'I want to', verb: 'travel', p2: 'around the world.' }, options: ['travel', 'travels', 'traveled', 'traveling'], sentence_kor: '나는 세계 일주 여행을 하고 싶다.', explanation: "'to' 부정사 뒤에는 동사의 원형이 와야 하므로 'travel'이 정답입니다." },
+            { eng: 'climb', pos: '동사', kor: '오르다, 타다 오르다', ipa: '[klaɪm]', kor_pron: '클라임', forms: 'climb - climbed - climbed', sentence_parts: { p1: 'He', verb: 'climbed', p2: 'the mountain last weekend.' }, options: ['climb', 'climbs', 'climbed', 'climbing'], sentence_kor: '그는 지난 주말에 그 산을 올랐다.', explanation: "'last weekend'라는 명백한 과거 시점 부사가 있으므로 동사의 과거형 'climbed'가 정답입니다." },
+            { eng: 'plan', pos: '동사', kor: '계획하다', ipa: '[plæn]', kor_pron: '플랜', forms: 'plan - planned - planned', sentence_parts: { p1: 'We are', verb: 'planning', p2: 'a trip to Jeju Island.' }, options: ['plan', 'plans', 'planned', 'planning'], sentence_kor: '우리는 제주도 여행을 계획하고 있다.', explanation: "현재 계획하고 있는 진행 중인 상황을 나타내므로 현재 진행형 'planning'이 정답입니다." },
+            { eng: 'arrive', pos: '동사', kor: '도착하다', ipa: '[əˈraɪv]', kor_pron: '어라이브', forms: 'arrive - arrived - arrived', sentence_parts: { p1: 'What time did you', verb: 'arrive', p2: 'at the airport?' }, options: ['arrive', 'arrives', 'arrived', 'arriving'], sentence_kor: '공항에 몇 시에 도착했니?', explanation: "조동사 'did'가 있는 과거 의문문이므로 뒤에는 동사 원형 'arrive'가 와야 합니다." },
+            { eng: 'catch', pos: '동사', kor: '붙잡다, (기차·버스 등을) 타다', ipa: '[kætʃ]', kor_pron: '캐치', forms: 'catch - caught - caught', sentence_parts: { p1: 'Let\'s', verb: 'catch', p2: 'the next bus.' }, options: ['catch', 'catches', 'caught', 'catching'], sentence_kor: '다음 버스를 타자.', explanation: "제안을 나타내는 'Let\'s' 다음에는 동사 원형이 와야 하므로 'catch'가 정답입니다." },
+            { eng: 'miss', pos: '동사', kor: '놓치다, 그리워하다', ipa: '[mɪs]', kor_pron: '미스', forms: 'miss - missed - missed', sentence_parts: { p1: 'I', verb: 'missed', p2: 'the train this morning.' }, options: ['miss', 'misses', 'missed', 'missing'], sentence_kor: '나는 오늘 아침에 기차를 놓쳤다.', explanation: "문맥상 과거에 기차를 놓친 행동을 나타내므로 과거형 'missed'가 정답입니다." },
+            { eng: 'reach', pos: '동사', kor: '~에 이르다, 닿다', ipa: '[riːtʃ]', kor_pron: '리치', forms: 'reach - reached - reached', sentence_parts: { p1: 'We finally', verb: 'reached', p2: 'the top of the hill.' }, options: ['reach', 'reaches', 'reached', 'reaching'], sentence_kor: '우리는 마침내 언덕 꼭대기에 다다랐다.', explanation: "문맥상 과거에 도착한 상황을 설명하므로 과거형 'reached'가 정답입니다." },
+            { eng: 'rest', pos: '동사', kor: '쉬다', ipa: '[rest]', kor_pron: '레스트', forms: 'rest - rested - rested', sentence_parts: { p1: 'You look tired. You should', verb: 'rest', p2: '.' }, options: ['rest', 'rests', 'rested', 'resting'], sentence_kor: '피곤해 보여. 너는 쉬어야 해.', explanation: "조언을 나타내는 조동사 'should' 다음에는 동사 원형이 와야 하므로 'rest'가 정답입니다." },
+            { eng: 'ride', pos: '동사', kor: '(말, 자전거 등을) 타다', ipa: '[raɪd]', kor_pron: '라이드', forms: 'ride - rode - ridden', sentence_parts: { p1: 'She', verb: 'is riding', p2: 'her bike in the park.' }, options: ['ride', 'rides', 'rode', 'is riding'], sentence_kor: '그녀는 공원에서 자전거를 타고 있다.', explanation: "현재 자전거를 타고 있는 진행 중인 동작을 나타내므로 현재 진행형 'is riding'이 정답입니다." },
+            { eng: 'return', pos: '동사', kor: '돌아오다', ipa: '[rɪˈtɜːrn]', kor_pron: '리턴', forms: 'return - returned - returned', sentence_parts: { p1: 'When will he', verb: 'return', p2: 'from his trip?' }, options: ['return', 'returns', 'returned', 'returning'], sentence_kor: '그는 여행에서 언제 돌아오나요?', explanation: "미래 시제를 묻는 조동사 'will' 다음에는 동사 원형이 와야 하므로 'return'이 정답입니다." },
+            { eng: 'special', pos: '형용사', kor: '특별한', ipa: '[ˈspeʃl]', kor_pron: '스페셜', forms: '', sentence_parts: { p1: 'Today', verb: 'is', p2: 'a very special day for us.' }, options: ['is', 'are', 'was', 'be'], sentence_kor: '오늘은 우리에게 매우 특별한 날이다.', explanation: "주어 'Today'가 3인칭 단수이고 현재의 사실을 나타내므로 'is'가 정답입니다." },
+            { eng: 'terrific', pos: '형용사', kor: '아주 좋은, 멋진', ipa: '[təˈrɪfɪk]', kor_pron: '터리픽', forms: '', sentence_parts: { p1: 'We', verb: 'had', p2: 'a terrific time at the concert.' }, options: ['have', 'has', 'had', 'having'], sentence_kor: '우리는 콘서트에서 아주 멋진 시간을 보냈다.', explanation: "이미 끝난 콘서트에 대한 이야기이므로, 'have'의 과거형인 'had'가 정답입니다." },
+            { eng: 'terrible', pos: '형용사', kor: '끔찍한, 지독한', ipa: '[ˈterəbl]', kor_pron: '테러블', forms: '', sentence_parts: { p1: 'The weather', verb: 'was', p2: 'terrible yesterday.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '어제 날씨는 끔찍했다.', explanation: "'yesterday'라는 과거 시점 부사가 있으므로, 주어 'The weather'에 맞는 과거형 be동사 'was'가 정답입니다." },
+            { eng: 'outdoor', pos: '형용사', kor: '야외의', ipa: '[ˈaʊtdɔːr]', kor_pron: '아웃도어', forms: '', sentence_parts: { p1: 'I enjoy', verb: 'doing', p2: 'outdoor activities.' }, options: ['do', 'does', 'did', 'doing'], sentence_kor: '나는 야외 활동을 하는 것을 즐긴다.', explanation: "동사 'enjoy' 다음에는 동명사(-ing) 형태가 와야 하므로 'doing'이 정답입니다." },
+            { eng: 'excited', pos: '형용사', kor: '신이 난, 초조한', ipa: '[ɪkˈsaɪtɪd]', kor_pron: '익사이티드', forms: '', sentence_parts: { p1: 'The children', verb: 'were', p2: 'excited about the trip.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '아이들은 여행에 대해 신이 나 있었다.', explanation: "주어 'The children'이 복수이고 과거의 감정 상태를 나타내므로 'were'가 정답입니다." },
+            { eng: 'foreign', pos: '형용사', kor: '외국의', ipa: '[ˈfɔːrən]', kor_pron: '포린', forms: '', sentence_parts: { p1: 'He', verb: 'speaks', p2: 'several foreign languages.' }, options: ['speak', 'speaks', 'spoke', 'speaking'], sentence_kor: '그는 여러 외국어를 구사한다.', explanation: "주어 'He'가 3인칭 단수이고 현재의 능력을 나타내므로 동사에 -s를 붙인 'speaks'가 정답입니다." },
+            { eng: 'land', pos: '동사', kor: '착륙하다', ipa: '[lænd]', kor_pron: '랜드', forms: 'land - landed - landed', sentence_parts: { p1: 'The plane', verb: 'will land', p2: 'in ten minutes.' }, options: ['land', 'lands', 'landed', 'will land'], sentence_kor: '비행기는 10분 후에 착륙할 것이다.', explanation: "미래의 일을 나타내므로 '조동사 will + 동사 원형' 형태인 'will land'가 정답입니다." },
+            { eng: 'flight', pos: '명사', kor: '비행, 항공편', ipa: '[flaɪt]', kor_pron: '플라이트', forms: 'flight / flights', sentence_parts: { p1: 'Our flight to New York', verb: 'was', p2: 'delayed.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '우리의 뉴욕행 비행기가 지연되었다.', explanation: "주어 'Our flight'가 단수이고 과거에 일어난 일을 설명하므로 'was'가 정답입니다." },
+            { eng: 'tourist', pos: '명사', kor: '관광객', ipa: '[ˈtʊrɪst]', kor_pron: '투어리스트', forms: 'tourist / tourists', sentence_parts: { p1: 'Many tourists', verb: 'visit', p2: 'this city every year.' }, options: ['visit', 'visits', 'visited', 'visiting'], sentence_kor: '많은 관광객들이 매년 이 도시를 방문한다.', explanation: "주어 'Many tourists'가 복수이고, 'every year'는 현재의 반복적인 사실을 나타내므로 동사 원형 'visit'이 정답입니다." },
+            { eng: 'culture', pos: '명사', kor: '문화, 사고방식', ipa: '[ˈkʌltʃər]', kor_pron: '컬처', forms: 'culture / cultures', sentence_parts: { p1: 'It is important to', verb: 'respect', p2: 'other cultures.' }, options: ['respect', 'respects', 'respected', 'respecting'], sentence_kor: '다른 문화를 존중하는 것은 중요하다.', explanation: "'to' 부정사 뒤에는 동사의 원형이 와야 하므로 'respect'가 정답입니다." },
+            { eng: 'trip', pos: '명사', kor: '여행', ipa: '[trɪp]', kor_pron: '트립', forms: 'trip / trips', sentence_parts: { p1: 'How', verb: 'was', p2: 'your trip to Busan?' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '부산 여행은 어땠니?', explanation: "이미 다녀온 여행에 대해 묻고 있으므로, 주어 'your trip'에 맞는 과거형 be동사 'was'가 정답입니다." },
+            { eng: 'leisure', pos: '명사', kor: '여가', ipa: '[ˈliːʒər]', kor_pron: '리저', forms: 'leisure (n.)', sentence_parts: { p1: 'What do you', verb: 'do', p2: 'in your leisure time?' }, options: ['do', 'does', 'did', 'doing'], sentence_kor: '여가 시간에 무엇을 하니?', explanation: "조동사 'do'를 사용한 의문문이므로 뒤에는 동사 원형 'do'가 와야 합니다." },
+            { eng: 'holiday', pos: '명사', kor: '휴가, 공휴일', ipa: '[ˈhɑːlədeɪ]', kor_pron: '할리데이', forms: 'holiday / holidays', sentence_parts: { p1: 'We', verb: 'are going', p2: 'on holiday next week.' }, options: ['go', 'goes', 'went', 'are going'], sentence_kor: '우리는 다음 주에 휴가를 갈 것이다.', explanation: "'next week'라는 미래 시점을 나타내며, 가까운 미래의 계획은 현재 진행형으로 표현할 수 있으므로 'are going'이 정답입니다." },
+            { eng: 'danger', pos: '명사', kor: '위험', ipa: '[ˈdeɪndʒər]', kor_pron: '데인저', forms: 'danger (n.)', sentence_parts: { p1: 'You', verb: 'are', p2: 'in danger here.' }, options: ['is', 'are', 'was', 'be'], sentence_kor: '너는 이곳에서 위험에 처해 있다.', explanation: "주어가 2인칭 'You'이고 현재 상태를 나타내므로 be동사 'are'가 정답입니다." },
+            { eng: 'airport', pos: '명사', kor: '공항', ipa: '[ˈerpɔːrt]', kor_pron: '에어포트', forms: 'airport / airports', sentence_parts: { p1: 'I have to', verb: 'be', p2: 'at the airport by 7.' }, options: ['is', 'are', 'was', 'be'], sentence_kor: '나는 7시까지 공항에 가야 한다.', explanation: "'have to' 다음에는 동사 원형이 와야 하므로 'be'가 정답입니다." },
+            { eng: 'airplane', pos: '명사', kor: '비행기', ipa: '[ˈerpleɪn]', kor_pron: '에어플레인', forms: 'airplane / airplanes', sentence_parts: { p1: 'The airplane', verb: 'is flying', p2: 'high in the sky.' }, options: ['fly', 'flies', 'flew', 'is flying'], sentence_kor: '비행기가 하늘 높이 날고 있다.', explanation: "현재 날고 있는 진행 중인 동작을 나타내므로 현재 진행형 'is flying'이 정답입니다." },
+            { eng: 'far', pos: '부사', kor: '멀리', ipa: '[fɑːr]', kor_pron: '파', forms: '', sentence_parts: { p1: 'How far', verb: 'is', p2: 'it from here to the station?' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '여기서 역까지 얼마나 멀어요?', explanation: "거리를 묻는 의문문에서 주어 'it'은 단수 취급하므로 'is'가 정답입니다." },
+            { eng: 'abroad', pos: '부사', kor: '해외로', ipa: '[əˈbrɔːd]', kor_pron: '어브로드', forms: '', sentence_parts: { p1: 'She has never', verb: 'been', p2: 'abroad.' }, options: ['is', 'are', 'was', 'been'], sentence_kor: '그녀는 해외에 가본 적이 없다.', explanation: "경험을 나타내는 현재완료 시제 'has + p.p.' 구문이므로, 'be' 동사의 과거분사형인 'been'이 정답입니다." },
+            { eng: 'during', pos: '전치사', kor: '~ 동안', ipa: '[ˈdʊrɪŋ]', kor_pron: '듀링', forms: '', sentence_parts: { p1: 'Please', verb: 'be', p2: 'quiet during the movie.' }, options: ['is', 'are', 'was', 'be'], sentence_kor: '영화 상영 중에는 조용히 해주세요.', explanation: "명령문은 동사 원형으로 시작해야 하므로 'be'가 정답입니다." },
+            // Phrases
+            { eng: 'wait for', pos: '숙어', kor: '~을 기다리다', ipa: '[weɪt fɔːr]', kor_pron: '웨이트 포', forms: 'wait - waited - waited', sentence_parts: { p1: 'I am', verb: 'waiting for', p2: 'my friend.' }, options: ['wait for', 'waits for', 'waited for', 'waiting for'], sentence_kor: '나는 내 친구를 기다리고 있다.', explanation: "현재 기다리고 있는 진행 중인 동작을 나타내므로 현재 진행형 'waiting for'가 정답입니다." },
+            { eng: 'take a trip', pos: '숙어', kor: '여행하다', ipa: '[teɪk ə trɪp]', kor_pron: '테이크 어 트립', forms: 'take - took - taken', sentence_parts: { p1: 'Let\'s', verb: 'take a trip', p2: 'this summer.' }, options: ['take a trip', 'takes a trip', 'took a trip', 'taking a trip'], sentence_kor: '올 여름에 여행 가자.', explanation: "제안을 나타내는 'Let\'s' 다음에는 동사 원형이 와야 하므로 'take a trip'이 정답입니다." },
+            { eng: 'go on a picnic', pos: '숙어', kor: '소풍 가다', ipa: '[ɡoʊ ɑːn ə ˈpɪknɪk]', kor_pron: '고 온 어 피크닉', forms: 'go - went - gone', sentence_parts: { p1: 'We', verb: 'went on a picnic', p2: 'last Sunday.' }, options: ['go on a picnic', 'goes on a picnic', 'went on a picnic', 'going on a picnic'], sentence_kor: '우리는 지난 일요일에 소풍을 갔다.', explanation: "'last Sunday'라는 명백한 과거 시점 부사가 있으므로 과거형 'went on a picnic'이 정답입니다." },
+            { eng: 'on weekends', pos: '숙어', kor: '주말에', ipa: '[ɑːn ˈwiːkends]', kor_pron: '온 위켄즈', forms: '', sentence_parts: { p1: 'What do you usually', verb: 'do', p2: 'on weekends?' }, options: ['do', 'does', 'did', 'doing'], sentence_kor: '주말에 보통 뭐 하세요?', explanation: "조동사 'do'를 사용한 의문문이므로 뒤에는 동사 원형 'do'가 와야 합니다." },
+            { eng: 'go swimming', pos: '숙어', kor: '수영하러 가다', ipa: '[ɡoʊ ˈswɪmɪŋ]', kor_pron: '고 스위밍', forms: 'go - went - gone', sentence_parts: { p1: 'Do you want to', verb: 'go swimming', p2: 'with us?' }, options: ['go swimming', 'goes swimming', 'went swimming', 'going swimming'], sentence_kor: '우리랑 수영하러 갈래?', explanation: "'to' 부정사 뒤에는 동사의 원형이 와야 하므로 'go swimming'이 정답입니다." },
+            { eng: 'go to a movie', pos: '숙어', kor: '영화 보러 가다', ipa: '[ɡoʊ tu ə ˈmuːvi]', kor_pron: '고 투 어 무비', forms: 'go - went - gone', sentence_parts: { p1: 'She', verb: 'went to a movie', p2: 'with her friends.' }, options: ['go to a movie', 'goes to a movie', 'went to a movie', 'going to a movie'], sentence_kor: '그녀는 친구들과 영화를 보러 갔다.', explanation: "문맥상 과거에 영화를 보러 간 행동을 나타내므로 과거형 'went to a movie'가 정답입니다." },
+            // English-English Dictionary
+            { eng: 'famous', pos: '형용사', kor: '유명한', ipa: '[ˈfeɪməs]', kor_pron: '페이머스', forms: '', sentence_parts: { p1: 'He', verb: 'is', p2: 'a famous actor.' }, options: ['is', 'are', 'was', 'be'], sentence_kor: '그는 유명한 배우이다.', explanation: "주어 'He'가 3인칭 단수이고 현재의 사실을 나타내므로 'is'가 정답입니다." },
+            { eng: 'safe', pos: '형용사', kor: '안전한', ipa: '[seɪf]', kor_pron: '세이프', forms: '', sentence_parts: { p1: 'You will', verb: 'be', p2: 'safe here.' }, options: ['is', 'are', 'was', 'be'], sentence_kor: '너는 여기서 안전할 거야.', explanation: "미래를 나타내는 조동사 'will' 다음에는 동사 원형이 와야 하므로 'be'가 정답입니다." },
+            { eng: 'relax', pos: '동사', kor: '휴식을 취하다', ipa: '[rɪˈlæks]', kor_pron: '릴랙스', forms: 'relax - relaxed - relaxed', sentence_parts: { p1: 'You should', verb: 'relax', p2: 'and get some rest.' }, options: ['relax', 'relaxes', 'relaxed', 'relaxing'], sentence_kor: '너는 휴식을 취하고 좀 쉬어야 해.', explanation: "조언을 나타내는 조동사 'should' 다음에는 동사 원형이 와야 하므로 'relax'가 정답입니다." },
+            { eng: 'happen', pos: '동사', kor: '일어나다, 발생하다', ipa: '[ˈhæpən]', kor_pron: '해픈', forms: 'happen - happened - happened', sentence_parts: { p1: 'What', verb: 'happened', p2: 'to you?' }, options: ['happen', 'happens', 'happened', 'happening'], sentence_kor: '너에게 무슨 일이 있었니?', explanation: "과거에 일어난 일에 대해 묻고 있으므로 동사의 과거형 'happened'가 정답입니다." }
+        ];
+
+        const cardGrid = document.getElementById('card-grid');
+        const scoreText = document.getElementById('score-text');
+        const percentageText = document.getElementById('percentage-text');
+        const resetButton = document.getElementById('reset-btn');
+        const modal = document.getElementById('explanation-modal');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const explanationText = document.getElementById('explanation-text');
+        
+        const synth = window.speechSynthesis;
+        let voices = [];
+
+        let currentScore = 0;
+        let answeredCount = 0;
+        const totalProblems = words.length;
+        const maxScore = totalProblems * 10;
+
+        function loadVoices() { 
+            voices = synth.getVoices(); 
+        }
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = loadVoices;
+        }
+        loadVoices();
+
+        function speak(text) {
+            if (synth.speaking) {
+                synth.cancel();
+            }
+            const utterThis = new SpeechSynthesisUtterance(text);
+            
+            let selectedVoice = voices.find(voice => voice.name === 'Google US English');
+            if (!selectedVoice) {
+                selectedVoice = voices.find(voice => voice.lang === 'en-US');
+            }
+            
+            utterThis.voice = selectedVoice;
+            utterThis.rate = 0.9;
+            synth.speak(utterThis);
+        }
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        function updateScoreDisplay() {
+            const correctAnswers = currentScore / 10;
+            const percentage = answeredCount > 0 ? (correctAnswers / answeredCount * 100).toFixed(1) : 0;
+            scoreText.textContent = `점수: ${currentScore}점 / ${maxScore}점`;
+            percentageText.textContent = `정답률: ${percentage}% (${correctAnswers}/${answeredCount})`;
+        }
+
+        function createCard(wordData, index) {
+            const cardContainer = document.createElement('div');
+            cardContainer.className = 'card-container h-80';
+            const { p1, verb, p2 } = wordData.sentence_parts;
+
+            // [수정] 단어 형태 정보가 없을 때도 빈 div를 생성하여 레이아웃 유지
+            const formsHTML = `<div class="word-forms text-base text-violet-700 font-semibold">
+                                   <p>${wordData.forms || '&nbsp;'}</p>
+                               </div>`;
+            
+            const shuffledOptions = [...wordData.options];
+            shuffleArray(shuffledOptions);
+
+            const optionsHTML = shuffledOptions.map(option => 
+                `<button class="option-btn">${option}</button>`
+            ).join('');
+
+            cardContainer.innerHTML = `
+                <div class="card">
+                    <div class="card-face card-front">
+                        <h2 class="text-4xl sm:text-5xl font-bold p-2">${wordData.eng}</h2>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="flex items-center gap-4">
+                            <div>
+                                <h3 class="text-2xl sm:text-3xl font-bold">${wordData.eng} <span class="text-xl font-normal text-violet-700">[${wordData.pos}] ${wordData.kor}</span></h3>
+                                <p class="text-lg sm:text-xl font-semibold text-violet-600">${wordData.ipa} (${wordData.kor_pron})</p>
+                            </div>
+                            <button class="play-btn" data-word="${wordData.eng}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </button>
+                        </div>
+                        
+                        ${formsHTML}
+
+                        <hr class="w-full border-t border-violet-200">
+
+                        <div class="text-base sm:text-lg w-full">
+                            <p class="mb-2 sentence-container flex items-center justify-center">
+                                <span>${p1}</span>
+                                <span class="font-bold text-xl quiz-placeholder">&nbsp;&nbsp;(...)&nbsp;&nbsp;</span>
+                                <span>${p2}</span>
+                                <button class="sentence-play-btn">🔊</button>
+                            </p>
+                            <div class="quiz-options">
+                                ${optionsHTML}
+                            </div>
+                            <p class="text-gray-500 mt-2">${wordData.sentence_kor}</p>
+                            <button class="explanation-btn">해설 보기</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            cardGrid.appendChild(cardContainer);
+
+            const card = cardContainer.querySelector('.card');
+            const playButton = cardContainer.querySelector('.play-btn');
+            const optionButtons = cardContainer.querySelectorAll('.option-btn');
+            const quizPlaceholder = cardContainer.querySelector('.quiz-placeholder');
+            const sentencePlayButton = cardContainer.querySelector('.sentence-play-btn');
+            const explanationBtn = cardContainer.querySelector('.explanation-btn');
+            
+            cardContainer.addEventListener('click', (e) => {
+                if (!e.target.closest('.option-btn') && !e.target.closest('.play-btn') && !e.target.closest('.sentence-play-btn') && !e.target.closest('.explanation-btn')) {
+                    card.classList.toggle('flipped');
+                }
+            });
+
+            optionButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    
+                    const selectedAnswer = button.textContent;
+                    const correctAnswer = wordData.sentence_parts.verb;
+
+                    if (selectedAnswer === correctAnswer) {
+                        button.classList.add('correct');
+                        currentScore += 10;
+                    } else {
+                        button.classList.add('incorrect');
+                        optionButtons.forEach(btn => {
+                            if (btn.textContent === correctAnswer) {
+                                btn.classList.add('correct');
+                            }
+                        });
+                    }
+                    
+                    answeredCount++;
+                    updateScoreDisplay();
+                    
+                    quizPlaceholder.innerHTML = `&nbsp;&nbsp;${correctAnswer}&nbsp;&nbsp;`;
+                    quizPlaceholder.classList.add('text-fuchsia-500');
+                    sentencePlayButton.style.display = 'inline-block';
+                    explanationBtn.style.display = 'inline-block';
+
+                    optionButtons.forEach(btn => {
+                        btn.disabled = true;
+                    });
+
+                    if (answeredCount === totalProblems) {
+                        resetButton.disabled = false;
+                    }
+                });
+            });
+
+            playButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (voices.length === 0) {
+                    setTimeout(() => speak(e.currentTarget.dataset.word), 100);
+                } else {
+                    speak(e.currentTarget.dataset.word);
+                }
+            });
+
+            sentencePlayButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const fullSentence = p1 + ' ' + verb + ' ' + p2;
+                if (voices.length === 0) {
+                     setTimeout(() => speak(fullSentence), 100);
+                } else {
+                    speak(fullSentence);
+                }
+            });
+
+            explanationBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                explanationText.textContent = wordData.explanation;
+                modal.classList.add('visible');
+            });
+        }
+
+        function initializeQuiz() {
+            cardGrid.innerHTML = '';
+            currentScore = 0;
+            answeredCount = 0;
+            updateScoreDisplay();
+            resetButton.disabled = true;
+            words.forEach(createCard);
+        }
+        
+        modalCloseBtn.addEventListener('click', () => {
+            modal.classList.remove('visible');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('visible');
+            }
+        });
+
+        resetButton.addEventListener('click', initializeQuiz);
+
+        // 초기 실행
+        initializeQuiz();
+    </script>
+</body>
+</html>
