@@ -300,26 +300,26 @@ GEMINI AI 영어 단어 퀴즈 마스터 템플릿 (최종 완성본)
 
     <script>
         const words = [
-            { eng: 'look at', pos: '숙어', kor: '~을 보다', forms: 'look at / looks at', sentence_parts: { p1: 'He ', verb: 'looks at', p2: ' the boy.' }, options: ['look at', 'looks at', 'looking at', 'looked at'], sentence_kor: '그는 그 남자아이를 봐요.', explanation: "주어가 'He'(3인칭 단수)이므로 동사에 '-s'를 붙인 'looks at'이 정답입니다." },
-            { eng: 'sun', pos: '명사', kor: '해, 태양', forms: 'sun (단수)', sentence_parts: { p1: 'The sun ', verb: 'is', p2: ' hot.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '해가 뜨거워요.', explanation: "주어 'The sun'(3인칭 단수)에 맞는 be동사는 'is'입니다." },
-            { eng: 'moon', pos: '명사', kor: '달', forms: 'moon (단수)', sentence_parts: { p1: 'The moon ', verb: 'is', p2: ' bright.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '달이 밝아요.', explanation: "주어 'The moon'(3인칭 단수)에 맞는 be동사는 'is'입니다." },
-            { eng: 'play', pos: '동사', kor: '(악기를) 연주하다', forms: 'play / plays / played', sentence_parts: { p1: 'I ', verb: 'play', p2: ' the piano.' }, options: ['play', 'plays', 'playing', 'played'], sentence_kor: '나는 피아노를 친다.', explanation: "주어가 'I'(1인칭)일 때 일반동사는 원래 형태 그대로 쓰므로 'play'가 정답입니다." },
-            { eng: 'soccer', pos: '명사', kor: '축구', forms: 'soccer (단수)', sentence_parts: { p1: 'I ', verb: 'play', p2: ' soccer.' }, options: ['play', 'plays', 'playing', 'played'], sentence_kor: '나는 축구를 한다.', explanation: "주어가 'I'(1인칭)일 때 일반동사는 원래 형태 그대로 쓰므로 'play'가 정답입니다." },
-            { eng: 'breakfast', pos: '명사', kor: '아침 (식사)', forms: 'breakfast (단수)', sentence_parts: { p1: 'I ', verb: 'have', p2: ' breakfast.' }, options: ['have', 'has', 'having', 'had'], sentence_kor: '나는 아침 식사를 한다.', explanation: "주어가 'I'(1인칭)일 때 '가지다/먹다'라는 뜻의 동사는 'have'를 사용합니다." },
-            { eng: 'umbrella', pos: '명사', kor: '우산', forms: 'umbrella / umbrellas', sentence_parts: { p1: 'It ', verb: 'is', p2: ' an umbrella.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그것은 우산이다.', explanation: "주어 'It'(3인칭 단수)에 맞는 be동사는 'is'입니다." },
-            { eng: 'cute', pos: '형용사', kor: '귀여운', forms: '', sentence_parts: { p1: 'The dog ', verb: 'is', p2: ' cute.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '그 개는 귀엽다.', explanation: "주어 'The dog'(3인칭 단수)에 맞는 be동사는 'is'입니다." },
-            { eng: 'teacher', pos: '명사', kor: '선생님', forms: 'teacher / teachers', sentence_parts: { p1: 'You ', verb: 'are', p2: ' a teacher.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '당신은 선생님이다.', explanation: "주어 'You'(2인칭)에 맞는 be동사는 'are'입니다." },
-            { eng: 'have', pos: '동사', kor: '가지고 있다', forms: 'have / has / had', sentence_parts: { p1: 'You ', verb: 'have', p2: ' an apple.' }, options: ['have', 'has', 'having', 'had'], sentence_kor: '너는 사과 한 개를 가지고 있다.', explanation: "주어가 'You'(2인칭)일 때 '가지다'라는 뜻의 동사는 'have'를 사용합니다." },
-            { eng: 'like', pos: '동사', kor: '좋아하다', forms: 'like / likes / liked', sentence_parts: { p1: 'I ', verb: 'like', p2: ' the book.' }, options: ['like', 'likes', 'liking', 'liked'], sentence_kor: '나는 그 책을 좋아한다.', explanation: "주어가 'I'(1인칭)일 때 일반동사는 원래 형태 그대로 쓰므로 'like'가 정답입니다." },
-            { eng: 'doctor', pos: '명사', kor: '의사', forms: 'doctor / doctors', sentence_parts: { p1: 'I ', verb: 'am', p2: ' a doctor.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '나는 의사이다.', explanation: "주어 'I'(1인칭)에 맞는 be동사는 'am'입니다." },
-            { eng: 'nurse', pos: '명사', kor: '간호사', forms: 'nurse / nurses', sentence_parts: { p1: 'You ', verb: 'are', p2: ' a nurse.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '당신은 간호사이다.', explanation: "주어 'You'(2인칭)에 맞는 be동사는 'are'입니다." },
-            { eng: 'onion', pos: '명사', kor: '양파', forms: 'onion / onions', sentence_parts: { p1: 'It ', verb: 'is', p2: ' an onion.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그것은 양파이다.', explanation: "주어 'It'(3인칭 단수)에 맞는 be동사는 'is'입니다." },
-            { eng: 'ant', pos: '명사', kor: '개미', forms: 'ant / ants', sentence_parts: { p1: 'It ', verb: 'is', p2: ' an ant.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그것은 개미이다.', explanation: "주어 'It'(3인칭 단수)에 맞는 be동사는 'is'입니다." },
-            { eng: 'desk', pos: '명사', kor: '책상', forms: 'desk / desks', sentence_parts: { p1: 'That ', verb: 'is', p2: ' a desk.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '저것은 책상이다.', explanation: "주어 'That'(3인칭 단수)에 맞는 be동사는 'is'입니다." },
-            { eng: 'sky', pos: '명사', kor: '하늘', forms: 'sky (단수)', sentence_parts: { p1: 'The sky ', verb: 'is', p2: ' blue.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '하늘이 파랗다.', explanation: "주어 'The sky'(3인칭 단수)에 맞는 be동사는 'is'입니다." },
-            { eng: 'lunch', pos: '명사', kor: '점심 (식사)', forms: 'lunch (단수)', sentence_parts: { p1: 'I ', verb: 'have', p2: ' lunch.' }, options: ['have', 'has', 'having', 'had'], sentence_kor: '나는 점심 식사를 한다.', explanation: "주어가 'I'(1인칭)일 때 '가지다/먹다'라는 뜻의 동사는 'have'를 사용합니다." },
-            { eng: 'dinner', pos: '명사', kor: '저녁 (식사)', forms: 'dinner (단수)', sentence_parts: { p1: 'We ', verb: 'have', p2: ' dinner.' }, options: ['have', 'has', 'having', 'had'], sentence_kor: '우리는 저녁 식사를 한다.', explanation: "주어가 'We'(1인칭 복수)일 때 '가지다/먹다'라는 뜻의 동사는 'have'를 사용합니다." },
-            { eng: 'happy', pos: '형용사', kor: '행복한', forms: '', sentence_parts: { p1: 'The boy ', verb: 'is', p2: ' happy.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그 남자아이는 행복하다.', explanation: "주어 'The boy'(3인칭 단수)에 맞는 be동사는 'is'입니다." }
+            { eng: 'look at', pos: '숙어', kor: '~을 보다', ipa: '[lʊk æt]', kor_pron: '룩 앳', forms: 'look at / looks at', sentence_parts: { p1: 'He ', verb: 'looks at', p2: ' the boy.' }, options: ['look at', 'looks at', 'looking at', 'looked at'], sentence_kor: '그는 그 남자아이를 봐요.', explanation: "주어가 'He'(3인칭 단수)이므로 동사에 '-s'를 붙인 'looks at'이 정답입니다." },
+            { eng: 'sun', pos: '명사', kor: '해, 태양', ipa: '[sʌn]', kor_pron: '선', forms: 'sun (단수)', sentence_parts: { p1: 'The sun ', verb: 'is', p2: ' hot.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '해가 뜨거워요.', explanation: "주어 'The sun'(3인칭 단수)에 맞는 be동사는 'is'입니다." },
+            { eng: 'moon', pos: '명사', kor: '달', ipa: '[muːn]', kor_pron: '문', forms: 'moon (단수)', sentence_parts: { p1: 'The moon ', verb: 'is', p2: ' bright.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '달이 밝아요.', explanation: "주어 'The moon'(3인칭 단수)에 맞는 be동사는 'is'입니다." },
+            { eng: 'play', pos: '동사', kor: '(악기를) 연주하다', ipa: '[pleɪ]', kor_pron: '플레이', forms: 'play / plays / played', sentence_parts: { p1: 'I ', verb: 'play', p2: ' the piano.' }, options: ['play', 'plays', 'playing', 'played'], sentence_kor: '나는 피아노를 친다.', explanation: "주어가 'I'(1인칭)일 때 일반동사는 원래 형태 그대로 쓰므로 'play'가 정답입니다." },
+            { eng: 'soccer', pos: '명사', kor: '축구', ipa: '[ˈsɑːkər]', kor_pron: '사커', forms: 'soccer (단수)', sentence_parts: { p1: 'I ', verb: 'play', p2: ' soccer.' }, options: ['play', 'plays', 'playing', 'played'], sentence_kor: '나는 축구를 한다.', explanation: "주어가 'I'(1인칭)일 때 일반동사는 원래 형태 그대로 쓰므로 'play'가 정답입니다." },
+            { eng: 'breakfast', pos: '명사', kor: '아침 (식사)', ipa: '[ˈbrekfəst]', kor_pron: '브뤸퍼스트', forms: 'breakfast (단수)', sentence_parts: { p1: 'I ', verb: 'have', p2: ' breakfast.' }, options: ['have', 'has', 'having', 'had'], sentence_kor: '나는 아침 식사를 한다.', explanation: "주어가 'I'(1인칭)일 때 '가지다/먹다'라는 뜻의 동사는 'have'를 사용합니다." },
+            { eng: 'umbrella', pos: '명사', kor: '우산', ipa: '[ʌmˈbrelə]', kor_pron: '엄브렐라', forms: 'umbrella / umbrellas', sentence_parts: { p1: 'It ', verb: 'is', p2: ' an umbrella.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그것은 우산이다.', explanation: "주어 'It'(3인칭 단수)에 맞는 be동사는 'is'입니다." },
+            { eng: 'cute', pos: '형용사', kor: '귀여운', ipa: '[kjuːt]', kor_pron: '큐트', forms: '', sentence_parts: { p1: 'The dog ', verb: 'is', p2: ' cute.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '그 개는 귀엽다.', explanation: "주어 'The dog'(3인칭 단수)에 맞는 be동사는 'is'입니다." },
+            { eng: 'teacher', pos: '명사', kor: '선생님', ipa: '[ˈtiːtʃər]', kor_pron: '티처', forms: 'teacher / teachers', sentence_parts: { p1: 'You ', verb: 'are', p2: ' a teacher.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '당신은 선생님이다.', explanation: "주어 'You'(2인칭)에 맞는 be동사는 'are'입니다." },
+            { eng: 'have', pos: '동사', kor: '가지고 있다', ipa: '[hæv]', kor_pron: '해브', forms: 'have / has / had', sentence_parts: { p1: 'You ', verb: 'have', p2: ' an apple.' }, options: ['have', 'has', 'having', 'had'], sentence_kor: '너는 사과 한 개를 가지고 있다.', explanation: "주어가 'You'(2인칭)일 때 '가지다'라는 뜻의 동사는 'have'를 사용합니다." },
+            { eng: 'like', pos: '동사', kor: '좋아하다', ipa: '[laɪk]', kor_pron: '라잌', forms: 'like / likes / liked', sentence_parts: { p1: 'I ', verb: 'like', p2: ' the book.' }, options: ['like', 'likes', 'liking', 'liked'], sentence_kor: '나는 그 책을 좋아한다.', explanation: "주어가 'I'(1인칭)일 때 일반동사는 원래 형태 그대로 쓰므로 'like'가 정답입니다." },
+            { eng: 'doctor', pos: '명사', kor: '의사', ipa: '[ˈdɑːktər]', kor_pron: '닥터', forms: 'doctor / doctors', sentence_parts: { p1: 'I ', verb: 'am', p2: ' a doctor.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '나는 의사이다.', explanation: "주어 'I'(1인칭)에 맞는 be동사는 'am'입니다." },
+            { eng: 'nurse', pos: '명사', kor: '간호사', ipa: '[nɜːrs]', kor_pron: '널스', forms: 'nurse / nurses', sentence_parts: { p1: 'You ', verb: 'are', p2: ' a nurse.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '당신은 간호사이다.', explanation: "주어 'You'(2인칭)에 맞는 be동사는 'are'입니다." },
+            { eng: 'onion', pos: '명사', kor: '양파', ipa: '[ˈʌnjən]', kor_pron: '어니언', forms: 'onion / onions', sentence_parts: { p1: 'It ', verb: 'is', p2: ' an onion.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그것은 양파이다.', explanation: "주어 'It'(3인칭 단수)에 맞는 be동사는 'is'입니다." },
+            { eng: 'ant', pos: '명사', kor: '개미', ipa: '[ænt]', kor_pron: '앤트', forms: 'ant / ants', sentence_parts: { p1: 'It ', verb: 'is', p2: ' an ant.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그것은 개미이다.', explanation: "주어 'It'(3인칭 단수)에 맞는 be동사는 'is'입니다." },
+            { eng: 'desk', pos: '명사', kor: '책상', ipa: '[desk]', kor_pron: '데스크', forms: 'desk / desks', sentence_parts: { p1: 'That ', verb: 'is', p2: ' a desk.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '저것은 책상이다.', explanation: "주어 'That'(3인칭 단수)에 맞는 be동사는 'is'입니다." },
+            { eng: 'sky', pos: '명사', kor: '하늘', ipa: '[skaɪ]', kor_pron: '스카이', forms: 'sky (단수)', sentence_parts: { p1: 'The sky ', verb: 'is', p2: ' blue.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '하늘이 파랗다.', explanation: "주어 'The sky'(3인칭 단수)에 맞는 be동사는 'is'입니다." },
+            { eng: 'lunch', pos: '명사', kor: '점심 (식사)', ipa: '[lʌntʃ]', kor_pron: '런치', forms: 'lunch (단수)', sentence_parts: { p1: 'I ', verb: 'have', p2: ' lunch.' }, options: ['have', 'has', 'having', 'had'], sentence_kor: '나는 점심 식사를 한다.', explanation: "주어가 'I'(1인칭)일 때 '가지다/먹다'라는 뜻의 동사는 'have'를 사용합니다." },
+            { eng: 'dinner', pos: '명사', kor: '저녁 (식사)', ipa: '[ˈdɪnər]', kor_pron: '디너', forms: 'dinner (단수)', sentence_parts: { p1: 'We ', verb: 'have', p2: ' dinner.' }, options: ['have', 'has', 'having', 'had'], sentence_kor: '우리는 저녁 식사를 한다.', explanation: "주어가 'We'(1인칭 복수)일 때 '가지다/먹다'라는 뜻의 동사는 'have'를 사용합니다." },
+            { eng: 'happy', pos: '형용사', kor: '행복한', ipa: '[ˈhæpi]', kor_pron: '해피', forms: '', sentence_parts: { p1: 'The boy ', verb: 'is', p2: ' happy.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그 남자아이는 행복하다.', explanation: "주어 'The boy'(3인칭 단수)에 맞는 be동사는 'is'입니다." }
         ];
 
         const cardGrid = document.getElementById('card-grid');
@@ -409,6 +409,10 @@ GEMINI AI 영어 단어 퀴즈 마스터 템플릿 (최종 완성본)
                 `<button class="option-btn">${option}</button>`
             ).join('');
 
+            // 발음기호와 한글 발음 추가
+            const pronunciationHTML = wordData.ipa && wordData.kor_pron ? 
+                `<p class="text-lg sm:text-xl font-semibold text-emerald-600">${wordData.ipa} (${wordData.kor_pron})</p>` : '';
+
             cardContainer.innerHTML = `
                 <div class="card">
                     <div class="card-face card-front">
@@ -418,6 +422,7 @@ GEMINI AI 영어 단어 퀴즈 마스터 템플릿 (최종 완성본)
                         <div class="flex items-center gap-4">
                             <div>
                                 <h3 class="text-2xl sm:text-3xl font-bold">${wordData.eng} <span class="text-xl font-normal text-emerald-700">[${wordData.pos}] ${wordData.kor}</span></h3>
+                                ${pronunciationHTML}
                             </div>
                             <button class="play-btn" data-word="${wordData.eng}">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
