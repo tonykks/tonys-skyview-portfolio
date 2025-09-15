@@ -70,7 +70,7 @@
             padding: 4px 12px;
             border-radius: 8px;
             font-style: italic;
-            height: 2.25rem;
+            height: 2.25rem; /* 일정한 높이 유지 */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -265,26 +265,26 @@
 
     <script>
         const words = [
-            { eng: 'leg', pos: '명사', kor: '다리', forms: 'leg / legs', sentence_parts: { p1: '', verb: 'My', p2: ' legs are long.' }, options: ['My', 'Your', 'His', 'Her'], sentence_kor: '내 다리는 길다.', explanation: "'내 다리'를 의미하므로 소유격 'My'가 정답입니다." },
-            { eng: 'long', pos: '형용사', kor: '(길이가) 긴', forms: '', sentence_parts: { p1: '', verb: 'Your', p2: ' legs were long.' }, options: ['My', 'Your', 'His', 'Her'], sentence_kor: '네 다리는 길었다.', explanation: "'너의 다리'를 의미하므로 소유격 'Your'가 정답입니다." },
-            { eng: 'brother', pos: '명사', kor: '형, 오빠, 남동생', forms: 'brother / brothers', sentence_parts: { p1: 'He is ', verb: 'our', p2: ' brother.' }, options: ['our', 'their', 'his', 'her'], sentence_kor: '그는 우리 형이다.', explanation: "문맥상 '우리 형'을 의미하므로 소유격 'our'가 정답입니다." },
-            { eng: 'sister', pos: '명사', kor: '언니, 누나, 여동생', forms: 'sister / sisters', sentence_parts: { p1: 'She was ', verb: 'their', p2: ' sister.' }, options: ['our', 'their', 'his', 'her'], sentence_kor: '그녀는 그들의 언니였다.', explanation: "문맥상 '그들의 언니'를 의미하므로 소유격 'their'가 정답입니다." },
-            { eng: 'nose', pos: '명사', kor: '코', forms: 'nose / noses', sentence_parts: { p1: '', verb: 'His', p2: ' nose is long.' }, options: ['My', 'Your', 'His', 'Her'], sentence_kor: '그의 코는 길다.', explanation: "'그의 코'를 의미하므로 소유격 'His'가 정답입니다." },
-            { eng: 'dad', pos: '명사', kor: '아빠', forms: 'dad / dads', sentence_parts: { p1: 'He was ', verb: 'her', p2: ' dad.' }, options: ['my', 'your', 'his', 'her'], sentence_kor: '그는 그녀의 아빠였다.', explanation: "문맥상 '그녀의 아빠'를 의미하므로 소유격 'her'가 정답입니다." },
-            { eng: 'mom', pos: '명사', kor: '엄마', forms: 'mom / moms', sentence_parts: { p1: 'She is ', verb: 'my', p2: ' mom.' }, options: ['my', 'your', 'his', 'her'], sentence_kor: '그녀는 우리 엄마이다.', explanation: "문맥상 '나의 엄마'를 의미하므로 소유격 'my'가 정답입니다." },
-            { eng: 'grandma', pos: '명사', kor: '할머니', forms: 'grandma / grandmas', sentence_parts: { p1: 'She was ', verb: 'their', p2: ' grandma.' }, options: ['our', 'their', 'his', 'her'], sentence_kor: '그녀는 그들의 할머니였다.', explanation: "문맥상 '그들의 할머니'를 의미하므로 소유격 'their'가 정답입니다." },
-            { eng: 'grandpa', pos: '명사', kor: '할아버지', forms: 'grandpa / grandmas', sentence_parts: { p1: 'He is ', verb: 'our', p2: ' grandpa.' }, options: ['our', 'their', 'his', 'her'], sentence_kor: '그는 우리 할아버지이다.', explanation: "문맥상 '우리 할아버지'를 의미하므로 소유격 'our'가 정답입니다." },
-            { eng: 'bat', pos: '명사', kor: '방망이, 배트', forms: 'bat / bats', sentence_parts: { p1: 'The bat was ', verb: 'mine', p2: '.' }, options: ['my', 'mine', 'your', 'yours'], sentence_kor: '그 방망이는 나의 것이었다.', explanation: "'나의 것'을 의미하는 소유대명사 'mine'이 정답입니다. 'my'는 뒤에 명사가 와야 합니다." },
-            { eng: 'doll', pos: '명사', kor: '인형', forms: 'doll / dolls', sentence_parts: { p1: 'This doll is ', verb: 'hers', p2: '.' }, options: ['her', 'hers', 'his', 'our'], sentence_kor: '이 인형은 그녀의 것이다.', explanation: "'그녀의 것'을 의미하는 소유대명사 'hers'가 정답입니다. 'her'는 소유격으로 뒤에 명사가 오거나 목적격으로 쓰입니다." },
-            { eng: 'toy', pos: '명사', kor: '장난감', forms: 'toy / toys', sentence_parts: { p1: 'These toys were ', verb: 'ours', p2: '.' }, options: ['our', 'ours', 'their', 'theirs'], sentence_kor: '이 장난감들은 우리 것이었다.', explanation: "'우리의 것'을 의미하는 소유대명사 'ours'가 정답입니다. 'our'는 뒤에 명사가 와야 합니다." },
-            { eng: 'eye', pos: '명사', kor: '눈', forms: 'eye / eyes', sentence_parts: { p1: '', verb: 'My', p2: ' eyes are big.' }, options: ['My', 'Your', 'His', 'Her'], sentence_kor: '내 눈은 크다.', explanation: "'나의 눈'을 의미하므로 소유격 'My'가 정답입니다." },
-            { eng: 'big', pos: '형용사', kor: '(크기가) 큰', forms: '', sentence_parts: { p1: '', verb: 'Their', p2: ' dog was big.' }, options: ['Our', 'Their', 'His', 'Her'], sentence_kor: '그들의 개는 컸다.', explanation: "'그들의 개'를 의미하므로 소유격 'Their'가 정답입니다." },
-            { eng: 'ear', pos: '명사', kor: '귀', forms: 'ear / ears', sentence_parts: { p1: '', verb: 'Its', p2: ' ear is long.' }, options: ["It's", 'Its', 'His', 'Her'], sentence_kor: '그것의 귀는 길다.', explanation: "'그것의'를 의미하는 소유격 'Its'가 정답입니다. 'It's'는 'It is'의 줄임말입니다." },
-            { eng: 'cap', pos: '명사', kor: '모자', forms: 'cap / caps', sentence_parts: { p1: 'This cap was ', verb: 'mine', p2: '.' }, options: ['my', 'mine', 'your', 'yours'], sentence_kor: '이 모자는 내 것이었다.', explanation: "'나의 것'을 의미하는 소유대명사 'mine'이 정답입니다." },
-            { eng: 'shoe', pos: '명사', kor: '신발 (한 짝)', forms: 'shoe / shoes', sentence_parts: { p1: 'These shoes are ', verb: 'his', p2: '.' }, options: ['he', 'him', 'his', 'her'], sentence_kor: '이 신발들은 그의 것이다.', explanation: "'그의 것'을 의미하는 소유대명사 'his'가 정답입니다." },
-            { eng: 'neck', pos: '명사', kor: '목', forms: 'neck / necks', sentence_parts: { p1: '', verb: 'Its', p2: ' neck was long.' }, options: ["It's", 'Its', 'His', 'Her'], sentence_kor: '그것의 목은 길었다.', explanation: "'그것의'를 의미하는 소유격 'Its'가 정답입니다. 'It's'는 'It is'의 줄임말입니다." },
-            { eng: 'name', pos: '명사', kor: '이름', forms: 'name / names', sentence_parts: { p1: '', verb: 'Her', p2: ' name is Lisa.' }, options: ['My', 'Your', 'His', 'Her'], sentence_kor: '그녀의 이름은 Lisa이다.', explanation: "'그녀의 이름'을 의미하므로 소유격 'Her'가 정답입니다." },
-            { eng: 'friend', pos: '명사', kor: '친구', forms: 'friend / friends', sentence_parts: { p1: 'They were ', verb: 'my', p2: ' friends.' }, options: ['my', 'mine', 'your', 'yours'], sentence_kor: '그들은 내 친구들이었다.', explanation: "뒤에 명사 'friends'가 오므로 '나의'를 의미하는 소유격 'my'가 정답입니다." }
+            { eng: 'leg', pos: '명사', kor: '다리', ipa: '[leɡ]', kor_pron: '레그', forms: 'leg / legs', sentence_parts: { p1: '', verb: 'My', p2: ' legs are long.' }, options: ['My', 'Your', 'His', 'Her'], sentence_kor: '내 다리는 길다.', explanation: "'내 다리'를 의미하므로 소유격 'My'가 정답입니다." },
+            { eng: 'long', pos: '형용사', kor: '(길이가) 긴', ipa: '[lɔːŋ]', kor_pron: '롱', forms: 'long / longer / longest', sentence_parts: { p1: '', verb: 'Your', p2: ' legs were long.' }, options: ['My', 'Your', 'His', 'Her'], sentence_kor: '네 다리는 길었다.', explanation: "'너의 다리'를 의미하므로 소유격 'Your'가 정답입니다." },
+            { eng: 'brother', pos: '명사', kor: '형, 오빠, 남동생', ipa: '[ˈbrʌðər]', kor_pron: '브라더', forms: 'brother / brothers', sentence_parts: { p1: 'He is ', verb: 'our', p2: ' brother.' }, options: ['our', 'their', 'his', 'her'], sentence_kor: '그는 우리 형이다.', explanation: "문맥상 '우리 형'을 의미하므로 소유격 'our'가 정답입니다." },
+            { eng: 'sister', pos: '명사', kor: '언니, 누나, 여동생', ipa: '[ˈsɪstər]', kor_pron: '시스터', forms: 'sister / sisters', sentence_parts: { p1: 'She was ', verb: 'their', p2: ' sister.' }, options: ['our', 'their', 'his', 'her'], sentence_kor: '그녀는 그들의 언니였다.', explanation: "문맥상 '그들의 언니'를 의미하므로 소유격 'their'가 정답입니다." },
+            { eng: 'nose', pos: '명사', kor: '코', ipa: '[noʊz]', kor_pron: '노우즈', forms: 'nose / noses', sentence_parts: { p1: '', verb: 'His', p2: ' nose is long.' }, options: ['My', 'Your', 'His', 'Her'], sentence_kor: '그의 코는 길다.', explanation: "'그의 코'를 의미하므로 소유격 'His'가 정답입니다." },
+            { eng: 'dad', pos: '명사', kor: '아빠', ipa: '[dæd]', kor_pron: '대드', forms: 'dad / dads', sentence_parts: { p1: 'He was ', verb: 'her', p2: ' dad.' }, options: ['my', 'your', 'his', 'her'], sentence_kor: '그는 그녀의 아빠였다.', explanation: "문맥상 '그녀의 아빠'를 의미하므로 소유격 'her'가 정답입니다." },
+            { eng: 'mom', pos: '명사', kor: '엄마', ipa: '[mɑːm]', kor_pron: '맘', forms: 'mom / moms', sentence_parts: { p1: 'She is ', verb: 'my', p2: ' mom.' }, options: ['my', 'your', 'his', 'her'], sentence_kor: '그녀는 우리 엄마이다.', explanation: "문맥상 '나의 엄마'를 의미하므로 소유격 'my'가 정답입니다." },
+            { eng: 'grandma', pos: '명사', kor: '할머니', ipa: '[ˈɡrændmɑː]', kor_pron: '그랜마', forms: 'grandma / grandmas', sentence_parts: { p1: 'She was ', verb: 'their', p2: ' grandma.' }, options: ['our', 'their', 'his', 'her'], sentence_kor: '그녀는 그들의 할머니였다.', explanation: "문맥상 '그들의 할머니'를 의미하므로 소유격 'their'가 정답입니다." },
+            { eng: 'grandpa', pos: '명사', kor: '할아버지', ipa: '[ˈɡrændpɑː]', kor_pron: '그랜파', forms: 'grandpa / grandpas', sentence_parts: { p1: 'He is ', verb: 'our', p2: ' grandpa.' }, options: ['our', 'their', 'his', 'her'], sentence_kor: '그는 우리 할아버지이다.', explanation: "문맥상 '우리 할아버지'를 의미하므로 소유격 'our'가 정답입니다." },
+            { eng: 'bat', pos: '명사', kor: '방망이, 배트', ipa: '[bæt]', kor_pron: '뱃', forms: 'bat / bats', sentence_parts: { p1: 'The bat was ', verb: 'mine', p2: '.' }, options: ['my', 'mine', 'your', 'yours'], sentence_kor: '그 방망이는 나의 것이었다.', explanation: "'나의 것'을 의미하는 소유대명사 'mine'이 정답입니다. 'my'는 뒤에 명사가 와야 합니다." },
+            { eng: 'doll', pos: '명사', kor: '인형', ipa: '[dɑːl]', kor_pron: '달', forms: 'doll / dolls', sentence_parts: { p1: 'This doll is ', verb: 'hers', p2: '.' }, options: ['her', 'hers', 'his', 'our'], sentence_kor: '이 인형은 그녀의 것이다.', explanation: "'그녀의 것'을 의미하는 소유대명사 'hers'가 정답입니다. 'her'는 소유격으로 뒤에 명사가 오거나 목적격으로 쓰입니다." },
+            { eng: 'toy', pos: '명사', kor: '장난감', ipa: '[tɔɪ]', kor_pron: '토이', forms: 'toy / toys', sentence_parts: { p1: 'These toys were ', verb: 'ours', p2: '.' }, options: ['our', 'ours', 'their', 'theirs'], sentence_kor: '이 장난감들은 우리 것이었다.', explanation: "'우리의 것'을 의미하는 소유대명사 'ours'가 정답입니다. 'our'는 뒤에 명사가 와야 합니다." },
+            { eng: 'eye', pos: '명사', kor: '눈', ipa: '[aɪ]', kor_pron: '아이', forms: 'eye / eyes', sentence_parts: { p1: '', verb: 'My', p2: ' eyes are big.' }, options: ['My', 'Your', 'His', 'Her'], sentence_kor: '내 눈은 크다.', explanation: "'나의 눈'을 의미하므로 소유격 'My'가 정답입니다." },
+            { eng: 'big', pos: '형용사', kor: '(크기가) 큰', ipa: '[bɪɡ]', kor_pron: '비그', forms: 'big / bigger / biggest', sentence_parts: { p1: '', verb: 'Their', p2: ' dog was big.' }, options: ['Our', 'Their', 'His', 'Her'], sentence_kor: '그들의 개는 컸다.', explanation: "'그들의 개'를 의미하므로 소유격 'Their'가 정답입니다." },
+            { eng: 'ear', pos: '명사', kor: '귀', ipa: '[ɪər]', kor_pron: '이어', forms: 'ear / ears', sentence_parts: { p1: '', verb: 'Its', p2: ' ear is long.' }, options: ["It's", 'Its', 'His', 'Her'], sentence_kor: '그것의 귀는 길다.', explanation: "'그것의'를 의미하는 소유격 'Its'가 정답입니다. 'It's'는 'It is'의 줄임말입니다." },
+            { eng: 'cap', pos: '명사', kor: '모자', ipa: '[kæp]', kor_pron: '캡', forms: 'cap / caps', sentence_parts: { p1: 'This cap was ', verb: 'mine', p2: '.' }, options: ['my', 'mine', 'your', 'yours'], sentence_kor: '이 모자는 내 것이었다.', explanation: "'나의 것'을 의미하는 소유대명사 'mine'이 정답입니다." },
+            { eng: 'shoe', pos: '명사', kor: '신발 (한 짝)', ipa: '[ʃuː]', kor_pron: '슈', forms: 'shoe / shoes', sentence_parts: { p1: 'These shoes are ', verb: 'his', p2: '.' }, options: ['he', 'him', 'his', 'her'], sentence_kor: '이 신발들은 그의 것이다.', explanation: "'그의 것'을 의미하는 소유대명사 'his'가 정답입니다." },
+            { eng: 'neck', pos: '명사', kor: '목', ipa: '[nek]', kor_pron: '넥', forms: 'neck / necks', sentence_parts: { p1: '', verb: 'Its', p2: ' neck was long.' }, options: ["It's", 'Its', 'His', 'Her'], sentence_kor: '그것의 목은 길었다.', explanation: "'그것의'를 의미하는 소유격 'Its'가 정답입니다. 'It's'는 'It is'의 줄임말입니다." },
+            { eng: 'name', pos: '명사', kor: '이름', ipa: '[neɪm]', kor_pron: '네임', forms: 'name / names', sentence_parts: { p1: '', verb: 'Her', p2: ' name is Lisa.' }, options: ['My', 'Your', 'His', 'Her'], sentence_kor: '그녀의 이름은 Lisa이다.', explanation: "'그녀의 이름'을 의미하므로 소유격 'Her'가 정답입니다." },
+            { eng: 'friend', pos: '명사', kor: '친구', ipa: '[frend]', kor_pron: '프렌드', forms: 'friend / friends', sentence_parts: { p1: 'They were ', verb: 'my', p2: ' friends.' }, options: ['my', 'mine', 'your', 'yours'], sentence_kor: '그들은 내 친구들이었다.', explanation: "뒤에 명사 'friends'가 오므로 '나의'를 의미하는 소유격 'my'가 정답입니다." }
         ];
 
         const cardGrid = document.getElementById('card-grid');
@@ -327,13 +327,12 @@
             synth.speak(utterThis);
         }
 
-        // 단어 섞기 기능 제거
-        /* function shuffleArray(array) {
+        function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
             }
-        } */
+        }
         
         function updateScoreDisplay() {
             const correctAnswers = currentScore / 10;
@@ -363,17 +362,20 @@
             cardContainer.className = 'card-container h-80';
             const { p1, verb, p2 } = wordData.sentence_parts;
 
-            const formsHTML = wordData.forms ? `<div class="word-forms text-base text-emerald-700 font-semibold">
-                                                  <p>${wordData.forms}</p>
-                                               </div>` : '<div class="word-forms"></div>';
+            // 변화형이 없을 경우 &nbsp;를 삽입하여 높이를 일정하게 유지
+            const formsHTML = wordData.forms ? `<p>${wordData.forms}</p>` : `<p>&nbsp;</p>`;
             
-            // 보기 섞기 기능은 유지
+            // 보기 섞기 기능 유지
             const shuffledOptions = [...wordData.options];
-            // shuffleArray(shuffledOptions); // 보기는 섞지 않도록 주석 처리. 만약 보기 섞기를 원하시면 이 줄의 주석을 해제하세요.
+            shuffleArray(shuffledOptions);
             
             const optionsHTML = shuffledOptions.map(option => 
                 `<button class="option-btn">${option}</button>`
             ).join('');
+
+            // 발음기호와 한글 발음 추가
+            const pronunciationHTML = wordData.ipa && wordData.kor_pron ? 
+                `<p class="text-lg sm:text-xl font-semibold text-emerald-600">${wordData.ipa} (${wordData.kor_pron})</p>` : '';
 
             cardContainer.innerHTML = `
                 <div class="card">
@@ -384,13 +386,16 @@
                         <div class="flex items-center gap-4">
                             <div>
                                 <h3 class="text-2xl sm:text-3xl font-bold">${wordData.eng} <span class="text-xl font-normal text-emerald-700">[${wordData.pos}] ${wordData.kor}</span></h3>
+                                ${pronunciationHTML}
                             </div>
                             <button class="play-btn" data-word="${wordData.eng}">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             </button>
                         </div>
                         
-                        ${formsHTML}
+                        <div class="word-forms text-base text-emerald-700 font-semibold">
+                            ${formsHTML}
+                        </div>
 
                         <div class="text-base sm:text-lg w-full flex flex-col flex-grow">
                             <div>
@@ -497,7 +502,6 @@
             answeredCount = 0;
             updateScoreDisplay();
             resetButton.disabled = true;
-            // 단어 목록을 섞지 않고 순서대로 생성
             words.forEach(createCard);
         }
 
@@ -508,4 +512,3 @@
     </script>
 </body>
 </html>
-

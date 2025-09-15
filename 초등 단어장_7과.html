@@ -1,4 +1,32 @@
 <!DOCTYPE html>
+<!--
+====================================================================
+GEMINI AI 영어 단어 퀴즈 마스터 템플릿 (최종 완성본)
+====================================================================
+템플릿 이름: 초등 필수 단어 퀴즈 (최종 완성본)
+제작 요청자: 선생님
+최종 업데이트: 2025년 8월 29일
+--------------------------------------------------------------------
+## 핵심 기능 및 규칙 (AI 필독!) ##
+1. 제공되는 단어 목록 이미지(사진)를 분석하여 아래 'const words' 배열을 교체한다.
+   - '교과서 어휘' 섹션의 'Words', 'Phrases', 'English-English Dictionary'에
+     있는 모든 단어와 숙어를 빠짐없이 포함해야 한다.
+2. 각 단어 객체에 'explanation' 키를 추가하고, 규칙 기반의 검증된 해설을 미리 작성한다.
+   - 해설은 초등학생이 이해하기 쉽게 한두 문장으로 간결하게 작성한다.
+3. 'word-forms' 영역은 동사(3단 변화), 명사(단/복수), 형용사/부사(원급/비교급/최상급),
+   동사 포함 숙어에만 표시하고, 그 외 품사는 생략하여 프롬프트의 품사와 상관없이, 예문 속
+   '동사'의 올른 형태를 묻는 문제로 출제해야 한다.
+   - (예: 품사가 형용사 'final'일지라도, 예문 'This (is) the final chapter.'에서 'is'를 퀴즈로 출제)
+4. 4지선다 보기는 동사의 원형, 3인칭 단수형, 과거형, 진행형 등 다양한 형태로 구성한다.
+5. 문제 풀이 후 '해설 보기' 버튼이 나타나며, 클릭 시 팝업(모달) 창으로 해설을 보여준다.
+   - 해설은 AI 호출 없이 미리 저장된 내용을 즉시 보여주어 로딩 시간을 없앤다.
+6. 화면 크기에 따라 카드는 유연하게 배치된다. (작은 화면: 1개, 큰 화면: 2개)
+====================================================================
+
+## 추천 프롬프트 (이 템플릿과 함께 사용하세요) ##
+- 프롬프트: 이 코드를 템플릿으로 사용하고, 함께 제공된 사진 속 '교과서 어휘'의 모든 단어와 숙어를 이용해 단어 퀴즈를 만들어 줘. 각 문제의 정답 동사를 찾는 형식으로 출제하고, 단어 목록에는 품사, 뜻, 발음 기호, 한국어 발음, 단어 형태(3단 변화 등), 그리고 예문과 그에 대한 한국어 해석을 반드시 포함해 줘. 또한, 예문에 사용된 동사 형태에 대한 문법적 해설도 미리 작성해서 'explanation' 키에 저장해 줘. 해설은 초등학생이 이해하기 쉽게 한두 문장으로 간단하게 작성해줘.
+====================================================================
+-->
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -65,16 +93,18 @@
         .play-btn:hover {
             background-color: #10b981; /* bg-emerald-500 */
         }
+        /* 단어 변화형 스타일 */
         .word-forms {
             background-color: #d1fae5;
             padding: 4px 12px;
             border-radius: 8px;
             font-style: italic;
-            height: 2.25rem;
+            height: 2.25rem; /* 일정한 높이 유지 */
             display: flex;
             align-items: center;
             justify-content: center;
         }
+        /* 4지선다형 퀴즈 스타일 */
         .quiz-options {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -96,19 +126,20 @@
             background-color: #d1fae5;
         }
         .option-btn.correct {
-            background-color: #34d399;
-            border-color: #059669;
+            background-color: #34d399; /* bg-emerald-400 */
+            border-color: #059669; /* border-emerald-600 */
             color: white;
         }
         .option-btn.incorrect {
-            background-color: #f87171;
-            border-color: #dc2626;
+            background-color: #f87171; /* bg-red-400 */
+            border-color: #dc2626; /* border-red-600 */
             color: white;
         }
         .option-btn:disabled {
             cursor: not-allowed;
             opacity: 0.7;
         }
+        /* 점수판 스타일 */
         #score-board {
             background-color: white;
             padding: 0.75rem 1.5rem;
@@ -117,7 +148,7 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            flex-wrap: nowrap;
+            flex-wrap: nowrap; /* 줄바꿈 방지 */
         }
         #reset-btn {
             background-color: #fb923c;
@@ -128,15 +159,16 @@
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.2s;
-            flex-shrink: 0;
+            flex-shrink: 0; /* 버튼 크기 유지 */
         }
         #reset-btn:hover:not(:disabled) {
             background-color: #f97316;
         }
         #reset-btn:disabled {
-            background-color: #9ca3af;
+            background-color: #9ca3af; /* gray-400 */
             cursor: not-allowed;
         }
+        /* 문장 읽기 버튼 스타일 */
         .sentence-play-btn {
             background: none;
             border: none;
@@ -144,15 +176,16 @@
             font-size: 1.2rem;
             vertical-align: middle;
             margin-left: 0.25rem;
-            display: none;
+            display: none; /* 초기에는 숨김 */
             color: #059669;
             transition: color 0.2s;
         }
         .sentence-play-btn:hover {
             color: #047857;
         }
+        /* 해설 버튼 스타일 */
         .explanation-btn {
-            background-color: #818cf8;
+            background-color: #818cf8; /* bg-indigo-400 */
             color: white;
             border: none;
             padding: 0.5rem 1rem;
@@ -160,11 +193,13 @@
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.2s;
-            display: none;
+            display: none; /* 초기에는 숨김 */
+            margin-top: auto;
         }
         .explanation-btn:hover {
-            background-color: #6366f1;
+            background-color: #6366f1; /* bg-indigo-500 */
         }
+        /* 팝업 모달 스타일 */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -213,7 +248,7 @@
             text-align: left;
         }
         .modal-content .close-btn {
-            background-color: #60a5fa;
+            background-color: #60a5fa; /* bg-blue-400 */
             color: white;
             border: none;
             padding: 0.5rem 1.5rem;
@@ -223,7 +258,7 @@
             transition: background-color 0.2s;
         }
         .modal-content .close-btn:hover {
-            background-color: #3b82f6;
+            background-color: #3b82f6; /* bg-blue-500 */
         }
         .show-btn-animation {
             animation: fadeIn 0.5s ease-in-out forwards;
@@ -235,6 +270,7 @@
     </style>
 </head>
 <body>
+
     <header class="sticky top-0 z-10 bg-emerald-100 py-4 shadow-sm">
         <div class="max-w-5xl mx-auto text-center px-4">
             <h1 class="text-3xl sm:text-4xl font-bold text-emerald-800" style="font-family: 'Noto Sans KR', sans-serif;">초등 필수 단어 퀴즈 (7과) 🌳</h1>
@@ -253,11 +289,14 @@
         </div>
     </main>
     
+    <!-- 정답 해설 팝업 모달 -->
     <div id="explanation-modal" class="modal-overlay">
         <div class="modal-content">
             <div id="modal-body">
                 <h3>정답 해설 💡</h3>
-                <p id="explanation-text"></p>
+                <p id="explanation-text">
+                    <!-- 해설 내용이 여기에 로드됩니다. -->
+                </p>
                 <button class="close-btn" id="modal-close-btn">닫기</button>
             </div>
         </div>
@@ -265,26 +304,26 @@
 
     <script>
         const words = [
-            { eng: 'leg', pos: '명사', kor: '다리', forms: 'leg / legs', sentence_parts: { p1: 'My legs ', verb: 'are', p2: ' long.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '내 다리는 길다.', explanation: "주어 'My legs'는 복수이므로 be동사 'are'가 정답입니다." },
-            { eng: 'long', pos: '형용사', kor: '(길이가) 긴', forms: '', sentence_parts: { p1: 'Your legs ', verb: 'were', p2: ' long.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '네 다리는 길었다.', explanation: "주어 'Your legs'는 복수이고 과거 상황을 나타내므로 be동사 'were'가 정답입니다." },
-            { eng: 'brother', pos: '명사', kor: '형, 오빠, 남동생', forms: 'brother / brothers', sentence_parts: { p1: 'He ', verb: 'is', p2: ' our brother.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그는 우리 형이다.', explanation: "주어가 'He'(3인칭 단수)이므로 be동사 'is'가 정답입니다." },
-            { eng: 'sister', pos: '명사', kor: '언니, 누나, 여동생', forms: 'sister / sisters', sentence_parts: { p1: 'She ', verb: 'was', p2: ' their sister.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그녀는 그들의 언니였다.', explanation: "주어가 'She'(3인칭 단수)이고 과거 상황을 나타내므로 be동사 'was'가 정답입니다." },
-            { eng: 'nose', pos: '명사', kor: '코', forms: 'nose / noses', sentence_parts: { p1: 'His nose ', verb: 'is', p2: ' long.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그의 코는 길다.', explanation: "주어 'His nose'는 단수이므로 be동사 'is'가 정답입니다." },
-            { eng: 'dad', pos: '명사', kor: '아빠', forms: 'dad / dads', sentence_parts: { p1: 'He ', verb: 'was', p2: ' her dad.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그는 그녀의 아빠였다.', explanation: "주어가 'He'(3인칭 단수)이고 과거 상황을 나타내므로 be동사 'was'가 정답입니다." },
-            { eng: 'mom', pos: '명사', kor: '엄마', forms: 'mom / moms', sentence_parts: { p1: 'She ', verb: 'is', p2: ' my mom.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그녀는 우리 엄마이다.', explanation: "주어가 'She'(3인칭 단수)이므로 be동사 'is'가 정답입니다." },
-            { eng: 'grandma', pos: '명사', kor: '할머니', forms: 'grandma / grandmas', sentence_parts: { p1: 'She ', verb: 'was', p2: ' their grandma.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그녀는 그들의 할머니였다.', explanation: "주어가 'She'(3인칭 단수)이고 과거 상황을 나타내므로 be동사 'was'가 정답입니다." },
-            { eng: 'grandpa', pos: '명사', kor: '할아버지', forms: 'grandpa / grandpas', sentence_parts: { p1: 'He ', verb: 'is', p2: ' our grandpa.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '그는 우리 할아버지이다.', explanation: "주어가 'He'(3인칭 단수)이므로 be동사 'is'가 정답입니다." },
-            { eng: 'bat', pos: '명사', kor: '방망이, 배트', forms: 'bat / bats', sentence_parts: { p1: 'The bat ', verb: 'was', p2: ' mine.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 방망이는 나의 것이었다.', explanation: "주어 'The bat'은 단수이고 과거의 소유를 나타내므로 be동사 'was'가 정답입니다." },
-            { eng: 'doll', pos: '명사', kor: '인형', forms: 'doll / dolls', sentence_parts: { p1: 'This doll ', verb: 'is', p2: ' hers.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '이 인형은 그녀의 것이다.', explanation: "주어 'This doll'은 단수이므로 be동사 'is'가 정답입니다." },
-            { eng: 'toy', pos: '명사', kor: '장난감', forms: 'toy / toys', sentence_parts: { p1: 'These toys ', verb: 'were', p2: ' ours.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '이 장난감들은 우리 것이었다.', explanation: "주어 'These toys'는 복수이고 과거의 소유를 나타내므로 be동사 'were'가 정답입니다." },
-            { eng: 'eye', pos: '명사', kor: '눈', forms: 'eye / eyes', sentence_parts: { p1: 'My eyes ', verb: 'are', p2: ' big.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '내 눈은 크다.', explanation: "주어 'My eyes'는 복수이므로 be동사 'are'가 정답입니다." },
-            { eng: 'big', pos: '형용사', kor: '(크기가) 큰', forms: '', sentence_parts: { p1: 'Their dog ', verb: 'was', p2: ' big.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그들의 개는 컸다.', explanation: "주어 'Their dog'은 단수이고 과거의 상태를 나타내므로 be동사 'was'가 정답입니다." },
-            { eng: 'ear', pos: '명사', kor: '귀', forms: 'ear / ears', sentence_parts: { p1: 'Its ear ', verb: 'is', p2: ' long.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그것의 귀는 길다.', explanation: "주어 'Its ear'는 단수이므로 be동사 'is'가 정답입니다." },
-            { eng: 'cap', pos: '명사', kor: '모자', forms: 'cap / caps', sentence_parts: { p1: 'This cap ', verb: 'was', p2: ' mine.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '이 모자는 내 것이었다.', explanation: "주어 'This cap'은 단수이고 과거의 소유를 나타내므로 be동사 'was'가 정답입니다." },
-            { eng: 'shoe', pos: '명사', kor: '신발 (한 짝)', forms: 'shoe / shoes', sentence_parts: { p1: 'These shoes ', verb: 'are', p2: ' his.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '이 신발들은 그의 것이다.', explanation: "주어 'These shoes'는 복수이므로 be동사 'are'가 정답입니다." },
-            { eng: 'neck', pos: '명사', kor: '목', forms: 'neck / necks', sentence_parts: { p1: 'Its neck ', verb: 'was', p2: ' long.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그것의 목은 길었다.', explanation: "주어 'Its neck'은 단수이고 과거의 상태를 나타내므로 be동사 'was'가 정답입니다." },
-            { eng: 'name', pos: '명사', kor: '이름', forms: 'name / names', sentence_parts: { p1: 'Her name ', verb: 'is', p2: ' Lisa.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '그녀의 이름은 Lisa이다.', explanation: "주어 'Her name'은 단수이므로 be동사 'is'가 정답입니다." },
-            { eng: 'friend', pos: '명사', kor: '친구', forms: 'friend / friends', sentence_parts: { p1: 'They ', verb: 'were', p2: ' my friends.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그들은 내 친구들이었다.', explanation: "주어가 'They'(복수)이고 과거 상황을 나타내므로 be동사 'were'가 정답입니다." }
+            { eng: 'leg', pos: '명사', kor: '다리', ipa: '[leɡ]', kor_pron: '레그', forms: 'leg / legs', sentence_parts: { p1: 'My legs ', verb: 'are', p2: ' long.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '내 다리는 길다.', explanation: "주어 'My legs'는 복수이므로 be동사 'are'가 정답입니다." },
+            { eng: 'long', pos: '형용사', kor: '(길이가) 긴', ipa: '[lɔːŋ]', kor_pron: '롱', forms: 'long / longer / longest', sentence_parts: { p1: 'Your legs ', verb: 'were', p2: ' long.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '네 다리는 길었다.', explanation: "주어 'Your legs'는 복수이고 과거 상황을 나타내므로 be동사 'were'가 정답입니다." },
+            { eng: 'brother', pos: '명사', kor: '형, 오빠, 남동생', ipa: '[ˈbrʌðər]', kor_pron: '브라더', forms: 'brother / brothers', sentence_parts: { p1: 'He ', verb: 'is', p2: ' our brother.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그는 우리 형이다.', explanation: "주어가 'He'(3인칭 단수)이므로 be동사 'is'가 정답입니다." },
+            { eng: 'sister', pos: '명사', kor: '언니, 누나, 여동생', ipa: '[ˈsɪstər]', kor_pron: '시스터', forms: 'sister / sisters', sentence_parts: { p1: 'She ', verb: 'was', p2: ' their sister.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그녀는 그들의 언니였다.', explanation: "주어가 'She'(3인칭 단수)이고 과거 상황을 나타내므로 be동사 'was'가 정답입니다." },
+            { eng: 'nose', pos: '명사', kor: '코', ipa: '[noʊz]', kor_pron: '노우즈', forms: 'nose / noses', sentence_parts: { p1: 'His nose ', verb: 'is', p2: ' long.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그의 코는 길다.', explanation: "주어 'His nose'는 단수이므로 be동사 'is'가 정답입니다." },
+            { eng: 'dad', pos: '명사', kor: '아빠', ipa: '[dæd]', kor_pron: '대드', forms: 'dad / dads', sentence_parts: { p1: 'He ', verb: 'was', p2: ' her dad.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그는 그녀의 아빠였다.', explanation: "주어가 'He'(3인칭 단수)이고 과거 상황을 나타내므로 be동사 'was'가 정답입니다." },
+            { eng: 'mom', pos: '명사', kor: '엄마', ipa: '[mɑːm]', kor_pron: '맘', forms: 'mom / moms', sentence_parts: { p1: 'She ', verb: 'is', p2: ' my mom.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그녀는 우리 엄마이다.', explanation: "주어가 'She'(3인칭 단수)이므로 be동사 'is'가 정답입니다." },
+            { eng: 'grandma', pos: '명사', kor: '할머니', ipa: '[ˈɡrændmɑː]', kor_pron: '그랜마', forms: 'grandma / grandmas', sentence_parts: { p1: 'She ', verb: 'was', p2: ' their grandma.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그녀는 그들의 할머니였다.', explanation: "주어가 'She'(3인칭 단수)이고 과거 상황을 나타내므로 be동사 'was'가 정답입니다." },
+            { eng: 'grandpa', pos: '명사', kor: '할아버지', ipa: '[ˈɡrændpɑː]', kor_pron: '그랜파', forms: 'grandpa / grandpas', sentence_parts: { p1: 'He ', verb: 'is', p2: ' our grandpa.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '그는 우리 할아버지이다.', explanation: "주어가 'He'(3인칭 단수)이므로 be동사 'is'가 정답입니다." },
+            { eng: 'bat', pos: '명사', kor: '방망이, 배트', ipa: '[bæt]', kor_pron: '뱃', forms: 'bat / bats', sentence_parts: { p1: 'The bat ', verb: 'was', p2: ' mine.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 방망이는 나의 것이었다.', explanation: "주어 'The bat'은 단수이고 과거의 소유를 나타내므로 be동사 'was'가 정답입니다." },
+            { eng: 'doll', pos: '명사', kor: '인형', ipa: '[dɑːl]', kor_pron: '달', forms: 'doll / dolls', sentence_parts: { p1: 'This doll ', verb: 'is', p2: ' hers.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '이 인형은 그녀의 것이다.', explanation: "주어 'This doll'은 단수이므로 be동사 'is'가 정답입니다." },
+            { eng: 'toy', pos: '명사', kor: '장난감', ipa: '[tɔɪ]', kor_pron: '토이', forms: 'toy / toys', sentence_parts: { p1: 'These toys ', verb: 'were', p2: ' ours.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '이 장난감들은 우리 것이었다.', explanation: "주어 'These toys'는 복수이고 과거의 소유를 나타내므로 be동사 'were'가 정답입니다." },
+            { eng: 'eye', pos: '명사', kor: '눈', ipa: '[aɪ]', kor_pron: '아이', forms: 'eye / eyes', sentence_parts: { p1: 'My eyes ', verb: 'are', p2: ' big.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '내 눈은 크다.', explanation: "주어 'My eyes'는 복수이므로 be동사 'are'가 정답입니다." },
+            { eng: 'big', pos: '형용사', kor: '(크기가) 큰', ipa: '[bɪɡ]', kor_pron: '비그', forms: 'big / bigger / biggest', sentence_parts: { p1: 'Their dog ', verb: 'was', p2: ' big.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그들의 개는 컸다.', explanation: "주어 'Their dog'은 단수이고 과거의 상태를 나타내므로 be동사 'was'가 정답입니다." },
+            { eng: 'ear', pos: '명사', kor: '귀', ipa: '[ɪər]', kor_pron: '이어', forms: 'ear / ears', sentence_parts: { p1: 'Its ear ', verb: 'is', p2: ' long.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '그것의 귀는 길다.', explanation: "주어 'Its ear'는 단수이므로 be동사 'is'가 정답입니다." },
+            { eng: 'cap', pos: '명사', kor: '모자', ipa: '[kæp]', kor_pron: '캡', forms: 'cap / caps', sentence_parts: { p1: 'This cap ', verb: 'was', p2: ' mine.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '이 모자는 내 것이었다.', explanation: "주어 'This cap'은 단수이고 과거의 소유를 나타내므로 be동사 'was'가 정답입니다." },
+            { eng: 'shoe', pos: '명사', kor: '신발 (한 짝)', ipa: '[ʃuː]', kor_pron: '슈', forms: 'shoe / shoes', sentence_parts: { p1: 'These shoes ', verb: 'are', p2: ' his.' }, options: ['is', 'are', 'am', 'was'], sentence_kor: '이 신발들은 그의 것이다.', explanation: "주어 'These shoes'는 복수이므로 be동사 'are'가 정답입니다." },
+            { eng: 'neck', pos: '명사', kor: '목', ipa: '[nek]', kor_pron: '넥', forms: 'neck / necks', sentence_parts: { p1: 'Its neck ', verb: 'was', p2: ' long.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그것의 목은 길었다.', explanation: "주어 'Its neck'은 단수이고 과거의 상태를 나타내므로 be동사 'was'가 정답입니다." },
+            { eng: 'name', pos: '명사', kor: '이름', ipa: '[neɪm]', kor_pron: '네임', forms: 'name / names', sentence_parts: { p1: 'Her name ', verb: 'is', p2: ' Lisa.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '그녀의 이름은 Lisa이다.', explanation: "주어 'Her name'은 단수이므로 be동사 'is'가 정답입니다." },
+            { eng: 'friend', pos: '명사', kor: '친구', ipa: '[frend]', kor_pron: '프렌드', forms: 'friend / friends', sentence_parts: { p1: 'They ', verb: 'were', p2: ' my friends.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그들은 내 친구들이었다.', explanation: "주어가 'They'(복수)이고 과거 상황을 나타내므로 be동사 'were'가 정답입니다." }
         ];
 
         const cardGrid = document.getElementById('card-grid');
@@ -341,6 +380,7 @@
             percentageText.textContent = `정답률: ${percentage}% (${correctAnswers}/${answeredCount})`;
         }
         
+        // 미리 저장된 해설을 사용하여 모달을 여는 함수
         function openExplanationModal(wordData) {
             explanationText.textContent = wordData.explanation;
             explanationModal.classList.add('open');
@@ -362,9 +402,8 @@
             cardContainer.className = 'card-container h-80';
             const { p1, verb, p2 } = wordData.sentence_parts;
 
-            const formsHTML = wordData.forms ? `<div class="word-forms text-base text-emerald-700 font-semibold">
-                                                  <p>${wordData.forms}</p>
-                                               </div>` : '<div class="word-forms"></div>';
+            // 변화형이 없을 경우 &nbsp;를 삽입하여 높이를 일정하게 유지합니다.
+            const formsHTML = wordData.forms ? `<p>${wordData.forms}</p>` : `<p>&nbsp;</p>`;
             
             const shuffledOptions = [...wordData.options];
             shuffleArray(shuffledOptions);
@@ -372,6 +411,10 @@
             const optionsHTML = shuffledOptions.map(option => 
                 `<button class="option-btn">${option}</button>`
             ).join('');
+
+            // 발음기호와 한글 발음 추가
+            const pronunciationHTML = wordData.ipa && wordData.kor_pron ? 
+                `<p class="text-lg sm:text-xl font-semibold text-emerald-600">${wordData.ipa} (${wordData.kor_pron})</p>` : '';
 
             cardContainer.innerHTML = `
                 <div class="card">
@@ -382,13 +425,16 @@
                         <div class="flex items-center gap-4">
                             <div>
                                 <h3 class="text-2xl sm:text-3xl font-bold">${wordData.eng} <span class="text-xl font-normal text-emerald-700">[${wordData.pos}] ${wordData.kor}</span></h3>
+                                ${pronunciationHTML}
                             </div>
                             <button class="play-btn" data-word="${wordData.eng}">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             </button>
                         </div>
                         
-                        ${formsHTML}
+                        <div class="word-forms text-base text-emerald-700 font-semibold">
+                            ${formsHTML}
+                        </div>
 
                         <div class="text-base sm:text-lg w-full flex flex-col flex-grow">
                             <div>
@@ -505,4 +551,3 @@
     </script>
 </body>
 </html>
-
