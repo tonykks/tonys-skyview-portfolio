@@ -1,20 +1,37 @@
 <!DOCTYPE html>
 <!--
-================================================================================
-  GEMINI AI 영어 단어 퀴즈 마스터 템플릿 (음성 출력 최종 수정)
-================================================================================
-  수정 내용(2025-08-25):
-    - 모든 외부 API 및 스마트폰 설정 의존성 제거.
-    - 가장 안정적인 브라우저 내장 SpeechSynthesis API 방식으로 최종 통일.
-    - 다른 단어장 파일들과 동일한 음성 재생 로직을 적용하여 일관성 확보.
-    - 해설 보기 기능 추가.
-================================================================================
+====================================================================
+GEMINI AI 영어 단어 퀴즈 마스터 템플릿 (최종 완성본)
+====================================================================
+템플릿 이름: 초등 필수 단어 퀴즈 (최종 완성본)
+제작 요청자: 선생님
+최종 업데이트: 2025년 8월 27일
+--------------------------------------------------------------------
+## 핵심 기능 및 규칙 (AI 필독!) ##
+1. 제공되는 단어 목록 이미지(사진)를 분석하여 아래 'const words' 배열을 교체한다.
+   - '교과서 어휘' 섹션의 'Words', 'Phrases', 'English-English Dictionary'에
+     있는 모든 단어와 숙어를 빠짐없이 포함해야 한다.
+2. 각 단어 객체에 'explanation' 키를 추가하고, 규칙 기반의 검증된 해설을 미리 작성한다.
+   - 해설은 초등학생이 이해하기 쉽게 한두 문장으로 간결하게 작성한다.
+3. 'word-forms' 영역은 동사(3단 변화), 명사(단/복수), 동사 포함 숙어에만 표시하고,
+   그 외 품사는 생략하여 프롬프트의 품사와 상관없이, 예문 속 '동사'의 올른 형태를
+   묻는 문제로 출제해야 한다.
+   - (예: 품사가 형용사 'final'일지라도, 예문 'This (is) the final chapter.'에서 'is'를 퀴즈로 출제)
+4. 4지선다 보기는 동사의 원형, 3인칭 단수형, 과거형, 진행형 등 다양한 형태로 구성한다.
+5. 문제 풀이 후 '해설 보기' 버튼이 나타나며, 클릭 시 팝업(모달) 창으로 해설을 보여준다.
+   - 해설은 AI 호출 없이 미리 저장된 내용을 즉시 보여주어 로딩 시간을 없앤다.
+6. 화면 크기에 따라 카드는 유연하게 배치된다. (작은 화면: 1개, 큰 화면: 2개)
+====================================================================
+
+## 추천 프롬프트 (이 템플릿과 함께 사용하세요) ##
+- 프롬프트: 이 코드를 템플릿으로 사용하고, 함께 제공된 사진 속 '교과서 어휘'의 모든 단어와 숙어를 이용해 단어 퀴즈를 만들어 줘. 각 문제의 정답 동사를 찾는 형식으로 출제하고, 단어 목록에는 품사, 뜻, 발음 기호, 한국어 발음, 단어 형태(3단 변화 등), 그리고 예문과 그에 대한 한국어 해석을 반드시 포함해 줘. 또한, 예문에 사용된 동사 형태에 대한 문법적 해설도 미리 작성해서 'explanation' 키에 저장해 줘. 해설은 초등학생이 이해하기 쉽게 한두 문장으로 간단하게 작성해줘.
+====================================================================
 -->
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>중등 필수 단어/숙어 퀴즈 (3과) - 음성 출력 최종 수정</title>
+    <title>초등 단어 퀴즈</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
     <style>
@@ -47,21 +64,21 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .card-front {
-            background-color: #a7f3d0; /* bg-emerald-200 */
-            color: #065f46; /* text-emerald-900 */
+            background-color: #6ee7b7; /* bg-emerald-300 */
+            color: #065f46; /* text-emerald-800 */
         }
         .card-back {
-            background-color: #f0fdf4; /* bg-emerald-50 */
-            color: #047857; /* text-emerald-800 */
+            background-color: #ecfdf5; /* bg-emerald-50 */
+            color: #064e3b; /* text-emerald-900 */
             transform: rotateY(180deg);
             flex-direction: column;
             padding: 1rem;
-            justify-content: space-around;
+            justify-content: space-between;
             align-items: center;
             text-align: center;
         }
         .play-btn {
-            background-color: #34d399;
+            background-color: #34d399; /* bg-emerald-400 */
             color: white;
             border: none;
             border-radius: 50%;
@@ -74,18 +91,16 @@
             transition: background-color 0.2s;
         }
         .play-btn:hover {
-            background-color: #10b981;
+            background-color: #10b981; /* bg-emerald-500 */
         }
+        /* 단어 변화형 스타일 */
         .word-forms {
             background-color: #d1fae5;
             padding: 4px 12px;
             border-radius: 8px;
             font-style: italic;
-            height: 2.25rem; /* 높이 고정 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
+        /* 4지선다형 퀴즈 스타일 */
         .quiz-options {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -107,19 +122,20 @@
             background-color: #d1fae5;
         }
         .option-btn.correct {
-            background-color: #34d399;
-            border-color: #059669;
+            background-color: #34d399; /* bg-emerald-400 */
+            border-color: #059669; /* border-emerald-600 */
             color: white;
         }
         .option-btn.incorrect {
-            background-color: #f87171;
-            border-color: #dc2626;
+            background-color: #f87171; /* bg-red-400 */
+            border-color: #dc2626; /* border-red-600 */
             color: white;
         }
         .option-btn:disabled {
             cursor: not-allowed;
             opacity: 0.7;
         }
+        /* 점수판 스타일 */
         #score-board {
             background-color: white;
             padding: 0.75rem 1.5rem;
@@ -127,8 +143,9 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 1rem;
-            flex-wrap: nowrap;
+            flex-wrap: nowrap; /* 줄바꿈 방지 */
         }
         #reset-btn {
             background-color: #fb923c;
@@ -139,15 +156,16 @@
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.2s;
-            flex-shrink: 0;
+            flex-shrink: 0; /* 버튼 크기 유지 */
         }
         #reset-btn:hover:not(:disabled) {
             background-color: #f97316;
         }
         #reset-btn:disabled {
-            background-color: #9ca3af;
+            background-color: #9ca3af; /* gray-400 */
             cursor: not-allowed;
         }
+        /* 문장 읽기 버튼 스타일 */
         .sentence-play-btn {
             background: none;
             border: none;
@@ -155,28 +173,31 @@
             font-size: 1.2rem;
             vertical-align: middle;
             margin-left: 0.25rem;
-            display: none;
+            display: none; /* 초기에는 숨김 */
             color: #059669;
             transition: color 0.2s;
         }
         .sentence-play-btn:hover {
             color: #047857;
         }
+        /* 해설 버튼 스타일 */
         .explanation-btn {
-            display: none;
-            margin-top: 8px;
-            padding: 6px 14px;
-            background-color: #a5b4fc;
+            background-color: #818cf8; /* bg-indigo-400 */
             color: white;
-            font-weight: bold;
+            border: none;
+            padding: 0.5rem 1rem;
             border-radius: 9999px;
+            font-weight: bold;
             cursor: pointer;
             transition: background-color 0.2s;
+            display: none; /* 초기에는 숨김 */
+            margin-top: auto; /* 변경: 버튼을 하단에 붙이도록 수정 */
         }
         .explanation-btn:hover {
-            background-color: #818cf8;
+            background-color: #6366f1; /* bg-indigo-500 */
         }
-        #explanation-modal {
+        /* 팝업 모달 스타일 */
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -186,12 +207,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 20;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
-        #explanation-modal.visible {
+        .modal-overlay.open {
             opacity: 1;
             visibility: visible;
         }
@@ -199,38 +220,101 @@
             background-color: white;
             padding: 2rem;
             border-radius: 1rem;
-            max-width: 500px;
             width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             transform: scale(0.95);
-            transition: transform 0.3s;
+            transition: transform 0.3s ease;
         }
-        #explanation-modal.visible .modal-content {
+        .modal-overlay.open .modal-content {
             transform: scale(1);
         }
-        .modal-close-btn {
-            margin-top: 1.5rem;
-            padding: 0.5rem 1.5rem;
-            background-color: #60a5fa;
+        .modal-content h3 {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 700;
+            color: #4f46e5;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .modal-content p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #374151;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .modal-content .close-btn {
+            background-color: #60a5fa; /* bg-blue-400 */
             color: white;
             border: none;
+            padding: 0.5rem 1.5rem;
             border-radius: 9999px;
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.2s;
         }
-        .modal-close-btn:hover {
-            background-color: #3b82f6;
+        .modal-content .close-btn:hover {
+            background-color: #3b82f6; /* bg-blue-500 */
+        }
+        .show-btn-animation {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* 모바일 세로 모드 최적화 (9:16) */
+        @media (max-width: 640px) and (orientation: portrait) {
+            header h1 {
+                font-size: 1.5rem; /* 제목 크기 줄이기 */
+            }
+            header p {
+                font-size: 0.875rem; /* 설명 글씨 크기 줄이기 */
+                margin-top: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+            #score-board {
+                flex-wrap: nowrap; /* 줄바꿈 방지 */
+                justify-content: center;
+                gap: 0.25rem; /* 간격 줄이기 */
+                padding: 0.5rem; /* 패딩 줄이기 */
+            }
+            #score-board #score-text, #score-board #percentage-text {
+                font-size: 0.75rem; /* 글씨 크기 줄이기 */
+                text-align: center;
+                white-space: nowrap;
+            }
+            #score-board #reset-btn {
+                font-size: 0.75rem; /* 버튼 글씨 크기 줄이기 */
+                padding: 0.3rem 0.6rem; /* 버튼 패딩 줄이기 */
+            }
+        }
+        /* 모바일 가로 모드 최적화 */
+        @media (max-width: 640px) and (orientation: landscape) {
+            header h1 {
+                font-size: 2rem; /* 제목 크기 줄이기 */
+            }
+            #score-board {
+                gap: 0.5rem; /* 간격 줄이기 */
+                padding: 0.5rem 0.75rem; /* 패딩 줄이기 */
+            }
+            #score-board #score-text, #score-board #percentage-text {
+                font-size: 0.875rem; /* 글씨 크기 줄이기 */
+            }
+            #score-board #reset-btn {
+                font-size: 0.75rem; /* 버튼 글씨 크기 줄이기 */
+                padding: 0.3rem 0.6rem; /* 버튼 패딩 줄이기 */
+            }
         }
     </style>
 </head>
-<body class="bg-emerald-100">
+<body>
 
     <header class="sticky top-0 z-10 bg-emerald-100 py-4 shadow-sm">
         <div class="max-w-5xl mx-auto text-center px-4">
-            <h1 class="text-3xl sm:text-4xl font-bold text-emerald-800" style="font-family: 'Noto Sans KR', sans-serif;">중등 필수 단어/숙어 퀴즈 (3과) 🍳</h1>
-            <p class="text-gray-600 mt-2 mb-6">카드 뒷면의 보기 중 알맞은 동사를 선택해보세요!</p>
+            <h1 class="text-3xl sm:text-4xl font-bold text-emerald-800" style="font-family: 'Noto Sans KR', sans-serif;">초등 단어 퀴즈 (3과) 🌳</h1>
+            <p class="text-gray-600 mt-2 mb-6">카드 뒷면의 보기 중 알맞은 Be동사를 선택해보세요!</p>
             <div id="score-board" class="max-w-xl mx-auto">
                 <span id="score-text" class="text-lg font-bold text-emerald-800 whitespace-nowrap">점수: 0점 / 0점</span>
                 <span id="percentage-text" class="text-sm text-gray-600 whitespace-nowrap">정답률: 0.0% (0/0)</span>
@@ -244,82 +328,60 @@
             <!-- 단어 카드는 JavaScript로 생성됩니다 -->
         </div>
     </main>
-
-    <!-- 해설 팝업(모달) -->
-    <div id="explanation-modal">
+    
+    <!-- 정답 해설 팝업 모달 -->
+    <div id="explanation-modal" class="modal-overlay">
         <div class="modal-content">
-            <h2 class="text-2xl font-bold text-blue-800 mb-4">정답 해설 💡</h2>
-            <p id="explanation-text" class="text-gray-700"></p>
-            <button id="modal-close-btn" class="modal-close-btn">닫기</button>
+            <div id="modal-body">
+                <h3>정답 해설 💡</h3>
+                <p id="explanation-text">
+                    <!-- 해설 내용이 여기에 로드됩니다. -->
+                </p>
+                <button class="close-btn" id="modal-close-btn">닫기</button>
+            </div>
         </div>
-    </div>
-
+    </div >
 
     <script>
         const words = [
-            // Words
-            { eng: 'bake', pos: '동사', kor: '굽다', ipa: '[beɪk]', kor_pron: '베이크', forms: 'bake - baked - baked', sentence_parts: { p1: 'My mom', verb: 'bakes', p2: 'cookies every Christmas.' }, options: ['bake', 'bakes', 'baked', 'baking'], sentence_kor: '우리 엄마는 매년 크리스마스에 쿠키를 구우신다.', explanation: "주어 'My mom'이 3인칭 단수이고, 'every Christmas'는 반복되는 행동을 나타내므로 현재 시제 동사에 -s를 붙인 'bakes'가 정답입니다." },
-            { eng: 'prepare', pos: '동사', kor: '준비하다', ipa: '[prɪˈper]', kor_pron: '프리페어', forms: 'prepare - prepared - prepared', sentence_parts: { p1: 'You need to', verb: 'prepare', p2: 'for the exam.' }, options: ['prepare', 'prepares', 'prepared', 'preparing'], sentence_kor: '너는 시험을 준비해야 한다.', explanation: "조동사적 용법으로 쓰인 'need to' 다음에는 동사 원형이 와야 하므로 'prepare'가 정답입니다." },
-            { eng: 'boil', pos: '동사', kor: '끓다, 삶다', ipa: '[bɔɪl]', kor_pron: '보일', forms: 'boil - boiled - boiled', sentence_parts: { p1: 'Water', verb: 'boils', p2: 'at 100 degrees Celsius.' }, options: ['boil', 'boils', 'boiled', 'boiling'], sentence_kor: '물은 섭씨 100도에서 끓는다.', explanation: "주어 'Water'는 셀 수 없는 명사로 단수 취급하며, 과학적 사실은 현재 시제로 표현하므로 동사에 -s를 붙인 'boils'가 정답입니다." },
-            { eng: 'shine', pos: '동사', kor: '빛나다', ipa: '[ʃaɪn]', kor_pron: '샤인', forms: 'shine - shone - shone', sentence_parts: { p1: 'The sun', verb: 'is shining', p2: 'brightly today.' }, options: ['shine', 'shines', 'shone', 'is shining'], sentence_kor: '오늘은 해가 밝게 빛나고 있다.', explanation: "지금 이 순간 빛나고 있는 진행 중인 상황을 묘사하므로 현재 진행형 'is shining'이 정답입니다." },
-            { eng: 'blow', pos: '동사', kor: '불다', ipa: '[bloʊ]', kor_pron: '블로우', forms: 'blow - blew - blown', sentence_parts: { p1: 'The wind', verb: 'blew', p2: 'hard last night.' }, options: ['blow', 'blows', 'blew', 'blowing'], sentence_kor: '어젯밤에 바람이 세게 불었다.', explanation: "'last night'이라는 명백한 과거 시점 부사가 있으므로 동사의 과거형 'blew'가 정답입니다." },
-            { eng: 'serve', pos: '동사', kor: '제공하다', ipa: '[sɜːrv]', kor_pron: '서브', forms: 'serve - served - served', sentence_parts: { p1: 'They', verb: 'serve', p2: 'breakfast until 10 a.m.' }, options: ['serve', 'serves', 'served', 'serving'], sentence_kor: '그들은 오전 10시까지 아침 식사를 제공한다.', explanation: "주어가 복수인 'They'이고, 반복되는 사실을 나타내므로 현재 시제 동사 원형 'serve'가 정답입니다." },
-            { eng: 'enough', pos: '형용사', kor: '충분한', ipa: '[ɪˈnʌf]', kor_pron: '이너프', forms: '', sentence_parts: { p1: 'We', verb: 'have', p2: 'enough food for everyone.' }, options: ['have', 'has', 'had', 'having'], sentence_kor: '우리는 모두를 위한 충분한 음식을 가지고 있다.', explanation: "주어가 복수인 'We'이고 현재 소유 상태를 나타내므로 동사 원형 'have'가 정답입니다." },
-            { eng: 'delicious', pos: '형용사', kor: '아주 맛있는', ipa: '[dɪˈlɪʃəs]', kor_pron: '딜리셔스', forms: '', sentence_parts: { p1: 'This pizza', verb: 'tastes', p2: 'delicious.' }, options: ['taste', 'tastes', 'tasted', 'tasting'], sentence_kor: '이 피자는 맛있는 맛이 난다.', explanation: "주어 'This pizza'가 3인칭 단수이고, 감각동사 'taste'는 현재 시제에서 -s를 붙여 'tastes'가 됩니다." },
-            { eng: 'spicy', pos: '형용사', kor: '양념 맛이 강한', ipa: '[ˈspaɪsi]', kor_pron: '스파이시', forms: '', sentence_parts: { p1: 'I', verb: 'like', p2: 'spicy food.' }, options: ['like', 'likes', 'liked', 'liking'], sentence_kor: '나는 매운 음식을 좋아한다.', explanation: "주어가 1인칭 'I'이고, 일반적인 선호를 나타내므로 현재 시제 동사 원형 'like'가 정답입니다." },
-            { eng: 'extreme', pos: '형용사', kor: '극심한, 심각한', ipa: '[ɪkˈstriːm]', kor_pron: '익스트림', forms: '', sentence_parts: { p1: 'They', verb: 'faced', p2: 'extreme weather conditions.' }, options: ['face', 'faces', 'faced', 'facing'], sentence_kor: '그들은 극심한 기상 조건에 직면했다.', explanation: "문맥상 과거에 일어난 일을 설명하므로 동사의 과거형 'faced'가 정답입니다." },
-            { eng: 'lovely', pos: '형용사', kor: '아주 좋은, 사랑스러운', ipa: '[ˈlʌvli]', kor_pron: '러블리', forms: '', sentence_parts: { p1: 'We', verb: 'had', p2: 'a lovely time at the party.' }, options: ['have', 'has', 'had', 'having'], sentence_kor: '우리는 파티에서 아주 좋은 시간을 보냈다.', explanation: "이미 끝난 파티에 대한 이야기이므로, 'have'의 과거형인 'had'가 정답입니다." },
-            { eng: 'cool', pos: '형용사', kor: '시원한', ipa: '[kuːl]', kor_pron: '쿨', forms: '', sentence_parts: { p1: 'It', verb: 'is', p2: 'getting cool in the evening.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '저녁에는 날씨가 시원해지고 있다.', explanation: "날씨를 나타내는 비인칭 주어 'It'은 단수 취급하며, 현재의 변화를 나타내므로 'is'가 정답입니다." },
-            { eng: 'bright', pos: '형용사', kor: '밝은', ipa: '[braɪt]', kor_pron: '브라이트', forms: '', sentence_parts: { p1: 'The future', verb: 'looks', p2: 'bright.' }, options: ['look', 'looks', 'looked', 'looking'], sentence_kor: '미래가 밝아 보인다.', explanation: "주어 'The future'가 3인칭 단수이고, 현재의 상태를 나타내므로 감각동사 'look'에 -s를 붙인 'looks'가 정답입니다." },
-            { eng: 'fresh', pos: '형용사', kor: '신선한', ipa: '[freʃ]', kor_pron: '프레시', forms: '', sentence_parts: { p1: 'I always', verb: 'buy', p2: 'fresh vegetables from the market.' }, options: ['buy', 'buys', 'bought', 'buying'], sentence_kor: '나는 항상 시장에서 신선한 채소를 산다.', explanation: "주어가 1인칭 'I'이고, 'always'는 현재의 반복적인 습관을 나타내므로 동사 원형 'buy'가 정답입니다." },
-            { eng: 'warm', pos: '형용사', kor: '따뜻한', ipa: '[wɔːrm]', kor_pron: '웜', forms: '', sentence_parts: { p1: 'Please', verb: 'keep', p2: 'the soup warm.' }, options: ['keep', 'keeps', 'kept', 'keeping'], sentence_kor: '수프를 따뜻하게 유지해 주세요.', explanation: "명령문은 동사 원형으로 시작해야 하므로 'keep'이 정답입니다." },
-            { eng: 'heavy', pos: '형용사', kor: '무거운', ipa: '[ˈhevi]', kor_pron: '헤비', forms: '', sentence_parts: { p1: 'It', verb: 'rained', p2: 'heavily yesterday.' }, options: ['rain', 'rains', 'rained', 'raining'], sentence_kor: '어제는 비가 심하게 내렸다.', explanation: "'yesterday'라는 명백한 과거 시점 부사가 있으므로 동사의 과거형 'rained'가 정답입니다." },
-            { eng: 'sudden', pos: '형용사', kor: '갑작스러운', ipa: '[ˈsʌdn]', kor_pron: '서든', forms: '', sentence_parts: { p1: 'All of a sudden, the lights', verb: 'went', p2: 'out.' }, options: ['go', 'goes', 'went', 'going'], sentence_kor: '갑자기, 불이 나갔다.', explanation: "문맥상 과거에 일어난 일을 설명하므로 'go'의 과거형 'went'가 정답입니다." },
-            { eng: 'restaurant', pos: '명사', kor: '식당', ipa: '[ˈrestrɑːnt]', kor_pron: '레스트런트', forms: 'restaurant / restaurants', sentence_parts: { p1: 'Let\'s', verb: 'eat', p2: 'at that new restaurant.' }, options: ['eat', 'eats', 'ate', 'eating'], sentence_kor: '저 새로운 식당에서 먹자.', explanation: "제안을 나타내는 'Let\'s' 다음에는 동사 원형이 와야 하므로 'eat'이 정답입니다." },
-            { eng: 'bowl', pos: '명사', kor: '그릇', ipa: '[boʊl]', kor_pron: '보울', forms: 'bowl / bowls', sentence_parts: { p1: 'She', verb: 'is eating', p2: 'a bowl of soup.' }, options: ['eat', 'eats', 'ate', 'is eating'], sentence_kor: '그녀는 수프 한 그릇을 먹고 있다.', explanation: "지금 먹고 있는 중인 동작을 나타내므로 현재 진행형 'is eating'이 정답입니다." },
-            { eng: 'plate', pos: '명사', kor: '접시', ipa: '[pleɪt]', kor_pron: '플레이트', forms: 'plate / plates', sentence_parts: { p1: 'Can you', verb: 'pass', p2: 'me that plate?' }, options: ['pass', 'passes', 'passed', 'passing'], sentence_kor: '저 접시 좀 건네주시겠어요?', explanation: "요청을 나타내는 조동사 'Can' 다음에는 동사 원형이 와야 하므로 'pass'가 정답입니다." },
-            { eng: 'vegetable', pos: '명사', kor: '채소', ipa: '[ˈvedʒtəbl]', kor_pron: '베지터블', forms: 'vegetable / vegetables', sentence_parts: { p1: 'You should', verb: 'eat', p2: 'more vegetables.' }, options: ['eat', 'eats', 'ate', 'eating'], sentence_kor: '너는 채소를 더 많이 먹어야 한다.', explanation: "조언을 나타내는 조동사 'should' 다음에는 동사 원형이 와야 하므로 'eat'이 정답입니다." },
-            { eng: 'dish', pos: '명사', kor: '접시, 요리', ipa: '[dɪʃ]', kor_pron: '디시', forms: 'dish / dishes', sentence_parts: { p1: 'My father', verb: 'cooked', p2: 'a special dish for my birthday.' }, options: ['cook', 'cooks', 'cooked', 'cooking'], sentence_kor: '아버지는 내 생일을 위해 특별한 요리를 해주셨다.', explanation: "이미 지난 생일에 대한 이야기이므로 동사의 과거형 'cooked'가 정답입니다." },
-            { eng: 'flour', pos: '명사', kor: '밀가루', ipa: '[ˈflaʊər]', kor_pron: '플라워', forms: '', sentence_parts: { p1: 'You', verb: 'need', p2: 'flour to make bread.' }, options: ['need', 'needs', 'needed', 'needing'], sentence_kor: '빵을 만들려면 밀가루가 필요하다.', explanation: "주어가 2인칭 'You'이고 일반적인 사실을 말하므로 현재 시제 동사 원형 'need'가 정답입니다." },
-            { eng: 'dessert', pos: '명사', kor: '디저트', ipa: '[dɪˈzɜːrt]', kor_pron: '디저트', forms: 'dessert / desserts', sentence_parts: { p1: 'What do you', verb: 'want', p2: 'for dessert?' }, options: ['want', 'wants', 'wanted', 'wanting'], sentence_kor: '디저트로 무엇을 원하세요?', explanation: "조동사 'do'를 사용한 의문문이므로 뒤에는 동사 원형 'want'가 와야 합니다." },
-            { eng: 'recipe', pos: '명사', kor: '요리법', ipa: '[ˈresəpi]', kor_pron: '레서피', forms: 'recipe / recipes', sentence_parts: { p1: 'I', verb: 'found', p2: 'a good recipe online.' }, options: ['find', 'finds', 'found', 'finding'], sentence_kor: '나는 온라인에서 좋은 요리법을 찾았다.', explanation: "문맥상 과거에 찾은 것을 의미하므로 'find'의 과거형 'found'가 정답입니다." },
-            { eng: 'grocery', pos: '명사', kor: '식료품', ipa: '[ˈɡroʊsəri]', kor_pron: '그로서리', forms: 'grocery / groceries', sentence_parts: { p1: 'She', verb: 'is going', p2: 'to the grocery store.' }, options: ['go', 'goes', 'went', 'is going'], sentence_kor: '그녀는 식료품점에 가고 있다.', explanation: "지금 가고 있는 중인 동작을 나타내므로 현재 진행형 'is going'이 정답입니다." },
-            { eng: 'taste', pos: '명사', kor: '맛', ipa: '[teɪst]', kor_pron: '테이스트', forms: 'taste / tastes', sentence_parts: { p1: 'The chef', verb: 'tasted', p2: 'the soup carefully.' }, options: ['taste', 'tastes', 'tasted', 'tasting'], sentence_kor: '요리사는 수프 맛을 조심스럽게 보았다.', explanation: "문맥상 과거에 맛을 본 행동을 설명하므로 동사의 과거형 'tasted'가 정답입니다." },
-            { eng: 'weather', pos: '명사', kor: '날씨', ipa: '[ˈweðər]', kor_pron: '웨더', forms: '', sentence_parts: { p1: 'How', verb: 'is', p2: 'the weather today?' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '오늘 날씨 어때요?', explanation: "주어 'the weather'는 단수 취급하며, 현재의 날씨를 묻고 있으므로 'is'가 정답입니다." },
-            { eng: 'snowflake', pos: '명사', kor: '눈송이', ipa: '[ˈsnoʊfleɪk]', kor_pron: '스노우플레이크', forms: 'snowflake / snowflakes', sentence_parts: { p1: 'Every snowflake', verb: 'is', p2: 'unique.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '모든 눈송이는 저마다 독특하다.', explanation: "주어 'Every snowflake'는 단수 취급하며, 일반적인 사실을 말하므로 'is'가 정답입니다." },
-            { eng: 'maybe', pos: '부사', kor: '어쩌면', ipa: '[ˈmeɪbi]', kor_pron: '메이비', forms: '', sentence_parts: { p1: 'Maybe it', verb: 'will rain', p2: 'tomorrow.' }, options: ['rain', 'rains', 'will rain', 'raining'], sentence_kor: '어쩌면 내일 비가 올지도 모른다.', explanation: "미래의 추측을 나타내므로 '조동사 will + 동사 원형' 형태인 'will rain'이 정답입니다." },
-            // Phrases
-            { eng: 'eat out', pos: '숙어', kor: '외식하다', ipa: '[iːt aʊt]', kor_pron: '잇 아웃', forms: 'eat - ate - eaten', sentence_parts: { p1: 'We often', verb: 'eat out', p2: 'on Fridays.' }, options: ['eat out', 'eats out', 'ate out', 'eating out'], sentence_kor: '우리는 금요일마다 자주 외식한다.', explanation: "주어가 복수 'We'이고, 'often'은 현재의 반복적인 습관을 나타내므로 동사 원형 'eat out'이 정답입니다." },
-            { eng: 'do the dishes', pos: '숙어', kor: '설거지를 하다', ipa: '[duː ðə ˈdɪʃɪz]', kor_pron: '두 더 디시즈', forms: 'do - did - done', sentence_parts: { p1: 'He', verb: 'is doing', p2: 'the dishes now.' }, options: ['do', 'does', 'did', 'is doing'], sentence_kor: '그는 지금 설거지를 하고 있다.', explanation: "'now'라는 부사를 통해 현재 진행 중인 동작임을 알 수 있으므로, 현재 진행형 'is doing'이 정답입니다." },
-            { eng: 'help yourself', pos: '숙어', kor: '마음껏 먹다', ipa: '[help jərˈself]', kor_pron: '헬프 유어셀프', forms: 'help - helped - helped', sentence_parts: { p1: 'Please', verb: 'help yourself', p2: 'to some cookies.' }, options: ['help yourself', 'helps yourself', 'helped yourself', 'helping yourself'], sentence_kor: '쿠키 좀 마음껏 드세요.', explanation: "정중한 권유를 나타내는 명령문은 동사 원형으로 시작하므로 'help yourself'가 정답입니다." },
-            { eng: 'set the table', pos: '숙어', kor: '상을 차리다', ipa: '[set ðə ˈteɪbl]', kor_pron: '셋 더 테이블', forms: 'set - set - set', sentence_parts: { p1: 'Could you please', verb: 'set the table', p2: 'for dinner?' }, options: ['set the table', 'sets the table', 'setting the table', 'to set the table'], sentence_kor: '저녁 식사 상차림 좀 해주시겠어요?', explanation: "정중한 요청을 나타내는 'Could you please' 다음에는 동사 원형이 와야 하므로 'set the table'이 정답입니다." },
-            { eng: 'at once', pos: '부사', kor: '즉시', ipa: '[æt wʌns]', kor_pron: '앳 원스', forms: '', sentence_parts: { p1: 'You must', verb: 'start', p2: 'your homework at once.' }, options: ['start', 'starts', 'started', 'starting'], sentence_kor: '너는 즉시 숙제를 시작해야 한다.', explanation: "의무를 나타내는 조동사 'must' 다음에는 동사 원형이 와야 하므로 'start'가 정답입니다." },
-            { eng: 'hurry up', pos: '숙어', kor: '서두르다', ipa: '[ˈhɜːri ʌp]', kor_pron: '허리 업', forms: 'hurry - hurried - hurried', sentence_parts: { p1: '', verb: 'Hurry up', p2: ', or we will be late.' }, options: ['Hurry up', 'Hurries up', 'Hurried up', 'Hurrying up'], sentence_kor: '서둘러, 그렇지 않으면 늦을 거야.', explanation: "명령문은 동사 원형으로 시작해야 하므로 'Hurry up'이 정답입니다." },
-            // English-English Dictionary
-            { eng: 'windy', pos: '형용사', kor: '바람이 많이 부는', ipa: '[ˈwɪndi]', kor_pron: '윈디', forms: '', sentence_parts: { p1: 'It', verb: 'was', p2: 'very windy yesterday.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '어제는 바람이 매우 많이 불었다.', explanation: "'yesterday'라는 과거 시점 부사가 있으므로, 비인칭 주어 'It'에 맞는 과거형 be동사 'was'가 정답입니다." },
-            { eng: 'cloudy', pos: '형용사', kor: '구름이 잔뜩 낀', ipa: '[ˈklaʊdi]', kor_pron: '클라우디', forms: '', sentence_parts: { p1: 'The sky', verb: 'looks', p2: 'cloudy this morning.' }, options: ['look', 'looks', 'looked', 'looking'], sentence_kor: '오늘 아침 하늘이 흐려 보인다.', explanation: "주어 'The sky'가 3인칭 단수이고, 현재의 상태를 나타내므로 감각동사 'look'에 -s를 붙인 'looks'가 정답입니다." },
-            { eng: 'thirsty', pos: '형용사', kor: '목이 마른', ipa: '[ˈθɜːrsti]', kor_pron: '썰스티', forms: '', sentence_parts: { p1: 'I', verb: 'am', p2: 'thirsty after the run.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '달리기를 하고 나니 목이 마르다.', explanation: "주어가 1인칭 'I'이고 현재의 상태를 나타내므로, be동사 'am'이 정답입니다." },
-            { eng: 'hungry', pos: '형용사', kor: '배고픈', ipa: '[ˈhʌŋɡri]', kor_pron: '헝그리', forms: '', sentence_parts: { p1: 'The children', verb: 'are', p2: 'getting hungry.' }, options: ['is', 'are', 'am', 'be'], sentence_kor: '아이들이 배고파지고 있다.', explanation: "주어가 복수인 'The children'이고, 현재 변화하는 상태를 나타내므로 be동사 'are'가 정답입니다." }
+            { eng: 'box', pos: '명사', kor: '상자', forms: 'box / boxes', ipa: '[bɑːks]', kor_pron: '박스', sentence_parts: { p1: 'This ', verb: 'is', p2: ' a big box.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '이것은 큰 상자입니다.', explanation: "주어 'This'는 단수이므로 be동사 'is'가 정답입니다." },
+            { eng: 'baby', pos: '명사', kor: '아기', forms: 'baby / babies', ipa: '[ˈbeɪbi]', kor_pron: '베이비', sentence_parts: { p1: 'The baby ', verb: 'is', p2: ' happy.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 아기는 행복합니다.', explanation: "주어 'The baby'는 단수이므로 be동사 'is'가 정답입니다." },
+            { eng: 'ball', pos: '명사', kor: '공', forms: 'ball / balls', ipa: '[bɔːl]', kor_pron: '볼', sentence_parts: { p1: 'The balls ', verb: 'are', p2: ' in the box.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 공들은 상자 안에 있습니다.', explanation: "주어 'The balls'는 복수 명사이므로 be동사 'are'가 정답입니다." },
+            { eng: 'bus', pos: '명사', kor: '버스', forms: 'bus / buses', ipa: '[bʌs]', kor_pron: '버스', sentence_parts: { p1: 'The bus ', verb: 'was', p2: ' late yesterday.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 버스는 어제 늦었습니다.', explanation: "어제(yesterday) 있었던 일이므로, 주어 'The bus'에 맞는 과거형 be동사 'was'가 정답입니다." },
+            { eng: 'fox', pos: '명사', kor: '여우', forms: 'fox / foxes', ipa: '[fɑːks]', kor_pron: '팍스', sentence_parts: { p1: 'The fox ', verb: 'is', p2: ' a wild animal.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 여우는 야생 동물입니다.', explanation: "주어 'The fox'는 단수이므로 be동사 'is'가 정답입니다." },
+            { eng: 'dish', pos: '명사', kor: '접시', forms: 'dish / dishes', ipa: '[dɪʃ]', kor_pron: '디시', sentence_parts: { p1: 'The dishes ', verb: 'are', p2: ' clean.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 접시들은 깨끗합니다.', explanation: "주어 'The dishes'는 복수이므로 be동사 'are'가 정답입니다." },
+            { eng: 'bench', pos: '명사', kor: '벤치', forms: 'bench / benches', ipa: '[bentʃ]', kor_pron: '벤치', sentence_parts: { p1: 'The benches ', verb: 'were', p2: ' empty.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 벤치들은 비어 있었습니다.', explanation: "주어 'The benches'는 복수 명사이고 과거의 상태를 나타내므로 be동사의 과거형인 'were'가 정답입니다." },
+            { eng: 'candy', pos: '명사', kor: '사탕', forms: 'candy / candies', ipa: '[ˈkændi]', kor_pron: '캔디', sentence_parts: { p1: 'The candy ', verb: 'is', p2: ' sweet.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 사탕은 달콤합니다.', explanation: "주어 'The candy'는 단수이므로 be동사 'is'가 정답입니다." },
+            { eng: 'key', pos: '명사', kor: '열쇠', forms: 'key / keys', ipa: '[kiː]', kor_pron: '키', sentence_parts: { p1: 'The key ', verb: 'was', p2: ' in my pocket.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 열쇠는 내 주머니에 있었습니다.', explanation: "주어 'The key'는 단수이고 과거의 상태를 나타내므로 be동사의 과거형인 'was'가 정답입니다." },
+            { eng: 'leaf', pos: '명사', kor: '나뭇잎', forms: 'leaf / leaves', ipa: '[liːf]', kor_pron: '리프', sentence_parts: { p1: 'The leaves ', verb: 'are', p2: ' green.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 나뭇잎들은 초록색입니다.', explanation: "주어 'The leaves'는 복수이므로 be동사 'are'가 정답입니다." },
+            { eng: 'wolf', pos: '명사', kor: '늑대', forms: 'wolf / wolves', ipa: '[wʊlf]', kor_pron: '울프', sentence_parts: { p1: 'A wolf ', verb: 'was', p2: ' in the forest.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '숲 속에 늑대 한 마리가 있었습니다.', explanation: "주어 'A wolf'는 단수 명사이고 과거의 상태를 나타내므로 be동사의 과거형인 'was'가 정답입니다." },
+            { eng: 'knife', pos: '명사', kor: '칼', forms: 'knife / knives', ipa: '[naɪf]', kor_pron: '나이프', sentence_parts: { p1: 'The knife ', verb: 'is', p2: ' sharp.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 칼은 날카롭습니다.', explanation: "주어 'The knife'는 단수이므로 be동사 'is'가 정답입니다." },
+            { eng: 'foot', pos: '명사', kor: '발', forms: 'foot / feet', ipa: '[fʊt]', kor_pron: '풋', sentence_parts: { p1: 'My feet ', verb: 'are', p2: ' cold.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '내 발이 차갑습니다.', explanation: "주어 'My feet'는 복수이므로 be동사 'are'가 정답입니다." },
+            { eng: 'tooth', pos: '명사', kor: '이, 치아', forms: 'tooth / teeth', ipa: '[tuːθ]', kor_pron: '투스', sentence_parts: { p1: 'My teeth ', verb: 'were', p2: ' white.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '내 이빨은 하얬습니다.', explanation: "과거의 상태를 나타내고 주어 'My teeth'는 복수이므로 be동사의 과거형인 'were'가 정답입니다." },
+            { eng: 'child', pos: '명사', kor: '어린이', forms: 'child / children', ipa: '[tʃaɪld]', kor_pron: '차일드', sentence_parts: { p1: 'The children ', verb: 'are', p2: ' in the park.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 아이들은 공원에 있습니다.', explanation: "주어 'The children'은 복수이므로 be동사 'are'가 정답입니다." },
+            { eng: 'mouse', pos: '명사', kor: '쥐', forms: 'mouse / mice', ipa: '[maʊs]', kor_pron: '마우스', sentence_parts: { p1: 'The mouse ', verb: 'was', p2: ' in the kitchen last night.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 쥐는 어젯밤에 부엌에 있었습니다.', explanation: "어젯밤(last night)에 있었던 일이므로, 주어 'The mouse'에 맞는 과거형 be동사 'was'가 정답입니다." },
+            { eng: 'sheep', pos: '명사', kor: '양', forms: 'sheep / sheep', ipa: '[ʃiːp]', kor_pron: '쉽', sentence_parts: { p1: 'The sheep ', verb: 'are', p2: ' on the hill.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 양들은 언덕 위에 있습니다.', explanation: "주어 'The sheep'은 단수와 복수 형태가 같으나, 일반적으로 복수로 사용될 때 'are'를 사용합니다." },
+            { eng: 'deer', pos: '명사', kor: '사슴', forms: 'deer / deer', ipa: '[dɪər]', kor_pron: '디어', sentence_parts: { p1: 'A deer ', verb: 'is', p2: ' a beautiful animal.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '사슴은 아름다운 동물입니다.', explanation: "주어 'A deer'는 단수이므로 be동사 'is'가 정답입니다." },
+            { eng: 'egg', pos: '명사', kor: '달걀', forms: 'egg / eggs', ipa: '[eɡ]', kor_pron: '에그', sentence_parts: { p1: 'The eggs ', verb: 'are', p2: ' in the fridge.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 달걀들은 냉장고에 있습니다.', explanation: "주어 'The eggs'는 복수이므로 be동사 'are'가 정답입니다." },
+            { eng: 'glass', pos: '명사', kor: '유리잔', forms: 'glass / glasses', ipa: '[ɡlæs]', kor_pron: '글래스', sentence_parts: { p1: 'The glass ', verb: 'was', p2: ' full of water.' }, options: ['is', 'are', 'was', 'were'], sentence_kor: '그 유리잔은 물로 가득 차 있었습니다.', explanation: "주어 'The glass'는 단수 명사이고 과거의 상태를 나타내므로 be동사의 과거형인 'was'가 정답입니다." }
         ];
 
         const cardGrid = document.getElementById('card-grid');
         const scoreText = document.getElementById('score-text');
         const percentageText = document.getElementById('percentage-text');
         const resetButton = document.getElementById('reset-btn');
-        const modal = document.getElementById('explanation-modal');
-        const modalCloseBtn = document.getElementById('modal-close-btn');
-        const explanationText = document.getElementById('explanation-text');
-        
-        // [수정] SpeechSynthesis API 관련 변수 추가
         const synth = window.speechSynthesis;
         let voices = [];
-
+        
         let currentScore = 0;
         let answeredCount = 0;
         const totalProblems = words.length;
         const maxScore = totalProblems * 10;
 
-        // [수정] SpeechSynthesis API 음성 로드 함수
+        const explanationModal = document.getElementById('explanation-modal');
+        const explanationText = document.getElementById('explanation-text');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+
         function loadVoices() { 
             voices = synth.getVoices(); 
         }
@@ -328,7 +390,6 @@
         }
         loadVoices();
 
-        // [수정] SpeechSynthesis API를 사용하는 speak 함수
         function speak(text) {
             if (synth.speaking) {
                 synth.cancel();
@@ -344,7 +405,7 @@
             utterThis.rate = 0.9;
             synth.speak(utterThis);
         }
-        
+
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -358,15 +419,32 @@
             scoreText.textContent = `점수: ${currentScore}점 / ${maxScore}점`;
             percentageText.textContent = `정답률: ${percentage}% (${correctAnswers}/${answeredCount})`;
         }
+        
+        // 미리 저장된 해설을 사용하여 모달을 여는 함수
+        function openExplanationModal(wordData) {
+            explanationText.textContent = wordData.explanation;
+            explanationModal.classList.add('open');
+        }
+
+        function closeExplanationModal() {
+            explanationModal.classList.remove('open');
+        }
+
+        modalCloseBtn.addEventListener('click', closeExplanationModal);
+        explanationModal.addEventListener('click', (e) => {
+            if (e.target === explanationModal) {
+                closeExplanationModal();
+            }
+        });
 
         function createCard(wordData, index) {
             const cardContainer = document.createElement('div');
             cardContainer.className = 'card-container h-80';
             const { p1, verb, p2 } = wordData.sentence_parts;
 
-            const formsHTML = (wordData.forms && (wordData.forms.includes('-') || wordData.forms.includes('/'))) ? `<div class="word-forms text-base text-emerald-700 font-semibold">
+            const formsHTML = wordData.forms ? `<div class="word-forms text-base text-emerald-700 font-semibold">
                                                   <p>${wordData.forms}</p>
-                                               </div>` : '<div class="word-forms"></div>';
+                                               </div>` : '';
             
             const shuffledOptions = [...wordData.options];
             shuffleArray(shuffledOptions);
@@ -378,7 +456,7 @@
             cardContainer.innerHTML = `
                 <div class="card">
                     <div class="card-face card-front">
-                        <h2 class="text-4xl sm:text-5xl font-bold p-2">${wordData.eng}</h2>
+                        <h2 class="text-4xl sm:text-5xl font-bold">${wordData.eng}</h2>
                     </div>
                     <div class="card-face card-back">
                         <div class="flex items-center gap-4">
@@ -393,12 +471,10 @@
                         
                         ${formsHTML}
 
-                        <hr class="w-full border-t border-emerald-200">
-
                         <div class="text-base sm:text-lg w-full">
                             <p class="mb-2 sentence-container flex items-center justify-center">
                                 <span>${p1}</span>
-                                <span class="font-bold text-xl quiz-placeholder">&nbsp;&nbsp;(...)&nbsp;&nbsp;</span>
+                                <span class="font-bold text-xl quiz-placeholder">( ... )</span>
                                 <span>${p2}</span>
                                 <button class="sentence-play-btn">🔊</button>
                             </p>
@@ -406,7 +482,9 @@
                                 ${optionsHTML}
                             </div>
                             <p class="text-gray-500 mt-2">${wordData.sentence_kor}</p>
-                            <button class="explanation-btn">해설 보기</button>
+                            <div class="flex justify-center mt-auto">
+                                <button class="explanation-btn">해설 보기</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -452,7 +530,8 @@
                     quizPlaceholder.innerHTML = `&nbsp;&nbsp;${correctAnswer}&nbsp;&nbsp;`;
                     quizPlaceholder.classList.add('text-fuchsia-500');
                     sentencePlayButton.style.display = 'inline-block';
-                    explanationBtn.style.display = 'inline-block';
+                    explanationBtn.classList.add('show-btn-animation');
+                    explanationBtn.style.display = 'block';
 
                     optionButtons.forEach(btn => {
                         btn.disabled = true;
@@ -466,7 +545,6 @@
 
             playButton.addEventListener('click', (e) => {
                 e.stopPropagation();
-                 // [수정] 음성 로딩 지연을 고려하여 약간의 딜레이 후 재생
                 if (voices.length === 0) {
                     setTimeout(() => speak(e.currentTarget.dataset.word), 100);
                 } else {
@@ -476,8 +554,7 @@
 
             sentencePlayButton.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const fullSentence = p1 + ' ' + verb + ' ' + p2;
-                 // [수정] 음성 로딩 지연을 고려하여 약간의 딜레이 후 재생
+                const fullSentence = p1 + verb + p2;
                 if (voices.length === 0) {
                      setTimeout(() => speak(fullSentence), 100);
                 } else {
@@ -487,8 +564,7 @@
 
             explanationBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                explanationText.textContent = wordData.explanation;
-                modal.classList.add('visible');
+                openExplanationModal(wordData);
             });
         }
 
@@ -500,16 +576,6 @@
             resetButton.disabled = true;
             words.forEach(createCard);
         }
-        
-        modalCloseBtn.addEventListener('click', () => {
-            modal.classList.remove('visible');
-        });
-
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('visible');
-            }
-        });
 
         resetButton.addEventListener('click', initializeQuiz);
 
