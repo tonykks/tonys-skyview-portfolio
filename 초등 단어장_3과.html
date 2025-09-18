@@ -31,7 +31,7 @@ GEMINI AI 영어 단어 퀴즈 마스터 템플릿 (최종 완성본)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>초등 필수 단어 퀴즈</title>
+    <title>초등 단어 퀴즈</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
     <style>
@@ -143,6 +143,7 @@ GEMINI AI 영어 단어 퀴즈 마스터 템플릿 (최종 완성본)
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 1rem;
             flex-wrap: nowrap; /* 줄바꿈 방지 */
         }
@@ -263,13 +264,56 @@ GEMINI AI 영어 단어 퀴즈 마스터 템플릿 (최종 완성본)
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        /* 모바일 세로 모드 최적화 (9:16) */
+        @media (max-width: 640px) and (orientation: portrait) {
+            header h1 {
+                font-size: 1.5rem; /* 제목 크기 줄이기 */
+            }
+            header p {
+                font-size: 0.875rem; /* 설명 글씨 크기 줄이기 */
+                margin-top: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+            #score-board {
+                flex-wrap: nowrap; /* 줄바꿈 방지 */
+                justify-content: center;
+                gap: 0.25rem; /* 간격 줄이기 */
+                padding: 0.5rem; /* 패딩 줄이기 */
+            }
+            #score-board #score-text, #score-board #percentage-text {
+                font-size: 0.75rem; /* 글씨 크기 줄이기 */
+                text-align: center;
+                white-space: nowrap;
+            }
+            #score-board #reset-btn {
+                font-size: 0.75rem; /* 버튼 글씨 크기 줄이기 */
+                padding: 0.3rem 0.6rem; /* 버튼 패딩 줄이기 */
+            }
+        }
+        /* 모바일 가로 모드 최적화 */
+        @media (max-width: 640px) and (orientation: landscape) {
+            header h1 {
+                font-size: 2rem; /* 제목 크기 줄이기 */
+            }
+            #score-board {
+                gap: 0.5rem; /* 간격 줄이기 */
+                padding: 0.5rem 0.75rem; /* 패딩 줄이기 */
+            }
+            #score-board #score-text, #score-board #percentage-text {
+                font-size: 0.875rem; /* 글씨 크기 줄이기 */
+            }
+            #score-board #reset-btn {
+                font-size: 0.75rem; /* 버튼 글씨 크기 줄이기 */
+                padding: 0.3rem 0.6rem; /* 버튼 패딩 줄이기 */
+            }
+        }
     </style>
 </head>
 <body>
 
     <header class="sticky top-0 z-10 bg-emerald-100 py-4 shadow-sm">
         <div class="max-w-5xl mx-auto text-center px-4">
-            <h1 class="text-3xl sm:text-4xl font-bold text-emerald-800" style="font-family: 'Noto Sans KR', sans-serif;">초등 필수 단어 퀴즈 (3과) 🌳</h1>
+            <h1 class="text-3xl sm:text-4xl font-bold text-emerald-800" style="font-family: 'Noto Sans KR', sans-serif;">초등 단어 퀴즈 (3과) 🌳</h1>
             <p class="text-gray-600 mt-2 mb-6">카드 뒷면의 보기 중 알맞은 Be동사를 선택해보세요!</p>
             <div id="score-board" class="max-w-xl mx-auto">
                 <span id="score-text" class="text-lg font-bold text-emerald-800 whitespace-nowrap">점수: 0점 / 0점</span>
