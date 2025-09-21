@@ -13,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>중등 필수 단어/숙어 퀴즈 (1과) - 음성 출력 최종 수정</title>
+    <title>중등 단어 퀴즈 (1과) - 음성 출력 최종 수정</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
     <style>
@@ -126,8 +126,11 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 1rem;
             flex-wrap: nowrap;
+            max-width: 500px;
+            margin: 0 auto;
         }
         #reset-btn {
             background-color: #fb923c;
@@ -198,7 +201,7 @@
             background-color: white;
             padding: 2rem;
             border-radius: 1rem;
-            max-width: 500px;
+            max-width: 600px;
             width: 90%;
             text-align: center;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
@@ -222,15 +225,50 @@
         .modal-close-btn:hover {
             background-color: #3b82f6;
         }
+        .show-btn-animation {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 모바일 세로 모드 최적화 (9:16) */
+        @media (max-width: 640px) and (orientation: portrait) {
+            header h1 {
+                font-size: 1.5rem; /* 제목 크기 줄이기 */
+            }
+            header p {
+                font-size: 0.875rem; /* 설명 글씨 크기 줄이기 */
+                margin-top: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+            #score-board {
+                flex-wrap: nowrap; /* 줄바꿈 방지 */
+                justify-content: center;
+                gap: 0.25rem; /* 간격 줄이기 */
+                padding: 0.5rem; /* 패딩 줄이기 */
+                max-width: 90%; /* 화면 폭에 맞게 조정 */
+            }
+            #score-board #score-text, #score-board #percentage-text {
+                font-size: 0.75rem; /* 글씨 크기 줄이기 */
+                text-align: center;
+                white-space: nowrap;
+            }
+            #score-board #reset-btn {
+                font-size: 0.75rem; /* 버튼 글씨 크기 줄이기 */
+                padding: 0.3rem 0.6rem; /* 버튼 패딩 줄이기 */
+            }
+        }
     </style>
 </head>
 <body class="bg-blue-100">
 
     <header class="sticky top-0 z-10 bg-blue-100 py-4 shadow-sm">
         <div class="max-w-5xl mx-auto text-center px-4">
-            <h1 class="text-3xl sm:text-4xl font-bold text-blue-800" style="font-family: 'Noto Sans KR', sans-serif;">중등 필수 단어/숙어 퀴즈 (1과) ✍️</h1>
+            <h1 class="text-3xl sm:text-4xl font-bold text-blue-800" style="font-family: 'Noto Sans KR', sans-serif;">중등 단어 퀴즈 (1과) ✍️</h1>
             <p class="text-gray-600 mt-2 mb-6">카드 뒷면의 보기 중 알맞은 동사를 선택해보세요!</p>
-            <div id="score-board" class="max-w-xl mx-auto">
+            <div id="score-board">
                 <span id="score-text" class="text-lg font-bold text-blue-800 whitespace-nowrap">점수: 0점 / 0점</span>
                 <span id="percentage-text" class="text-sm text-gray-600 whitespace-nowrap">정답률: 0.0% (0/0)</span>
                 <button id="reset-btn">다시 풀기 🔄</button>
@@ -309,7 +347,7 @@
         const modalCloseBtn = document.getElementById('modal-close-btn');
         const explanationText = document.getElementById('explanation-text');
         
-        // [수정] SpeechSynthesis API 관련 변수 추가
+        // SpeechSynthesis API 관련 변수
         const synth = window.speechSynthesis;
         let voices = [];
 
@@ -318,7 +356,6 @@
         const totalProblems = words.length;
         const maxScore = totalProblems * 10;
 
-        // [수정] SpeechSynthesis API 음성 로드 함수
         function loadVoices() { 
             voices = synth.getVoices(); 
         }
@@ -327,7 +364,6 @@
         }
         loadVoices();
 
-        // [수정] SpeechSynthesis API를 사용하는 speak 함수
         function speak(text) {
             if (synth.speaking) {
                 synth.cancel();
@@ -394,7 +430,7 @@
 
                         <hr class="w-full border-t border-blue-200">
 
-                        <div class="text-base sm:text-lg w-full">
+                        <div class="text-base sm:text-lg w-full flex flex-col items-center">
                             <p class="mb-2 sentence-container flex items-center justify-center">
                                 <span>${p1}</span>
                                 <span class="font-bold text-xl quiz-placeholder">&nbsp;&nbsp;(...)&nbsp;&nbsp;</span>
@@ -451,7 +487,9 @@
                     quizPlaceholder.innerHTML = `&nbsp;&nbsp;${correctAnswer}&nbsp;&nbsp;`;
                     quizPlaceholder.classList.add('text-fuchsia-500');
                     sentencePlayButton.style.display = 'inline-block';
-                    explanationBtn.style.display = 'inline-block';
+                    
+                    explanationBtn.classList.add('show-btn-animation');
+                    explanationBtn.style.display = 'block';
 
                     optionButtons.forEach(btn => {
                         btn.disabled = true;
@@ -465,8 +503,7 @@
 
             playButton.addEventListener('click', (e) => {
                 e.stopPropagation();
-                 // [수정] 음성 로딩 지연을 고려하여 약간의 딜레이 후 재생
-                if (voices.length === 0) {
+                 if (voices.length === 0) {
                     setTimeout(() => speak(e.currentTarget.dataset.word), 100);
                 } else {
                     speak(e.currentTarget.dataset.word);
@@ -476,8 +513,7 @@
             sentencePlayButton.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const fullSentence = p1 + ' ' + verb + ' ' + p2;
-                 // [수정] 음성 로딩 지연을 고려하여 약간의 딜레이 후 재생
-                if (voices.length === 0) {
+                 if (voices.length === 0) {
                      setTimeout(() => speak(fullSentence), 100);
                 } else {
                     speak(fullSentence);
