@@ -127,8 +127,11 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 1rem;
             flex-wrap: nowrap;
+            max-width: 500px;
+            margin: 0 auto;
         }
         #reset-btn {
             background-color: #fb923c;
@@ -172,6 +175,9 @@
             border-radius: 9999px;
             cursor: pointer;
             transition: background-color 0.2s;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
         .explanation-btn:hover {
             background-color: #818cf8;
@@ -223,6 +229,53 @@
         .modal-close-btn:hover {
             background-color: #3b82f6;
         }
+        /* 모바일 세로 모드 최적화 (9:16) - 추가된 부분 */
+        @media (max-width: 640px) and (orientation: portrait) {
+            header h1 {
+                font-size: 1.5rem; /* 제목 크기 줄이기 */
+            }
+            header p {
+                font-size: 0.875rem; /* 설명 글씨 크기 줄이기 */
+                margin-top: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+            #score-board {
+                flex-wrap: nowrap; /* 줄바꿈 방지 */
+                justify-content: center;
+                gap: 0.25rem; /* 간격 줄이기 */
+                padding: 0.5rem; /* 패딩 줄이기 */
+                max-width: 90%; /* 화면 폭에 맞게 조정 */
+            }
+            #score-board #score-text, #score-board #percentage-text {
+                font-size: 0.75rem; /* 글씨 크기 줄이기 */
+                text-align: center;
+                white-space: nowrap;
+            }
+            #score-board #reset-btn {
+                font-size: 0.75rem; /* 버튼 글씨 크기 줄이기 */
+                padding: 0.3rem 0.6rem; /* 버튼 패딩 줄이기 */
+            }
+            .card-container {
+                height: 22rem;
+            }
+            .card-front h2 {
+                font-size: 2.5rem;
+            }
+            .card-back h3 {
+                font-size: 1.5rem;
+            }
+            .card-back p.text-lg {
+                font-size: 1rem;
+            }
+            .quiz-options {
+                /* 수정된 부분 */
+                grid-template-columns: repeat(2, 1fr);
+                padding: 0 0.5rem;
+            }
+            .option-btn {
+                padding: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body class="bg-emerald-100">
@@ -231,6 +284,7 @@
         <div class="max-w-5xl mx-auto text-center px-4">
             <h1 class="text-3xl sm:text-4xl font-bold text-emerald-800" style="font-family: 'Noto Sans KR', sans-serif;">중등 필수 단어/숙어 퀴즈 (3과) 🍳</h1>
             <p class="text-gray-600 mt-2 mb-6">카드 뒷면의 보기 중 알맞은 동사를 선택해보세요!</p>
+            <!-- 수정된 부분: justify-content-center를 추가하여 내부 요소를 중앙 정렬 -->
             <div id="score-board" class="max-w-xl mx-auto">
                 <span id="score-text" class="text-lg font-bold text-emerald-800 whitespace-nowrap">점수: 0점 / 0점</span>
                 <span id="percentage-text" class="text-sm text-gray-600 whitespace-nowrap">정답률: 0.0% (0/0)</span>
@@ -258,7 +312,7 @@
     <script>
         const words = [
             // Words
-            { eng: 'bake', pos: '동사', kor: '굽다', ipa: '[beɪk]', kor_pron: '베이크', forms: 'bake - baked - baked', sentence_parts: { p1: 'My mom', verb: 'bakes', p2: 'cookies every Christmas.' }, options: ['bake', 'bakes', 'baked', 'baking'], sentence_kor: '우리 엄마는 매년 크리스마스에 쿠키를 구우신다.', explanation: "주어 'My mom'이 3인칭 단수이고, 'every Christmas'는 반복되는 행동을 나타내므로 현재 시제 동사에 -s를 붙인 'bakes'가 정답입니다." },
+            { eng: 'bake', pos: '동사', kor: '굽다', ipa: '[beɪk]', kor_pron: '베이크', forms: 'bake - baked - baked', sentence_parts: { p1: 'She', verb: 'bakes', p2: 'cookies every Sunday.' }, options: ['bake', 'bakes', 'baked', 'baking'], sentence_kor: '그녀는 일요일 마다 쿠키를 구우신다.', explanation: "주어 'She'는 3인칭 단수이고, 'every Sunday'는 반복되는 행동을 나타내므로 현재 시제 동사에 -s를 붙인 'bakes'가 정답입니다." },
             { eng: 'prepare', pos: '동사', kor: '준비하다', ipa: '[prɪˈper]', kor_pron: '프리페어', forms: 'prepare - prepared - prepared', sentence_parts: { p1: 'You need to', verb: 'prepare', p2: 'for the exam.' }, options: ['prepare', 'prepares', 'prepared', 'preparing'], sentence_kor: '너는 시험을 준비해야 한다.', explanation: "조동사적 용법으로 쓰인 'need to' 다음에는 동사 원형이 와야 하므로 'prepare'가 정답입니다." },
             { eng: 'boil', pos: '동사', kor: '끓다, 삶다', ipa: '[bɔɪl]', kor_pron: '보일', forms: 'boil - boiled - boiled', sentence_parts: { p1: 'Water', verb: 'boils', p2: 'at 100 degrees Celsius.' }, options: ['boil', 'boils', 'boiled', 'boiling'], sentence_kor: '물은 섭씨 100도에서 끓는다.', explanation: "주어 'Water'는 셀 수 없는 명사로 단수 취급하며, 과학적 사실은 현재 시제로 표현하므로 동사에 -s를 붙인 'boils'가 정답입니다." },
             { eng: 'shine', pos: '동사', kor: '빛나다', ipa: '[ʃaɪn]', kor_pron: '샤인', forms: 'shine - shone - shone', sentence_parts: { p1: 'The sun', verb: 'is shining', p2: 'brightly today.' }, options: ['shine', 'shines', 'shone', 'is shining'], sentence_kor: '오늘은 해가 밝게 빛나고 있다.', explanation: "지금 이 순간 빛나고 있는 진행 중인 상황을 묘사하므로 현재 진행형 'is shining'이 정답입니다." },
@@ -398,7 +452,7 @@
                         <div class="text-base sm:text-lg w-full">
                             <p class="mb-2 sentence-container flex items-center justify-center">
                                 <span>${p1}</span>
-                                <span class="font-bold text-xl quiz-placeholder">&nbsp;&nbsp;(...)&nbsp;&nbsp;</span>
+                                <span class="font-bold text-xl quiz-placeholder">&nbsp;(...)&nbsp;</span>
                                 <span>${p2}</span>
                                 <button class="sentence-play-btn">🔊</button>
                             </p>
@@ -449,7 +503,7 @@
                     answeredCount++;
                     updateScoreDisplay();
                     
-                    quizPlaceholder.innerHTML = `&nbsp;&nbsp;${correctAnswer}&nbsp;&nbsp;`;
+                    quizPlaceholder.innerHTML = `&nbsp;${correctAnswer}&nbsp;`;
                     quizPlaceholder.classList.add('text-fuchsia-500');
                     sentencePlayButton.style.display = 'inline-block';
                     explanationBtn.style.display = 'inline-block';
