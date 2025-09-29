@@ -86,7 +86,8 @@
   .link-button{
     display:block;
     width:100%;
-    max-width: 280px;
+    /* 수정: 버튼 텍스트가 잘리는 것을 방지하기 위해 최대 너비를 400px로 증가 */
+    max-width: 400px;
     background-color: var(--brand);
     color:white;
     padding:0.75rem 1.5rem;
@@ -96,6 +97,10 @@
     text-decoration:none;
     margin-bottom:1rem;
     transition:background-color 0.2s;
+    /* 텍스트 한 줄 유지 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .link-button:hover{
     background-color:var(--brand-hover);
@@ -142,6 +147,10 @@
     .content-container{
       flex-direction:column;
       padding: 1rem;
+    }
+    /* 수정: 모바일에서 텍스트가 잘리는 것을 방지하기 위해 버튼 글꼴 크기 축소 */
+    .link-button {
+      font-size: 0.8rem; 
     }
   }
 </style>
@@ -218,31 +227,3 @@
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
