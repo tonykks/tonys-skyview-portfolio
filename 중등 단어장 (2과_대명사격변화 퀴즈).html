@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>중등 단어 퀴즈 (2과) - 대명사 격 선택</title>
+    <!-- Tailwind CSS 로드 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 한글 폰트 (고우운돋움, 노토 산스 KR) 로드 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <style>
+        /* 기본 글꼴 설정 */
+        body {
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+        /* 플립 카드 효과 설정 */
+        .card-container {
+            perspective: 1000px;
+            cursor: pointer;
+            height: 320px; /* 카드 높이 고정 */
+        }
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            text-align: center;
+        }
+        .card-front {
+            background-color: #93c5fd; /* bg-blue-300 */
+            color: #1e3a8a; /* text-blue-900 */
+        }
+        .card-back {
+            background-color: #eff6ff; /* bg-blue-50 */
+            color: #1e40af; /* text-blue-800 */
+            transform: rotateY(180deg);
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        /* 발음 버튼 스타일 */
+        .play-btn {
+            background-color: #60a5fa;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+        }
+        .play-btn:hover {
+            background-color: #3b82f6;
+        }
+        .sentence-play-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            vertical-align: middle;
+            margin-left: 0.25rem;
+            display: none; /* 초기 숨김 */
+            color: #2563eb;
+            transition: color 0.2s;
+        }
+        .sentence-play-btn:hover {
+            color: #1d4ed8;
+        }
+
+        /* 변화형 표시 스타일 */
+        .word-forms {
+            background-color: #dbeafe;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-style: italic;
+            height: 2.25rem; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 퀴즈 옵션 그리드 */
+        .quiz-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0 1rem;
+            margin-top: 0.5rem;
+        }
+        .option-btn {
+            background-color: white;
+            border: 2px solid #60a5fa;
+            color: #1e40af;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #dbeafe;
+        }
+        /* 정답/오답 스타일 */
+        .option-btn.correct {
+            background-color: #34d399;
+            border-color: #059669;
+            color: white;
+        }
+        .option-btn.incorrect {
+            background-color: #f87171;
+            border-color: #dc2626;
+            color: white;
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        /* 스코어 보드 및 리셋 버튼 */
+        #score-board {
+            background-color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: nowrap;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        #reset-btn {
+            background-color: #fb923c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+        }
+        #reset-btn:hover:not(:disabled) {
+            background-color: #f97316;
+        }
+        #reset-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        /* 해설 버튼 */
+        .explanation-btn {
+            display: none;
+            margin-top: 8px;
+            padding: 6px 14px;
+            background-color: #a5b4fc;
+            color: white;
+            font-weight: bold;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 0.875rem;
+        }
+        .explanation-btn:hover {
+            background-color: #818cf8;
+        }
+        .show-btn-animation {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 해설 모달 */
+        #explanation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        #explanation-modal.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+        #explanation-modal.visible .modal-content {
+            transform: scale(1);
+        }
+        .modal-close-btn {
+            margin-top: 1.5rem;
+            padding: 0.5rem 1.5rem;
+            background-color: #60a5fa;
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .modal-close-btn:hover {
+            background-color: #3b82f6;
+        }
+
+        /* 모바일 최적화 */
+        @media (max-width: 640px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+            header p {
+                font-size: 0.875rem;
+                margin-top: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+            #score-board {
+                gap: 0.5rem;
+                padding: 0.5rem;
+            }
+            #score-board #score-text, #score-board #percentage-text {
+                font-size: 0.75rem;
+            }
+            #score-board #reset-btn {
+                font-size: 0.75rem;
+                padding: 0.3rem 0.6rem;
+            }
+            .card-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-blue-100 min-h-screen pb-10">
+
+    <header class="sticky top-0 z-10 bg-blue-100 py-4 shadow-md">
+        <div class="max-w-5xl mx-auto text-center px-4">
+            <h1 class="text-3xl sm:text-4xl font-bold text-blue-800" style="font-family: 'Noto Sans KR', sans-serif;">중등 단어 퀴즈 (2과) - 대명사 격 선택 ✍️</h1>
+            <p class="text-gray-600 mt-2 mb-6">카드 뒷면의 보기 중 알맞은 인칭대명사의 <span class="font-bold text-red-500">격(Case)</span>을 선택해보세요!</p>
+            <div id="score-board">
+                <span id="score-text" class="text-lg font-bold text-blue-800 whitespace-nowrap">점수: 0점 / 400점</span>
+                <span id="percentage-text" class="text-sm text-gray-600 whitespace-nowrap">정답률: 0.0% (0/0)</span>
+                <button id="reset-btn" disabled>다시 풀기 🔄</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="p-4 sm:p-8">
+        <!-- 카드는 JavaScript로 여기에 생성됩니다. -->
+        <div id="card-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            <!-- Loading message or initial content -->
+            <div class="col-span-1 sm:col-span-2 text-center text-lg text-gray-500">
+                <p>로딩 중... 잠시만 기다려 주세요.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- 해설 모달 -->
+    <div id="explanation-modal">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4">정답 해설 💡</h2>
+            <!-- 해설 텍스트가 여기에 표시됩니다. -->
+            <div id="explanation-text" class="text-gray-700 text-left whitespace-pre-wrap text-base sm:text-lg"></div>
+            <button id="modal-close-btn" class="modal-close-btn">닫기</button>
+        </div>
+    </div>
+
+
+    <script>
+        // ----------------------------------------------------------------------
+        // 1. 단어 데이터 (40개 항목) - 중등 2과 단어 및 대명사 격 퀴즈 데이터
+        // ----------------------------------------------------------------------
+        const words = [
+            // Words (1-15)
+            { eng: 'watch', pos: '동사', kor: '보다; 조심하다', ipa: '[wɑːtʃ]', kor_pron: '와치', forms: 'watch - watched - watched', sentence_parts: { p1: 'Be careful! They are watching', verb: 'us', p2: '.' }, options: ["we", "our", "us", "ourselves"], sentence_kor: '조심해! 그들이 우리를 보고 있어.', explanation: "타동사 'watching(보고 있다)'의 뒤는 **목적어** 자리입니다. 따라서 대명사의 목적격인 'us'가 정답입니다." },
+            { eng: 'draw', pos: '동사', kor: '그리다', ipa: '[drɔː]', kor_pron: '드로우', forms: 'draw - drew - drawn', sentence_parts: { p1: 'This amazing picture is not', verb: 'mine', p2: '.' }, options: ["I", "my", "me", "mine"], sentence_kor: '이 놀라운 그림은 나의 것이 아니다.', explanation: "be동사 'is not'의 뒤는 주어를 보충 설명하는 **주격 보어** 자리입니다. '그림은 나의 것이 아니다'는 소유의 의미를 나타내므로 소유대명사 'mine'이 정답입니다." },
+            { eng: 'welcome', pos: '동사', kor: '환영하다', ipa: '[ˈwelkəm]', kor_pron: '웰컴', forms: 'welcome - welcomed - welcomed', sentence_parts: { p1: 'I was happy that', verb: 'she', p2: 'welcomed me.' }, options: ["she", "her", "hers", "herself"], sentence_kor: '나는 그녀가 나를 환영해 주어서 기뻤다.', explanation: "종속절 'that ( ) welcomed me'에서 빈칸은 동사 'welcomed'의 **주어** 자리입니다. 따라서 주격 'she'가 정답입니다." },
+            { eng: 'need', pos: '동사', kor: '필요로 하다', ipa: '[niːd]', kor_pron: '니드', forms: 'need - needed - needed', sentence_parts: { p1: 'This small puppy needs', verb: 'your', p2: 'attention.' }, options: ["you", "your", "yours", "yourself"], sentence_kor: '이 작은 강아지는 너의 주의가 필요하다.', explanation: "( ) 뒤에 명사 'attention(주의)'이 이어지고 있습니다. 명사를 **수식**하여 '너의 주의'라는 소유 관계를 나타내야 하므로 소유격 'your'가 정답입니다." },
+            { eng: 'carry', pos: '동사', kor: '나르다, 운반하다', ipa: '[ˈkæri]', kor_pron: '캐리', forms: 'carry - carried - carried', sentence_parts: { p1: 'They carry the heavy bag', verb: 'themselves', p2: '.' }, options: ["they", "their", "them", "themselves"], sentence_kor: '그들은 그 무거운 가방을 그들 스스로 나른다.', explanation: "문맥상 '그들 스스로' 직접 가방을 나른다는 뜻으로 **주어(They)를 강조**하기 위해 재귀대명사 'themselves'를 사용했습니다. (강조 용법)" },
+            { eng: 'clean', pos: '동사', kor: '청소하다', ipa: '[kliːn]', kor_pron: '클린', forms: 'clean - cleaned - cleaned', sentence_parts: { p1: 'We cleaned the room by', verb: 'ourselves', p2: '.' }, options: ["we", "our", "us", "ourselves"], sentence_kor: '우리는 그 방을 혼자서 청소했다.', explanation: "전치사 'by'의 목적어 자리입니다. 문맥상 '혼자서'라는 의미를 나타내고 주어(We)와 동일 대상을 가리키므로 재귀대명사의 관용적 표현인 'ourselves'가 정답입니다." },
+            { eng: 'invite', pos: '동사', kor: '초대하다', ipa: '[ɪnˈvaɪt]', kor_pron: '인바이트', forms: 'invite - invited - invited', sentence_parts: { p1: 'I invited', verb: 'her', p2: 'to my birthday party.' }, options: ["she", "her", "hers", "herself"], sentence_kor: '나는 그녀를 내 생일 파티에 초대했다.', explanation: "타동사 'invited(초대했다)'의 뒤는 **목적어** 자리입니다. 따라서 대명사의 목적격인 'her'가 정답입니다." },
+            { eng: 'leave', pos: '동사', kor: '떠나다, 남기다', ipa: '[liːv]', kor_pron: '리브', forms: 'leave - left - left', sentence_parts: { p1: 'He left his umbrella behind', verb: 'him', p2: '.' }, options: ["he", "his", "him", "himself"], sentence_kor: '그는 그의 우산을 뒤에 남겨두었다.', explanation: "전치사 'behind'의 뒤는 **목적어** 자리입니다. 따라서 대명사의 목적격인 'him'이 정답입니다." },
+            { eng: 'grow', pos: '동사', kor: '크다, 키우다', ipa: '[ɡroʊ]', kor_pron: '그로우', forms: 'grow - grew - grown', sentence_parts: { p1: 'My little brother grows his vegetables by', verb: 'himself', p2: '.' }, options: ["he", "his", "him", "himself"], sentence_kor: '나의 남동생은 혼자서 채소를 키운다.', explanation: "전치사 'by'의 목적어 자리입니다. 주어(My little brother, 즉 He)와 동일 대상을 가리키므로 재귀대명사의 관용적 표현인 'himself'가 정답입니다." },
+            { eng: 'throw', pos: '동사', kor: '던지다', ipa: '[θroʊ]', kor_pron: '쓰로우', forms: 'throw - threw - thrown', sentence_parts: { p1: 'We threw a ball to', verb: 'them', p2: '.' }, options: ["they", "their", "them", "theirs"], sentence_kor: '우리는 그들에게 공을 던졌다.', explanation: "전치사 'to'의 뒤는 반드시 **목적어** 자리입니다. 따라서 대명사의 목적격인 'them'이 정답입니다." },
+            { eng: 'live', pos: '동사', kor: '살다, 생활하다', ipa: '[lɪv]', kor_pron: '리브', forms: 'live - lived - lived', sentence_parts: { p1: 'I want to live a happy life with', verb: 'him', p2: '.' }, options: ["he", "his", "him", "himself"], sentence_kor: '나는 그와 함께 행복한 삶을 살고 싶다.', explanation: "전치사 'with'의 뒤는 반드시 **목적어** 자리입니다. 따라서 대명사의 목적격인 'him'이 정답입니다." },
+            { eng: 'believe', pos: '동사', kor: '믿다, 생각하다', ipa: '[bɪˈliːv]', kor_pron: '빌리브', forms: 'believe - believed - believed', sentence_parts: { p1: 'I believe that', verb: 'we', p2: 'can do it.', p2: 'can do it.' }, options: ["we", "our", "us", "ourselves"], sentence_kor: '나는 우리가 그것을 할 수 있다고 믿는다.', explanation: "종속절 'that ( ) can do it'에서 빈칸은 조동사 'can'의 **주어** 자리입니다. 따라서 주격 'we'가 정답입니다." },
+            { eng: 'remember', pos: '동사', kor: '기억하다, 명심하다', ipa: '[rɪˈmembər]', kor_pron: '리멤버', forms: 'remember - remembered - remembered', sentence_parts: { p1: 'Do you remember', verb: 'my', p2: 'name from last year?' }, options: ["I", "my", "me", "mine"], sentence_kor: '너는 작년에 나의 이름을 기억하니?', explanation: "( ) 뒤에 명사 'name(이름)'이 이어지고 있습니다. 명사를 **수식**하여 '나의 이름'이라는 소유 관계를 나타내야 하므로 소유격 'my'가 정답입니다." },
+            { eng: 'communicate', pos: '동사', kor: '의사소통하다', ipa: '[kəˈmjuːnɪkeɪt]', kor_pron: '커뮤니케이트', forms: 'communicate - communicated - communicated', sentence_parts: { p1: 'It is important that', verb: 'she', p2: 'communicates clearly.' }, options: ["she", "her", "hers", "herself"], sentence_kor: '그녀가 명확하게 의사소통하는 것이 중요하다.', explanation: "종속절 'that ( ) communicates clearly'에서 빈칸은 동사 'communicates'의 **주어** 자리입니다. 따라서 주격 'she'가 정답입니다." },
+            { eng: 'daily', pos: '형용사', kor: '매일의', ipa: '[ˈdeɪli]', kor_pron: '데일리', forms: 'daily (N/A)', sentence_parts: { p1: 'It is important to maintain', verb: 'your', p2: 'daily routine.' }, options: ["you", "your", "yours", "yourself"], sentence_kor: '너의 매일의 일과를 유지하는 것이 중요하다.', explanation: "( ) 뒤에 명사 'routine(일과)'이 이어지고 있습니다. 명사를 **수식**하여 '너의 일과'라는 소유 관계를 나타내야 하므로 소유격 'your'가 정답입니다." },
+
+            // Words (16-30)
+            { eng: 'pretty', pos: '부사', kor: '꽤, 매우', ipa: '[ˈprɪti]', kor_pron: '프리티', forms: 'pretty (adv.)', sentence_parts: { p1: 'The small house is pretty, but it is not', verb: 'theirs', p2: '.' }, options: ["they", "their", "them", "theirs"], sentence_kor: '그 작은 집은 예쁘지만, 그것은 그들의 것이 아니다.', explanation: "be동사 'is not'의 뒤는 **주격 보어** 자리입니다. '그들의 것'이라는 소유의 의미를 나타내므로 소유대명사 'theirs'가 정답입니다." },
+            { eng: 'beautiful', pos: '형용사', kor: '아름다운', ipa: '[ˈbjuːtɪfl]', kor_pron: '뷰티풀', forms: 'beautiful - more beautiful - most beautiful', sentence_parts: { p1: 'I saw a beautiful picture that', verb: 'they', p2: 'drew.' }, options: ["they", "their", "them", "theirs"], sentence_kor: '나는 그들이 그린 아름다운 그림을 봤다.', explanation: "종속절 'that ( ) drew'에서 빈칸은 동사 'drew'의 **주어** 자리입니다. 따라서 주격 'they'가 정답입니다." },
+            { eng: 'busy', pos: '형용사', kor: '바쁜', ipa: '[ˈbɪzi]', kor_pron: '비지', forms: 'busy - busier - busiest', sentence_parts: { p1: 'He is always busy planning', verb: 'his', p2: 'next vacation.' }, options: ["he", "his", "him", "himself"], sentence_kor: '그는 항상 그의 다음 휴가를 계획하느라 바쁘다.', explanation: "( ) 뒤에 명사 'vacation(휴가)'이 이어지고 있습니다. 명사를 **수식**하여 '그의 휴가'라는 소유 관계를 나타내야 하므로 소유격 'his'가 정답입니다." },
+            { eng: 'usual', pos: '형용사', kor: '보통의, 평소의', ipa: '[ˈjuːʒuəl]', kor_pron: '유주얼', forms: 'usual (N/A)', sentence_parts: { p1: 'We follow our usual routine with', verb: 'her', p2: '.' }, options: ["she", "her", "hers", "herself"], sentence_kor: '우리는 그녀와 함께 우리의 평소 일과를 따른다.', explanation: "전치사 'with'의 뒤는 반드시 **목적어** 자리입니다. 따라서 대명사의 목적격인 'her'가 정답입니다." },
+            { eng: 'different', pos: '형용사', kor: '다른', ipa: '[ˈdɪfrənt]', kor_pron: '디프런트', forms: 'different - more different - most different', sentence_parts: { p1: 'The difference between us and', verb: 'them', p2: 'is small.' }, options: ["they", "their", "them", "theirs"], sentence_kor: '우리와 그들 사이의 차이는 작다.', explanation: "전치사 'between'의 뒤는 반드시 **목적어** 자리입니다. 따라서 대명사의 목적격인 'them'이 정답입니다." },
+            { eng: 'child', pos: '명사', kor: '아이, 자식', ipa: '[tʃaɪld]', kor_pron: '차일드', forms: 'child / children', sentence_parts: { p1: 'They love their child as much as', verb: 'themselves', p2: '.' }, options: ["they", "their", "them", "themselves"], sentence_kor: '그들은 그들의 자녀를 그들 자신만큼 사랑한다.', explanation: "비교급 'as much as'의 뒤는 **목적어** 자리이며, 주어(They)와 동일한 대상을 가리키므로 재귀대명사 'themselves'가 정답입니다." },
+            { eng: 'grandparent', pos: '명사', kor: '조부모', ipa: '[ˈɡrændpærənt]', kor_pron: '그랜페런트', forms: 'grandparent / grandparents', sentence_parts: { p1: 'My grandparent gave the gift to', verb: 'me', p2: '.' }, options: ["I", "my", "me", "mine"], sentence_kor: '나의 조부모님은 나에게 그 선물을 주셨다.', explanation: "수여동사 'gave(주었다)'의 뒤는 **간접 목적어** 자리입니다. 따라서 대명사의 목적격인 'me'가 정답입니다." },
+            { eng: 'neighbor', pos: '명사', kor: '이웃, 근처의', ipa: '[ˈneɪbər]', kor_pron: '네이버', forms: 'neighbor / neighbors', sentence_parts: { p1: 'Our neighbor is kinder than', verb: 'yours', p2: '.' }, options: ["you", "your", "yours", "yourself"], sentence_kor: '우리 이웃은 너희 이웃보다 친절하다.', explanation: "비교 구문에서 뒤는 **비교 대상** 자리이며, 문맥상 '너의 이웃' 즉 소유의 의미를 나타내므로 소유대명사 'yours'가 정답입니다." },
+            { eng: 'relative', pos: '명사', kor: '친척', ipa: '[ˈrelətɪv]', kor_pron: '렐러티브', forms: 'relative / relatives', sentence_parts: { p1: 'She introduced', verb: 'us', p2: 'to her relatives.' }, options: ["we", "our", "us", "ourselves"], sentence_kor: '그녀는 우리를 그녀의 친척들에게 소개했다.', explanation: "타동사 'introduced(소개했다)'의 뒤는 **목적어** 자리입니다. 따라서 대명사의 목적격인 'us'가 정답입니다." },
+            { eng: 'diary', pos: '명사', kor: '일기', ipa: '[ˈdaɪəri]', kor_pron: '다이어리', forms: 'diary / diaries', sentence_parts: { p1: 'This diary belongs to', verb: 'him', p2: '.' }, options: ["he", "his", "him", "himself"], sentence_kor: '이 일기는 그에게 속해있다.', explanation: "숙어 'belongs to (~에 속하다)'에서 전치사 'to'의 뒤는 **목적어** 자리입니다. 따라서 대명사의 목적격인 'him'이 정답입니다." },
+            { eng: 'birth', pos: '명사', kor: '탄생, 출생', ipa: '[bɜːrθ]', kor_pron: '벌쓰', forms: 'birth / births', sentence_parts: { p1: 'The date of his birth is a secret from', verb: 'me', p2: '.' }, options: ["I", "my", "me", "mine"], sentence_kor: '그의 생일은 나에게는 비밀이다.', explanation: "전치사 'from'의 뒤는 반드시 **목적어** 자리입니다. 따라서 대명사의 목적격인 'me'가 정답입니다." },
+            { eng: 'water', pos: '명사', kor: '물; 음료수', ipa: '[ˈwɔːtər]', kor_pron: '워터', forms: 'water (n.)', sentence_parts: { p1: 'We drank the water and gave', verb: 'ours', p2: 'to them.' }, options: ["we", "our", "us", "ours"], sentence_kor: '우리는 물을 마시고 우리의 것(물)을 그들에게 주었다.', explanation: "타동사 'gave(주었다)'의 뒤는 **직접 목적어** 자리입니다. '우리의 것(우리가 가진 물)'이라는 소유의 의미를 나타내므로 소유대명사 'ours'가 정답입니다." },
+            { eng: 'plant', pos: '명사', kor: '식물, 나무', ipa: '[plænt]', kor_pron: '플랜트', forms: 'plant / plants', sentence_parts: { p1: 'The plants need', verb: 'their', p2: 'own water and sunlight.' }, options: ["they", "their", "them", "theirs"], sentence_kor: '그 식물들은 그들 자신의 물과 햇빛이 필요하다.', explanation: "( ) 뒤에 명사 'water(물)'가 이어지고 있습니다. 명사를 **수식**하여 '그들의 물'이라는 소유 관계를 나타내야 하므로 소유격 'their'가 정답입니다." },
+            { eng: 'sometimes', pos: '부사', kor: '때때로, 가끔', ipa: '[ˈsʌmtaɪmz]', kor_pron: '썸타임즈', forms: 'sometimes (adv.)', sentence_parts: { p1: 'Sometimes, this work feels too big for', verb: 'me', p2: '.' }, options: ["I", "my", "me", "mine"], sentence_kor: '때때로, 이 일은 나에게 너무 버겁게 느껴진다.', explanation: "전치사 'for'의 뒤는 반드시 **목적어** 자리입니다. 따라서 대명사의 목적격인 'me'가 정답입니다." },
+            { eng: 'often', pos: '부사', kor: '자주, 흔히', ipa: '[ˈɔːfn]', kor_pron: '오픈', forms: 'often (adv.)', sentence_parts: { p1: 'Do you often use', verb: 'your', p2: 'phone for studying?' }, options: ["you", "your", "yours", "yourself"], sentence_kor: '너는 공부를 위해 네 휴대폰을 자주 사용하니?', explanation: "( ) 뒤에 명사 'phone(휴대폰)'이 이어지고 있습니다. 명사를 **수식**하여 '너의 휴대폰'이라는 소유 관계를 나타내야 하므로 소유격 'your'가 정답입니다." },
+
+            // Phrases (31-36)
+            { eng: 'look at', pos: '숙어', kor: '~을 보다', ipa: '[lʊk æt]', kor_pron: '룩 앳', forms: 'look - looked - looked', sentence_parts: { p1: 'Look at the beautiful picture that', verb: 'she', p2: 'drew.' }, options: ["she", "her", "hers", "herself"], sentence_kor: '그녀가 그린 아름다운 그림을 봐라.', explanation: "종속절 'that ( ) drew'에서 빈칸은 동사 'drew'의 **주어** 자리입니다. 따라서 주격 'she'가 정답입니다." },
+            { eng: 'grow up', pos: '숙어', kor: '자라다, 성장하다', ipa: '[ɡroʊ ʌp]', kor_pron: '그로우 업', forms: 'grow - grew - grown', sentence_parts: { p1: 'He grew up in a place that is totally different from', verb: 'mine', p2: '.' }, options: ["I", "my", "me", "mine"], sentence_kor: '그는 나의 것(내가 자란 곳)과는 완전히 다른 곳에서 자랐다.', explanation: "전치사 'from'의 목적어 자리입니다. '내가 자란 곳'이라는 소유의 의미를 나타내므로 소유대명사 'mine'이 정답입니다." },
+            { eng: 'hang out with', pos: '숙어', kor: '~와 시간을 보내다', ipa: '[hæŋ aʊt wɪθ]', kor_pron: '행 아웃 위드', forms: 'hang - hung - hung', sentence_parts: { p1: 'We like to hang out with', verb: 'them', p2: 'at the park.' }, options: ["they", "their", "them", "theirs"], sentence_kor: '우리는 공원에서 그들과 어울리는 것을 좋아한다.', explanation: "전치사 'with'의 뒤는 반드시 **목적어** 자리입니다. 따라서 대명사의 목적격인 'them'이 정답입니다." },
+            { eng: 'look for', pos: '숙어', kor: '찾다, 기대하다', ipa: '[lʊk fɔːr]', kor_pron: '룩 포', forms: 'look - looked - looked', sentence_parts: { p1: 'The dog always looks for', verb: 'its', p2: 'owner.' }, options: ["it", "its", "it's", "itself"], sentence_kor: '그 개는 항상 자신의 주인을 찾는다.', explanation: "( ) 뒤에 명사 'owner(주인)'가 이어지고 있습니다. 명사를 **수식**하여 '자신의 주인'이라는 소유 관계를 나타내야 하므로 소유격 'its'가 정답입니다." },
+            { eng: 'take a walk', pos: '숙어', kor: '산책하다', ipa: '[teɪk ə wɔːk]', kor_pron: '테이크 어 워크', forms: 'take - took - taken', sentence_parts: { p1: 'I told', verb: 'him', p2: 'to take a walk every morning.' }, options: ["he", "his", "him", "himself"], sentence_kor: '나는 그에게 매일 아침 산책하라고 말했다.', explanation: "동사 'told(말했다)'의 뒤는 **목적어** 자리입니다. 'I told ( ) to take...'는 5형식 구조이므로 목적격 'him'이 정답입니다." },
+            { eng: 'keep one\'s promise', pos: '숙어', kor: '약속을 지키다', ipa: '[kiːp wʌnz ˈprɑːmɪs]', kor_pron: '킵 원즈 프라미스', forms: 'keep - kept - kept', sentence_parts: { p1: 'You must keep', verb: 'your', p2: 'promise to the team.' }, options: ["you", "your", "yours", "yourself"], sentence_kor: '너는 팀에게 한 너의 약속을 지켜야 한다.', explanation: "( ) 뒤에 명사 'promise(약속)'가 이어지고 있습니다. 명사를 **수식**하여 '너의 약속'이라는 소유 관계를 나타내야 하므로 소유격 'your'가 정답입니다." },
+
+            // English-English Dictionary (37-40)
+            { eng: 'adult', pos: '명사', kor: '성인, 어른', ipa: '[ˈædʌlt]', kor_pron: '어덜트', forms: 'adult / adults', sentence_parts: { p1: 'We are all adults who can take care of', verb: 'ourselves', p2: '.' }, options: ["we", "our", "us", "ourselves"], sentence_kor: '우리는 모두 우리 자신을 돌볼 수 있는 성인들이다.', explanation: "전치사 'of'의 목적어 자리이며, 주어(We)와 동일한 대상을 가리키므로 재귀대명사 'ourselves'가 정답입니다." },
+            { eng: 'cousin', pos: '명사', kor: '사촌', ipa: '[ˈkʌzn]', kor_pron: '커즌', forms: 'cousin / cousins', sentence_parts: { p1: 'I always have to share my room with', verb: 'her', p2: 'cousin.' }, options: ["she", "her", "hers", "herself"], sentence_kor: '나는 항상 그녀의 사촌과 방을 공유해야 한다.', explanation: "( ) 뒤에 명사 'cousin(사촌)'이 이어지고 있습니다. 명사를 **수식**하여 '그녀의 사촌'이라는 소유 관계를 나타내야 하므로 소유격 'her'가 정답입니다." },
+            { eng: 'visit', pos: '동사', kor: '방문하다', ipa: '[ˈvɪzɪt]', kor_pron: '비지트', forms: 'visit - visited - visited', sentence_parts: { p1: 'This house is for people who want to visit', verb: 'us', p2: '.' }, options: ["we", "our", "us", "ourselves"], sentence_kor: '이 집은 우리를 방문하려는 사람들을 위한 것이다.', explanation: "타동사 'visit(방문하다)'의 뒤는 **목적어** 자리입니다. 따라서 대명사의 목적격인 'us'가 정답입니다." },
+            { eng: 'greet', pos: '동사', kor: '인사하다, 맞이하다', ipa: '[ɡriːt]', kor_pron: '그리트', forms: 'greet - greeted - greeted', sentence_parts: { p1: 'When the teacher greets us, we greet', verb: 'her', p2: 'back.' }, options: ["she", "her", "hers", "herself"], sentence_kor: '선생님이 우리에게 인사할 때, 우리는 그녀에게 다시 인사한다.', explanation: "타동사 'greet(인사하다)'의 뒤는 **목적어** 자리입니다. 따라서 대명사의 목적격인 'her'가 정답입니다." }
+        ];
+
+        // ----------------------------------------------------------------------
+        // 2. DOM 및 상태 관리
+        // ----------------------------------------------------------------------
+        const cardGrid = document.getElementById('card-grid');
+        const scoreText = document.getElementById('score-text');
+        const percentageText = document.getElementById('percentage-text');
+        const resetButton = document.getElementById('reset-btn');
+        const modal = document.getElementById('explanation-modal');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const explanationText = document.getElementById('explanation-text');
+        
+        // SpeechSynthesis API 관련 변수
+        const synth = window.speechSynthesis;
+        let voices = [];
+        let isVoicesLoaded = false;
+
+        let currentScore = 0;
+        let answeredCount = 0;
+        const totalProblems = words.length;
+        const maxScore = totalProblems * 10;
+
+        // ----------------------------------------------------------------------
+        // 3. 음성 합성 (TTS) 로직
+        // ----------------------------------------------------------------------
+
+        // 음성 로딩 함수: 영어(en-) 목소리만 필터링
+        function loadVoices() { 
+            voices = synth.getVoices().filter(voice => voice.lang.startsWith('en-'));
+            if (voices.length > 0) {
+                isVoicesLoaded = true;
+            }
+        }
+        
+        // 목소리 변화 이벤트 감지 (Chrome/Mobile에서 지연될 수 있음)
+        loadVoices();
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = loadVoices;
+        }
+
+        /**
+         * 영어 텍스트를 발음합니다.
+         * @param {string} text 발음할 텍스트
+         */
+        function speak(text) {
+            if (!synth) {
+                console.error("SpeechSynthesis API is not supported.");
+                return;
+            }
+            if (synth.speaking) {
+                synth.cancel();
+            }
+            
+            const utterThis = new SpeechSynthesisUtterance(text);
+            
+            // US English 목소리를 찾고, 없으면 en-으로 시작하는 아무 목소리나 사용
+            let selectedVoice = voices.find(voice => voice.name.includes('Google US English')) || voices.find(voice => voice.lang.startsWith('en-US'));
+            
+            if (selectedVoice) {
+                utterThis.voice = selectedVoice;
+            } else if (voices.length > 0) {
+                utterThis.voice = voices[0]; // fallback to first available English voice
+            }
+
+            utterThis.lang = 'en-US'; // 언어 설정 명시
+            utterThis.rate = 0.9;
+            synth.speak(utterThis);
+        }
+
+        // ----------------------------------------------------------------------
+        // 4. 유틸리티 함수
+        // ----------------------------------------------------------------------
+
+        /**
+         * 배열 요소를 무작위로 섞습니다 (Fisher-Yates 알고리즘).
+         * @param {Array} array 섞을 배열
+         */
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        /**
+         * 점수판을 업데이트합니다.
+         */
+        function updateScoreDisplay() {
+            const correctAnswers = currentScore / 10;
+            // answeredCount가 0일 때 0.0%를 표시하도록 처리
+            const percentage = answeredCount > 0 ? (correctAnswers / answeredCount * 100).toFixed(1) : (answeredCount === 0 ? '0.0' : 'N/A');
+            scoreText.textContent = `점수: ${currentScore}점 / ${maxScore}점`;
+            percentageText.textContent = `정답률: ${percentage}% (${correctAnswers}/${answeredCount})`;
+        }
+
+        // ----------------------------------------------------------------------
+        // 5. 카드 생성 및 이벤트 처리
+        // ----------------------------------------------------------------------
+
+        /**
+         * 단어 데이터를 기반으로 플립 카드를 생성합니다.
+         * @param {Object} wordData 단어 데이터 객체
+         */
+        function createCard(wordData) {
+            const cardContainer = document.createElement('div');
+            cardContainer.className = 'card-container';
+            const { p1, verb, p2 } = wordData.sentence_parts; // verb는 정답이 되는 대명사
+
+            // 변화형(Forms) 정보가 있을 때만 표시
+            const formsHTML = wordData.forms ? 
+                `<div class="word-forms text-base text-blue-700 font-semibold"><p>${wordData.forms}</p></div>` 
+                : '<div class="word-forms h-9"></div>'; // 높이 유지를 위해 빈 Div에도 높이 지정
+            
+            const shuffledOptions = [...wordData.options];
+            shuffleArray(shuffledOptions);
+
+            const optionsHTML = shuffledOptions.map(option => 
+                `<button class="option-btn">${option}</button>`
+            ).join('');
+
+            cardContainer.innerHTML = `
+                <div class="card">
+                    <!-- 카드 앞면: 단어 -->
+                    <div class="card-face card-front">
+                        <h2 class="text-4xl sm:text-5xl font-bold p-2">${wordData.eng}</h2>
+                    </div>
+                    
+                    <!-- 카드 뒷면: 퀴즈 및 정보 -->
+                    <div class="card-face card-back">
+                        <!-- 단어 정보 및 발음 버튼 -->
+                        <div class="flex items-start w-full gap-3">
+                            <div class="flex-grow text-left">
+                                <h3 class="text-xl sm:text-2xl font-bold text-blue-800">${wordData.eng} 
+                                    <span class="text-base font-normal text-blue-700">[${wordData.pos}] ${wordData.kor}</span>
+                                </h3>
+                                <p class="text-sm sm:text-lg font-semibold text-blue-600">${wordData.ipa} (${wordData.kor_pron})</p>
+                            </div>
+                            <button class="play-btn" data-word="${wordData.eng}" title="단어 발음 듣기">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </button>
+                        </div>
+                        
+                        ${formsHTML}
+
+                        <hr class="w-full border-t border-blue-200 mt-2">
+
+                        <!-- 퀴즈 영역 -->
+                        <div class="text-base sm:text-lg w-full flex flex-col items-center">
+                            <!-- 예문 -->
+                            <p class="mb-2 sentence-container flex flex-wrap items-center justify-center text-lg sm:text-xl font-semibold leading-relaxed">
+                                <span>${p1}</span>
+                                <span class="font-bold text-xl quiz-placeholder text-red-500">&nbsp;&nbsp;(...)&nbsp;&nbsp;</span>
+                                <span>${p2}</span>
+                                <button class="sentence-play-btn" data-sentence="${p1} ${verb} ${p2}" title="예문 발음 듣기">🔊</button>
+                            </p>
+                            <!-- 퀴즈 옵션 -->
+                            <div class="quiz-options">
+                                ${optionsHTML}
+                            </div>
+                            <!-- 한글 해석 -->
+                            <p class="text-gray-500 mt-2 text-sm sm:text-base">${wordData.sentence_kor}</p>
+                            <!-- 해설 버튼 -->
+                            <button class="explanation-btn">해설 보기</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            cardGrid.appendChild(cardContainer);
+
+            const card = cardContainer.querySelector('.card');
+            const playButton = cardContainer.querySelector('.play-btn');
+            const optionButtons = cardContainer.querySelectorAll('.option-btn');
+            const quizPlaceholder = cardContainer.querySelector('.quiz-placeholder');
+            const sentencePlayButton = cardContainer.querySelector('.sentence-play-btn');
+            const explanationBtn = cardContainer.querySelector('.explanation-btn');
+            
+            // 1. 카드 플립 이벤트 (버튼 클릭 제외)
+            cardContainer.addEventListener('click', (e) => {
+                if (!e.target.closest('.option-btn') && !e.target.closest('.play-btn') && !e.target.closest('.sentence-play-btn') && !e.target.closest('.explanation-btn')) {
+                    card.classList.toggle('flipped');
+                }
+            });
+
+            // 2. 옵션 버튼 클릭 이벤트 (퀴즈 로직)
+            optionButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    
+                    const selectedAnswer = button.textContent;
+                    const correctAnswer = wordData.sentence_parts.verb; // 정답 키
+
+                    if (button.disabled) return; // 이미 답변 완료
+
+                    if (selectedAnswer === correctAnswer) {
+                        button.classList.add('correct');
+                        currentScore += 10;
+                    } else {
+                        button.classList.add('incorrect');
+                        optionButtons.forEach(btn => {
+                            if (btn.textContent === correctAnswer) {
+                                btn.classList.add('correct'); // 정답 표시
+                            }
+                        });
+                    }
+                    
+                    answeredCount++;
+                    updateScoreDisplay();
+                    
+                    // 정답 표시 및 문장 듣기/해설 버튼 활성화
+                    quizPlaceholder.innerHTML = `<span class="text-red-700">&nbsp;&nbsp;${correctAnswer}&nbsp;&nbsp;</span>`;
+                    sentencePlayButton.style.display = 'inline-block';
+                    
+                    explanationBtn.classList.add('show-btn-animation');
+                    explanationBtn.style.display = 'block';
+
+                    // 모든 버튼 비활성화
+                    optionButtons.forEach(btn => {
+                        btn.disabled = true;
+                    });
+
+                    // 모든 문제 답변 완료 시 리셋 버튼 활성화
+                    if (answeredCount === totalProblems) {
+                        resetButton.disabled = false;
+                    }
+                });
+            });
+
+            // 3. 단어 발음 듣기
+            playButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const wordToSpeak = e.currentTarget.dataset.word;
+                
+                // 모바일 환경을 고려하여 음성 로딩 지연 시 재시도 로직 추가
+                function attemptSpeak() {
+                    speak(wordToSpeak);
+                    
+                    setTimeout(() => {
+                        if (synth.pending || synth.speaking) return; 
+                        speak(wordToSpeak); // 2차 시도
+                    }, 150);
+                }
+                
+                attemptSpeak();
+            });
+
+            // 4. 문장 발음 듣기
+            sentencePlayButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const fullSentence = e.currentTarget.dataset.sentence;
+                speak(fullSentence);
+            });
+
+            // 5. 해설 보기 모달 팝업
+            explanationBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // 해설 텍스트의 볼드체(**) 마크다운을 <strong> 태그로 변환하여 표시
+                explanationText.innerHTML = wordData.explanation.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                modal.classList.add('visible');
+            });
+        }
+
+        /**
+         * 퀴즈를 초기화하고 카드를 다시 로드합니다.
+         */
+        function initializeQuiz() {
+            cardGrid.innerHTML = '';
+            currentScore = 0;
+            answeredCount = 0;
+            updateScoreDisplay();
+            resetButton.disabled = true;
+            
+            // 단어 배열 셔플
+            const shuffledWords = [...words];
+            shuffleArray(shuffledWords);
+
+            // 카드 생성
+            shuffledWords.forEach(createCard);
+            
+            // 로딩 메시지 제거 (카드 생성 완료 후)
+            if (cardGrid.children.length > 0 && cardGrid.children[0].classList.contains('col-span-1')) {
+                const loadingMessage = cardGrid.children[0];
+                if (loadingMessage.querySelector('p').textContent.includes('로딩 중')) {
+                    cardGrid.removeChild(loadingMessage);
+                }
+            }
+        }
+        
+        // ----------------------------------------------------------------------
+        // 6. 전역 이벤트 리스너
+        // ----------------------------------------------------------------------
+
+        // 모달 닫기 버튼
+        modalCloseBtn.addEventListener('click', () => {
+            modal.classList.remove('visible');
+        });
+
+        // 모달 바깥 영역 클릭 시 닫기
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('visible');
+            }
+        });
+        
+        // 다시 풀기 버튼
+        resetButton.addEventListener('click', initializeQuiz);
+
+        // 초기 실행: 페이지 로드 후 퀴즈 시작
+        window.onload = initializeQuiz;
+    </script>
+</body>
+</html>
