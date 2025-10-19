@@ -237,27 +237,33 @@
 /* Ensure dropdown overlays and captures clicks */
 .dropdown-content { z-index: 9999; pointer-events: auto; }
 
-/* == 모바일 전용: English 드롭다운 폭 및 간격 최적화 == */
+/* == 모바일 전용: English 버튼 폭과 동일한 세로 드롭다운 == */
 @media (max-width: 640px) {
+  #english-menu {
+    position: relative;
+  }
+
   #english-menu .dropdown-content {
-    top: calc(100% + 6px);
-    left: 10px;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    width: 100%;             /* English 버튼 폭과 동일하게 설정 */
     transform: none;
     flex-direction: column;
     align-items: stretch;
-    min-width: 100px;      /* 더 좁게: 기존 170px → 150px */
-    max-width: 70vw;       /* 화면의 약 70% 폭 */
-    gap: 1px;              /* 버튼 간격 적당히 좁게 유지 */
+    gap: 2px;                /* 버튼 간격 절반으로 줄임 */
     border-radius: 10px;
-    padding: 4px;
+    padding: 3px;
   }
+
   #english-menu .nav-subbtn {
     width: 100%;
     text-align: left;
-    padding: 9px 10px;     /* 좌우 패딩 살짝 줄임 */
-    font-size: 0.93rem;    /* 글자 크기 약간 축소 */
+    padding: 8px 10px;        /* 버튼 높이도 살짝 줄임 */
+    font-size: 0.9rem;
   }
 }
+
 
 </style>
 </head>
