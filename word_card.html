@@ -153,6 +153,90 @@
       font-size: 0.8rem; 
     }
   }
+
+/* ─── English 드롭다운 ───────────────────────────── */
+.dropdown { position: relative; display: inline-block; }
+
+/* 기본: 숨김, 데스크톱은 hover로 표시 */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--brand, #2b5aa6);
+  border-radius: 12px;
+  min-width: 180px;
+  padding: 6px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.25);
+  z-index: 50;
+}
+.dropdown:hover .dropdown-content { display: block; }
+
+/* 서브 버튼(드롭다운 내부 링크) */
+.nav-subbtn {
+  display: block;
+  margin: 6px;
+  padding: 10px 14px;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  background: var(--brand, #2b5aa6);
+  text-align: center;
+  white-space: nowrap;
+}
+.nav-subbtn:hover { background: var(--brand-hover, #4e7bd9); }
+
+/* 모바일/터치: 클릭 토글 보조 */
+@media (hover: none) {
+  .dropdown:hover .dropdown-content { display: none; }
+}
+
+
+/* ─── Override: English dropdown centered under button, horizontal layout ─── */
+.dropdown { position: relative; display: inline-block; }
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;              /* directly under the English button */
+  left: 50%;              /* center align to the button */
+  transform: translateX(-50%);
+  background: var(--brand, #2b5aa6);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.25);
+  z-index: 50;
+  gap: 8px;
+}
+
+.dropdown:hover .dropdown-content {
+  display: flex;          /* show horizontally on hover for pointer devices */
+  flex-direction: row;
+  justify-content: center;
+}
+
+.nav-subbtn {
+  display: inline-block;
+  padding: 10px 16px;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  background: var(--brand, #2b5aa6);
+  text-align: center;
+  white-space: nowrap;
+  font-size: 0.95rem;
+}
+.nav-subbtn:hover { background: var(--brand-hover, #4e7bd9); }
+
+@media (hover: none) {
+  .dropdown:hover .dropdown-content { display: none; }
+}
+
+
+/* Ensure dropdown overlays and captures clicks */
+.dropdown-content { z-index: 9999; pointer-events: auto; }
+
 </style>
 </head>
 <body>
@@ -163,7 +247,16 @@
     <a href="index.html" class="nav-btn">Home</a>
     <a href="videos.html" class="nav-btn">Videos</a>
     <a href="shorts.html" class="nav-btn">Shorts</a>
-    <a href="word_card.html" class="nav-btn">Word Card</a>
+    
+<div class="dropdown" id="english-menu">
+  <a href="#" class="nav-btn dropdown-toggle" aria-expanded="false">English ▾</a>
+  <div class="dropdown-content" role="menu" aria-label="English submenu">
+    <a href="e.html" class="nav-subbtn" role="menuitem">초 등 용</a>
+    <a href="m.html" class="nav-subbtn" role="menuitem">중 등 용</a>
+    <a href="g.html" class="nav-subbtn" role="menuitem">문법해설</a>
+  </div>
+</div>
+
     <a href="https://smile21c.notion.site/my-profile" class="nav-btn" target="_blank" rel="noopener">About Me</a>
     <a href="#" class="nav-btn" id="contact-btn">Contact Me</a>
   </div>
@@ -232,6 +325,29 @@
     contactModal.addEventListener('click',e=>{ if(e.target===contactModal){ contactModal.style.display='none'; contactModal.setAttribute('aria-hidden','true');}});
   }
 </script>
+
+<script>
+  // English 드롭다운: 터치/클릭 토글
+  (function () {
+    var root = document.getElementById('english-menu');
+    if (!root) return;
+    var btn  = root.querySelector('.dropdown-toggle');
+    var menu = root.querySelector('.dropdown-content');
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var open = menu.style.display === 'flex';
+      menu.style.display = open ? 'none' : 'flex';
+      btn.setAttribute('aria-expanded', (!open).toString());
+    });
+    document.addEventListener('click', function(e) {
+      if (!root.contains(e.target)) {
+        menu.style.display = 'none';
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  })();
+</script>
+
 </body>
 </html>
 
