@@ -1,2 +1,2 @@
 # tonys-skyview-portfolio
-My personal Video & English portfolio website
+A portfolio website showcasing my YouTube videos and English teaching projects.
