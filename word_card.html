@@ -2,23 +2,39 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8"/>
-<!-- ★★★ [여기] 4번줄 바로 아래에 붙여넣으세요 ★★★ -->
+<!-- ★★★ 스마트폰 인앱 환경 통합 처리 코드는 여기부터 ★★★ -->
 <script type="text/javascript">
 (function() {
-    var userAgent = navigator.userAgent.toLowerCase();
+    var ua = navigator.userAgent.toLowerCase();
+    var isInApp = /kakaotalk|naver|line|fbav|instagram/i.test(ua);
+    var isAndroid = /android/i.test(ua);
+    var isiOS = /iphone|ipad|ipod/i.test(ua);
     var targetUrl = location.href;
 
-    if (userAgent.match(/kakaotalk|naver|line|fbav|instagram/i)) {
-        if (userAgent.match(/android/i)) {
-            location.href = 'intent://' + targetUrl.replace(/https?:\/\//i, '') + '#Intent;scheme=https;package=com.android.chrome;end';
-        } else if (userAgent.match(/iphone|ipad|ipod/i)) {
-            // 아이폰은 강제 이동이 안되므로 사용자가 직접 열도록 유도
-            // 필요시 alert('화면 상단 점 3개를 눌러 Safari로 열어주세요'); 
-        }
+    // 1) Android 인앱 → Chrome으로 자동 이동
+    if (isInApp && isAndroid) {
+        location.href =
+            'intent://' +
+            targetUrl.replace(/https?:\/\//i, '') +
+            '#Intent;scheme=https;package=com.android.chrome;end';
+        return;
+    }
+
+    // 2) iOS 인앱 → Safari 안내문
+    if (isInApp && isiOS) {
+        alert(
+            "⚠️ iPhone에서는 카카오톡/네이버/라인 등 앱 안에서 열리면\n" +
+            "단어카드가 정상 표시되지 않을 수 있어요.\n\n" +
+            "📌 해결 방법:\n" +
+            "1) 화면 오른쪽 위의 ⋯ 점 3개를 누르고,\n" +
+            "2) 'Safari에서 열기'를 선택해주세요.\n\n" +
+            "Safari에서 열면 모든 기능이 정상적으로 작동합니다. 😊"
+        );
     }
 })();
 </script>
-<!-- ★★★ [여기까지] 모든 스마프폰에서 접속 가능하도록 하는 코드 ★★★ -->  
+<!-- ★★★ 스마트폰 인앱 환경 통합 처리 코드는 여기까지 ★★★ -->
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Tony's SkyView Portfolio - Word Card</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
