@@ -2,6 +2,23 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8"/>
+<!-- ★★★ [여기] 4번줄 바로 아래에 붙여넣으세요 ★★★ -->
+<script type="text/javascript">
+(function() {
+    var userAgent = navigator.userAgent.toLowerCase();
+    var targetUrl = location.href;
+
+    if (userAgent.match(/kakaotalk|naver|line|fbav|instagram/i)) {
+        if (userAgent.match(/android/i)) {
+            location.href = 'intent://' + targetUrl.replace(/https?:\/\//i, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+        } else if (userAgent.match(/iphone|ipad|ipod/i)) {
+            // 아이폰은 강제 이동이 안되므로 사용자가 직접 열도록 유도
+            // 필요시 alert('화면 상단 점 3개를 눌러 Safari로 열어주세요'); 
+        }
+    }
+})();
+</script>
+<!-- ★★★ [여기까지] 모든 스마프폰에서 접속 가능하도록 하는 코드 ★★★ -->  
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Tony's SkyView Portfolio - Word Card</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
