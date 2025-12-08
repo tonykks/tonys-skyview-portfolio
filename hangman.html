@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syntax Hangman: Class 6</title>
+    <!-- 1. Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 2. React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- 3. Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body { background-color: #0f172a; color: #e2e8f0; user-select: none; font-family: 'Segoe UI', sans-serif; }
+        .animate-fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* 흔들림 효과 (오답 시) */
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
+        textarea:focus { outline: 2px solid #6366f1; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // =============================================================================
+        // 1. SYSTEM CONFIGURATION
+        // =============================================================================
+        
+        // 주인님의 GAS 웹앱 URL (고정됨)
+        const API_URL = "https://script.google.com/macros/s/AKfycbzPzXmZVfTwNFVgNOuL7nnVbupVcbVw3IrHBvfAr9MTr6HwBFTSJcJVyjvLah6AT_nLnw/exec";
+
+        // 6과 텍스트 데이터 내장
+        const RAW_TEXT_DATA = `
+wear — She wears a blue jacket every day.
+(그녀는 매일 파란 재킷을 입는다.)
+
+fit — These shoes fit me well.
+(이 신발은 나에게 잘 맞는다.)
+
+move — My family moves to a new house this month.
+(우리 가족은 이번 달에 새 집으로 이사한다.)
+
+turn — He turns the handle slowly.
+(그는 손잡이를 천천히 돌린다.)
+
+lend — I lend my friend a pencil in class.
+(나는 수업 시간에 친구에게 연필을 빌려준다.)
+
+rent — They rent a small apartment near school.
+(그들은 학교 근처의 작은 아파트를 빌린다.)
+
+build — Workers build a new bridge over the river.
+(근로자들은 강 위에 새 다리를 건설한다.)
+
+suit — The dress suits her very well.
+(그 드레스는 그녀에게 정말 잘 어울린다.)
+
+use — We use this room for meetings.
+(우리는 이 방을 회의에 사용한다.)
+
+comfortable — This sofa feels very comfortable.
+(이 소파는 매우 편안하게 느껴진다.)
+
+convenient — Online shopping is convenient for busy people.
+(온라인 쇼핑은 바쁜 사람들에게 편리하다.)
+
+empty — The classroom is empty after school.
+(방과 후에는 교실이 비어 있다.)
+
+loose — These pants are too loose for me.
+(이 바지는 나에게 너무 헐렁하다.)
+
+tight — Her shoes are tight on her feet.
+(그녀의 신발은 발에 꽉 낀다.)
+
+other — He helps other students with homework.
+(그는 다른 학생들을 숙제로 도와준다.)
+
+upstairs — My parents sleep upstairs.
+(우리 부모님은 위층에서 주무신다.)
+
+stair — The cat sits on the stair quietly.
+(그 고양이는 계단에 조용히 앉아 있다.)
+
+cloth — She cleans the table with a soft cloth.
+(그녀는 부드러운 천으로 테이블을 닦는다.)
+
+closet — His closet is full of clothes.
+(그의 벽장은 옷으로 가득 차 있다.)
+
+furniture — This room needs more furniture.
+(이 방은 가구가 더 필요하다.)
+
+laundry — Mom does the laundry on weekends.
+(엄마는 주말에 빨래를 한다.)
+
+mirror — I look in the mirror every morning.
+(나는 매일 아침 거울을 본다.)
+
+address — She writes her new address on the form.
+(그녀는 양식에 새 주소를 적는다.)
+
+floor — The floor gets cold in winter.
+(겨울에는 바닥이 차가워진다.)
+
+garbage — He takes out the garbage every night.
+(그는 매일 밤 쓰레기를 버린다.)
+
+trash — The trash smells bad in hot weather.
+(더운 날씨에는 쓰레기에서 냄새가 난다.)
+
+community — Our community holds a festival every year.
+(우리 지역 사회는 매년 축제를 연다.)
+
+lock — She locks the door before bed.
+(그녀는 잠자기 전에 문을 잠근다.)
+
+refrigerator — The refrigerator keeps the food fresh.
+(냉장고는 음식을 신선하게 유지한다.)
+
+besides — He studies math, and besides, he learns music.
+(그는 수학을 공부하고, 게다가 음악도 배운다.)
+
+put on — She puts on her coat before going out.
+(그녀는 나가기 전에 코트를 입는다.)
+
+take off — He takes off his shoes at the door.
+(그는 현관에서 신발을 벗는다.)
+
+had better — You had better finish your homework now.
+(너는 지금 숙제를 끝내는 것이 좋겠다.)
+
+turn on — Dad turns on the TV after dinner.
+(아빠는 저녁 식사 후 TV를 켠다.)
+
+turn off — Please turn off the lights when you leave.
+(나갈 때 불을 꺼 주세요.)
+
+be able to — She is able to speak three languages.
+(그녀는 세 가지 언어를 할 수 있다.)
+
+repair — He repairs old bikes in his garage.
+(그는 차고에서 오래된 자전거들을 수리한다.)
+
+borrow — I borrow books from the library every week.
+(나는 매주 도서관에서 책을 빌린다.)
+
+kitchen — Our kitchen has a large window.
+(우리 부엌에는 큰 창문이 있다.)
+
+garage — The garage holds two cars.
+(그 차고에는 차 두 대가 들어간다.)
+`;
+
+        // =============================================================================
+        // 2. UTILITY FUNCTIONS
+        // =============================================================================
+
+        // [Parser] 텍스트 파일을 게임 데이터로 변환 (6과 파일 형식 전용)
+        const parseTextData = (text) => {
+            const lines = text.split('\n').filter(line => line.trim() !== "");
+            const parsedData = [];
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                // "단어 — 문장" 패턴 찾기 (대시 종류 다양성 대응)
+                if (line.includes('—') || line.includes('- ')) {
+                    const separator = line.includes('—') ? '—' : '-';
+                    const parts = line.split(separator);
+                    
+                    const headword = parts[0].trim();
+                    // 문장 뒤에 또 대시가 있을 수 있으므로 나머지를 합침
+                    const english = parts.slice(1).join(separator).trim();
+                    
+                    // 다음 줄이 (한글 뜻) 인지 확인
+                    let korean = "해석 없음";
+                    if (i + 1 < lines.length) {
+                        const nextLine = lines[i+1].trim();
+                        if (nextLine.startsWith('(') && nextLine.endsWith(')')) {
+                            korean = nextLine.slice(1, -1); // 괄호 제거
+                            i++; // 다음 줄 처리했으므로 인덱스 증가
+                        }
+                    }
+                    
+                    if (english) {
+                        parsedData.push({
+                            id: parsedData.length + 1,
+                            headword: headword,
+                            english: english,
+                            korean: korean
+                        });
+                    }
+                }
+            }
+            return parsedData;
+        };
+
+        // [TTS] 원어민 발음 재생
+        const speakText = (text) => {
+            if (!window.speechSynthesis) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.85; 
+            window.speechSynthesis.speak(utterance);
+        };
+
+        // [API] 점수 저장 (CORS 안전 모드)
+        const saveScoreToCloud = async (username, score, totalProblems) => {
+            if (!API_URL) return false;
+            try {
+                // GAS는 'text/plain'으로 보내야 CORS 오류 없이 처리 가능
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'saveScore',
+                        username: username,
+                        score: score,
+                        log: `Completed ${score/10}/${totalProblems} questions`
+                    })
+                });
+                return true;
+            } catch (e) {
+                console.error("Save Error:", e);
+                return false;
+            }
+        };
+
+        // 아이콘 (SVG)
+        const Icon = ({ path }) => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{path}</svg>;
+        const I = {
+            Book: <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />,
+            Play: <polygon points="5 3 19 12 5 21 5 3" />,
+            Rotate: <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 12 M3 3v9h9" />,
+            Volume: <path d="M11 5 6 9 2 9 2 15 6 15 11 19 11 5 M19.07 4.93a10 10 0 0 1 0 14.14 M15.54 8.46a5 5 0 0 1 0 7.07" />
+        };
+
+        // =============================================================================
+        // 3. REACT COMPONENTS
+        // =============================================================================
+        
+        const { useState, useEffect, useRef, useCallback } = React;
+
+        // [Component] 행맨 캔버스
+        const HangmanCanvas = ({ mistakes }) => {
+            const canvasRef = useRef(null);
+            const drawnRef = useRef(0);
+
+            useEffect(() => {
+                const canvas = canvasRef.current;
+                const ctx = canvas.getContext('2d');
+                ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+
+                if (mistakes === 0) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    drawnRef.current = 0;
+                    return;
+                }
+
+                const drawPart = (step) => {
+                    ctx.beginPath();
+                    if(step===1) { ctx.moveTo(50,250); ctx.lineTo(250,250); ctx.moveTo(100,250); ctx.lineTo(100,50); ctx.lineTo(200,50); ctx.lineTo(200,80); }
+                    if(step===2) { ctx.moveTo(220,100); ctx.arc(200,100,20,0,Math.PI*2); }
+                    if(step===3) { ctx.moveTo(200,120); ctx.lineTo(200,190); }
+                    if(step===4) { ctx.moveTo(200,130); ctx.lineTo(170,160); ctx.moveTo(200,130); ctx.lineTo(230,160); }
+                    if(step===5) { ctx.moveTo(200,190); ctx.lineTo(170,230); ctx.moveTo(200,190); ctx.lineTo(230,230); }
+                    ctx.stroke();
+                };
+
+                if (mistakes > drawnRef.current) {
+                    for (let i = drawnRef.current + 1; i <= mistakes; i++) {
+                        setTimeout(() => drawPart(i), (i - drawnRef.current - 1) * 300);
+                    }
+                    drawnRef.current = mistakes;
+                }
+            }, [mistakes]);
+
+            return (
+                <div className="bg-slate-800 rounded-xl p-4 flex justify-center items-center shadow-inner border border-slate-700">
+                    <canvas ref={canvasRef} width={300} height={300} className="w-full h-auto" />
+                </div>
+            );
+        };
+
+        // [Main App]
+        function App() {
+            const [step, setStep] = useState('LOGIN'); 
+            const [username, setUsername] = useState('');
+            const [rawData, setRawData] = useState('');
+            const [gameData, setGameData] = useState([]);
+            
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [targetWords, setTargetWords] = useState([]);
+            const [scrambledWords, setScrambledWords] = useState([]);
+            const [userSelection, setUserSelection] = useState([]);
+            
+            const [mistakes, setMistakes] = useState(0);
+            const [score, setScore] = useState(0);
+            const [isShake, setIsShake] = useState(false);
+            const [isSaving, setIsSaving] = useState(false);
+
+            // 초기 로드 시 RAW_TEXT_DATA 자동 파싱
+            useEffect(() => {
+                const parsed = parseTextData(RAW_TEXT_DATA);
+                if (parsed.length > 0) {
+                    setGameData(parsed.sort(() => Math.random() - 0.5));
+                }
+            }, []);
+
+            const handleLogin = () => {
+                if (username.trim().length < 1) return alert("이름을 입력해주세요.");
+                setStep('INPUT'); // 이름 입력 후 데이터 확인 단계로 이동
+            };
+
+            const handleDataConfirm = () => {
+                // 이미 RAW_TEXT_DATA가 로드되어 있으므로 바로 게임 시작 가능
+                // 또는 사용자가 직접 입력한 rawData가 있다면 그것을 우선 사용
+                const textToUse = rawData.trim() ? rawData : RAW_TEXT_DATA;
+                const parsed = parseTextData(textToUse);
+                
+                if (parsed.length === 0) return alert("데이터가 없습니다.");
+                
+                const shuffled = parsed.sort(() => Math.random() - 0.5);
+                setGameData(shuffled);
+                initLevel(shuffled[0]);
+                setStep('GAME');
+            };
+
+            const initLevel = (problem) => {
+                const cleanSentence = problem.english.replace(/[.!?]$/, '');
+                const words = problem.english.match(/[\w']+|[.,!?;]/g);
+
+                setTargetWords(words);
+                setUserSelection([]);
+                setMistakes(0);
+                
+                const bank = words.map((w, i) => ({ text: w, id: i, used: false }));
+                for (let i = bank.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [bank[i], bank[j]] = [bank[j], bank[i]];
+                }
+                setScrambledWords(bank);
+            };
+
+            const handleWordClick = (wordObj) => {
+                const nextIndex = userSelection.length;
+                const correctWord = targetWords[nextIndex];
+
+                if (wordObj.text.toLowerCase() === correctWord.toLowerCase()) {
+                    speakText(correctWord);
+                    setUserSelection([...userSelection, correctWord]);
+                    setScrambledWords(scrambledWords.map(w => w.id === wordObj.id ? { ...w, used: true } : w));
+
+                    if (userSelection.length + 1 === targetWords.length) {
+                        setScore(prev => prev + 10);
+                        setTimeout(() => {
+                            speakText(gameData[currentIndex].english);
+                            if (currentIndex + 1 < gameData.length) {
+                                setTimeout(() => {
+                                    setCurrentIndex(prev => prev + 1);
+                                    initLevel(gameData[currentIndex + 1]);
+                                }, 1500);
+                            } else {
+                                setStep('RESULT');
+                                autoSave();
+                            }
+                        }, 500);
+                    }
+                } else {
+                    setIsShake(true);
+                    setTimeout(() => setIsShake(false), 500);
+                    setMistakes(prev => prev + 1);
+                    if (mistakes + 1 >= 5) {
+                        alert(`정답: ${gameData[currentIndex].english}`);
+                        if (currentIndex + 1 < gameData.length) {
+                            setCurrentIndex(prev => prev + 1);
+                            initLevel(gameData[currentIndex + 1]);
+                        } else {
+                            setStep('RESULT');
+                            autoSave();
+                        }
+                    }
+                }
+            };
+
+            const autoSave = async () => {
+                setIsSaving(true);
+                await saveScoreToCloud(username, score + (userSelection.length === targetWords.length ? 10 : 0), gameData.length);
+                setIsSaving(false);
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col items-center justify-center p-4">
+                    {/* 1. LOGIN */}
+                    {step === 'LOGIN' && (
+                        <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-slate-700 animate-fade-in">
+                            <h1 className="text-3xl font-bold text-indigo-400 mb-6 text-center flex justify-center gap-2">
+                                <Icon path={I.Book} /> Syntax Hangman
+                            </h1>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-slate-400 text-sm mb-2">Student Name</label>
+                                    <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}
+                                        className="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white text-center text-lg focus:border-indigo-500 outline-none"
+                                        placeholder="이름을 입력하세요" onKeyPress={(e) => e.key === 'Enter' && handleLogin()} />
+                                </div>
+                                <button onClick={handleLogin} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-lg transition">NEXT</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 2. DATA CONFIRM (Previously INPUT) */}
+                    {step === 'INPUT' && (
+                        <div className="bg-slate-800 p-6 rounded-2xl shadow-2xl w-full max-w-2xl border border-slate-700 animate-fade-in flex flex-col h-[80vh]">
+                            <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                                <span className="bg-indigo-600 text-xs px-2 py-1 rounded">Step 2</span> 데이터 확인
+                            </h2>
+                            <p className="text-slate-400 text-xs mb-4">기본 데이터가 로드되었습니다. 필요시 수정하거나 바로 시작하세요.</p>
+                            <textarea className="flex-grow bg-slate-900 border border-slate-600 rounded p-4 text-green-400 font-mono text-sm resize-none mb-4 focus:border-indigo-500 outline-none"
+                                value={rawData || RAW_TEXT_DATA} onChange={(e) => setRawData(e.target.value)}
+                                spellCheck="false"></textarea>
+                            <button onClick={handleDataConfirm} className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg transition">GAME START</button>
+                        </div>
+                    )}
+
+                    {/* 3. GAME */}
+                    {step === 'GAME' && gameData[currentIndex] && (
+                        <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade-in">
+                            <div className="lg:col-span-4 flex flex-col gap-4">
+                                <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-lg text-center">
+                                    <p className="text-slate-400 text-sm">Player: <span className="text-white font-bold">{username}</span></p>
+                                    <div className="mt-2 flex justify-center gap-4 text-xs font-mono">
+                                        <span className="bg-slate-900 px-2 py-1 rounded text-indigo-400">Score: {score}</span>
+                                        <span className="bg-slate-900 px-2 py-1 rounded text-pink-400">Q: {currentIndex + 1}/{gameData.length}</span>
+                                    </div>
+                                </div>
+                                <HangmanCanvas mistakes={mistakes} />
+                                <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 text-center">
+                                    <p className="text-slate-500 text-xs uppercase tracking-widest mb-1">Key Word</p>
+                                    <p className="text-2xl font-bold text-yellow-400">{gameData[currentIndex].headword}</p>
+                                </div>
+                            </div>
+
+                            <div className="lg:col-span-8 bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg flex flex-col justify-between min-h-[500px]">
+                                <div className="text-center space-y-6 mt-8">
+                                    <div>
+                                        <p className="text-indigo-400 text-xs font-bold tracking-wider uppercase mb-2">Translate This</p>
+                                        <h2 className="text-2xl md:text-3xl font-bold text-white break-keep leading-relaxed">"{gameData[currentIndex].korean}"</h2>
+                                    </div>
+                                    <div className="flex flex-wrap justify-center gap-2 min-h-[60px]">
+                                        {targetWords.map((word, idx) => (
+                                            <div key={idx} className={`px-4 py-2 rounded-lg text-lg font-medium transition-all duration-300 border-b-4 min-w-[40px] text-center ${idx < userSelection.length ? 'bg-indigo-600 border-indigo-800 text-white scale-100 shadow-lg' : 'bg-slate-700 border-slate-600 text-transparent'}`}>
+                                                {idx < userSelection.length ? word : '?'}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className={`grid grid-cols-3 sm:grid-cols-4 gap-3 p-4 bg-slate-900/50 rounded-xl border border-slate-700 transition-transform ${isShake ? 'shake border-red-500' : ''}`}>
+                                    {scrambledWords.map((wordObj) => (
+                                        <button key={wordObj.id} onClick={() => !wordObj.used && handleWordClick(wordObj)} disabled={wordObj.used}
+                                            className={`p-3 rounded-lg text-sm font-semibold transition-all duration-150 border active:scale-95 ${wordObj.used ? 'bg-slate-900 text-slate-700 border-slate-800 opacity-50 cursor-default' : 'bg-slate-700 text-slate-200 border-slate-600 hover:bg-slate-600 hover:text-white hover:border-indigo-500 shadow-md'}`}>
+                                            {wordObj.text}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 4. RESULT */}
+                    {step === 'RESULT' && (
+                        <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-slate-700 text-center animate-fade-in">
+                            <h2 className="text-3xl font-bold text-white mb-2">Game Over</h2>
+                            <p className="text-slate-400 mb-6">{username}님의 최종 결과</p>
+                            <div className="text-5xl font-black text-yellow-400 mb-8 drop-shadow-lg">{score} <span className="text-lg text-slate-500 font-normal">pts</span></div>
+                            <div className="bg-slate-900 p-4 rounded-lg mb-6 text-sm text-slate-300">
+                                {isSaving ? "클라우드에 점수 저장 중..." : "✅ 점수가 저장되었습니다!"}
+                            </div>
+                            <button onClick={() => window.location.reload()} className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-lg transition">다시 하기</button>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
