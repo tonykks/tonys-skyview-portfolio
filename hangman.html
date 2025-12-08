@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syntax Hangman: Final</title>
+    <title>Syntax Hangman: Word Card</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
@@ -23,13 +26,14 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        // [설정] GAS 배포 URL
+        // =============================================================================
+        // 1. CONFIGURATION
+        // =============================================================================
         const API_URL = "https://script.google.com/macros/s/AKfycbzPzXmZVfTwNFVgNOuL7nnVbupVcbVw3IrHBvfAr9MTr6HwBFTSJcJVyjvLah6AT_nLnw/exec";
 
-        // [비상용 데이터] 시트 연결 실패 시 보여줄 샘플 (주인님의 시트 구조 반영)
+        // [샘플 데이터] 시트가 없을 때 보여질 기본값
         const FALLBACK_DATA = [
-            { id: 1, word: "wear", meaning: "입다", "word class": "동사", English: "She wears a blue jacket.", Korean: "그녀는 파란 재킷을 입는다." },
-            { id: 2, word: "fit", meaning: "맞다", "word class": "동사", English: "These shoes fit me well.", Korean: "이 신발은 나에게 잘 맞는다." }
+            { id: 1, word: "wear", pos: "verb", meaning: "입다", english: "She wears a blue jacket.", korean: "그녀는 파란 재킷을 입는다." }
         ];
 
         const { useState, useEffect, useRef } = React;
@@ -46,47 +50,52 @@
         const Icon = ({ path }) => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{path}</svg>;
         const I = {
             Volume: <path d="M11 5 6 9 2 9 2 15 6 15 11 19 11 5 M19.07 4.93a10 10 0 0 1 0 14.14 M15.54 8.46a5 5 0 0 1 0 7.07" />,
-            // [수정 완료] JSX 요소가 두 개 이상일 때는 Fragment (<>...</>)로 감싸야 합니다.
             Info: <><circle cx="12" cy="12" r="10" /><path d="M12 16v-4 M12 8h.01" /></>
         };
 
-        // --- 행맨 캔버스 (수정됨: 중앙 정렬 & 크기 확장) ---
+        // --- 컴포넌트: 행맨 캔버스 (좌표 완벽 보정) ---
         const HangmanCanvas = ({ mistakes }) => {
             const canvasRef = useRef(null);
             useEffect(() => {
                 const ctx = canvasRef.current.getContext('2d');
                 ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 4; ctx.lineCap = 'round';
                 
-                // [수정] 300x300 영역 초기화
+                // 300x300 초기화
                 ctx.clearRect(0, 0, 300, 300);
                 
                 const draw = (s) => {
                     ctx.beginPath();
-                    // [수정] 좌표를 전체적으로 오른쪽으로 이동시켜 중앙 배치 (기본 x=50 -> x=75)
-                    // 1. 기둥 (Base: 50~250, Pole: 100)
+                    
+                    // [좌표 수정] 중심축을 x=150으로 설정하여 정중앙 배치
+                    // 1. 기둥 (Base: 50~250, Pole: 50)
                     if(s>=1) { 
-                        ctx.moveTo(50,250); ctx.lineTo(250,250); // 바닥
-                        ctx.moveTo(100,250); ctx.lineTo(100,50); // 기둥
-                        ctx.lineTo(200,50); ctx.lineTo(200,80);  // 상단바 & 밧줄
+                        ctx.moveTo(50,270); ctx.lineTo(250,270); // 바닥 (넓게)
+                        ctx.moveTo(100,270); ctx.lineTo(100,50); // 기둥 (왼쪽)
+                        ctx.lineTo(150,50); ctx.lineTo(150,80);  // 상단바 & 밧줄 (중앙 x=150으로 떨어짐)
                     }
-                    // 2. 머리 (Center: 200, r: 20)
+                    // 2. 머리 (Center: 150, r: 20) -> 정확히 중앙
                     if(s>=2) { 
-                        ctx.moveTo(220,100); 
-                        ctx.arc(200,100,20,0,Math.PI*2); 
+                        ctx.moveTo(170,100); 
+                        ctx.arc(150,100,20,0,Math.PI*2); 
                     }
-                    // 3. 몸통
-                    if(s>=3) { ctx.moveTo(200,120); ctx.lineTo(200,190); }
-                    // 4. 팔
-                    if(s>=4) { ctx.moveTo(200,130); ctx.lineTo(170,160); ctx.moveTo(200,130); ctx.lineTo(230,160); }
-                    // 5. 다리
-                    if(s>=5) { ctx.moveTo(200,190); ctx.lineTo(170,230); ctx.moveTo(200,190); ctx.lineTo(230,230); }
+                    // 3. 몸통 (x=150)
+                    if(s>=3) { ctx.moveTo(150,120); ctx.lineTo(150,190); }
+                    // 4. 팔 (Center 150)
+                    if(s>=4) { 
+                        ctx.moveTo(150,130); ctx.lineTo(120,160); 
+                        ctx.moveTo(150,130); ctx.lineTo(180,160); 
+                    }
+                    // 5. 다리 (Center 150)
+                    if(s>=5) { 
+                        ctx.moveTo(150,190); ctx.lineTo(120,230); 
+                        ctx.moveTo(150,190); ctx.lineTo(180,230); 
+                    }
                     ctx.stroke();
                 };
                 draw(mistakes);
             }, [mistakes]);
             
-            // [수정] 컨테이너 및 캔버스 크기 300으로 고정
-            return <div className="bg-slate-800 p-4 rounded-xl flex justify-center border border-slate-700"><canvas ref={canvasRef} width={300} height={300} className="w-[300px] h-[300px]" /></div>;
+            return <div className="bg-slate-800 p-2 rounded-xl flex justify-center border border-slate-700"><canvas ref={canvasRef} width={300} height={300} className="w-[200px] h-[200px] sm:w-[300px] sm:h-[300px]" /></div>;
         };
 
         // --- 메인 앱 ---
@@ -130,26 +139,22 @@
                 setIsLoading(true);
                 try {
                     let data = [];
-                    // 시트 연결 시도
                     const res = await fetch(`${API_URL}?action=getData&sheet=${selectedSheet}`);
                     const json = await res.json();
                     
                     if (json.status === 'success' && json.data && json.data.length > 0) {
                         data = json.data;
                     } else {
-                        // 실패 시 폴백 데이터 사용 (테스트용)
-                        console.warn("시트 데이터 로드 실패, 샘플 데이터 사용");
+                        console.warn("데이터 로드 실패, 폴백 사용");
                         data = FALLBACK_DATA; 
                     }
 
-                    // 데이터 셔플 및 게임 시작
                     const shuffled = data.sort(() => Math.random() - 0.5);
                     setGameData(shuffled);
                     initLevel(shuffled[0]);
                     setStep('GAME');
 
                 } catch (e) {
-                    // 네트워크 에러 시 폴백
                     setGameData(FALLBACK_DATA);
                     initLevel(FALLBACK_DATA[0]);
                     setStep('GAME');
@@ -160,10 +165,7 @@
 
             // 3. 레벨 초기화
             const initLevel = (problem) => {
-                // [매핑] 시트의 컬럼명을 여기서 연결합니다. 대소문자 유연하게 처리
-                const sentence = problem.English || problem.english || "No Data";
-                
-                // 구두점 처리
+                const sentence = problem.english || problem.English || "No Data";
                 const clean = sentence.trim().replace(/[.!?]$/, ''); 
                 const words = clean.split(/\s+/);
 
@@ -187,7 +189,7 @@
 
                     if (userWords.length + 1 === targetWords.length) {
                         setScore(s => s + 10);
-                        const currentSentence = gameData[qIndex].English || gameData[qIndex].english;
+                        const currentSentence = gameData[qIndex].english || gameData[qIndex].English;
                         setTimeout(() => {
                             speak(currentSentence);
                             if (qIndex + 1 < gameData.length) {
@@ -206,7 +208,7 @@
                     setTimeout(() => setShake(false), 500);
                     setMistakes(m => m + 1);
                     if (mistakes + 1 >= 5) {
-                        const correctSentence = gameData[qIndex].English || gameData[qIndex].english;
+                        const correctSentence = gameData[qIndex].english || gameData[qIndex].English;
                         alert(`정답: ${correctSentence}`);
                         if (qIndex + 1 < gameData.length) {
                             setQIndex(q => q + 1);
@@ -266,7 +268,7 @@
                     {step === 'GAME' && (
                         <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-12 gap-6 animate-fade-in">
                             
-                            {/* 좌측: 행맨 & 단어 카드 */}
+                            {/* 좌측: 행맨 & 단어 정보 카드 */}
                             <div className="md:col-span-4 flex flex-col gap-4">
                                 <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 text-center shadow-lg flex justify-between items-center px-6">
                                     <div className="text-left">
@@ -281,31 +283,35 @@
                                 
                                 <HangmanCanvas mistakes={mistakes} />
 
-                                {/* [단어 정보 카드] 시트 데이터 매핑 */}
+                                {/* [NEW] 단어 정보 카드 (시트 컬럼과 자동 매핑) */}
                                 <div className="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg flex flex-col gap-2">
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            <span className="text-[10px] text-indigo-400 font-bold tracking-wider uppercase block mb-1">WORD INFO</span>
-                                            <h3 className="text-2xl font-bold text-white leading-none">
-                                                {curr.word || curr.headword || '-'}
+                                            <span className="text-[10px] text-indigo-400 font-bold tracking-wider uppercase block mb-1">KEY WORD</span>
+                                            <h3 className="text-2xl font-bold text-white leading-none mb-1">
+                                                {curr.word || curr.headword || 'Word'}
                                             </h3>
-                                            {/* 품사 (word class) */}
-                                            <span className="text-xs text-slate-400 italic">
-                                                {curr['word class'] || curr.pos || ''}
+                                            {/* 품사 표시 (pos 또는 word class) */}
+                                            <span className="inline-block bg-slate-700 text-slate-300 text-[10px] px-2 py-0.5 rounded-full border border-slate-600">
+                                                {curr.pos || curr['word class'] || '품사'}
                                             </span>
                                         </div>
-                                        <button onClick={() => speak(curr.word || 'No word')} 
-                                            className="p-2 bg-slate-700 hover:bg-slate-600 rounded-full text-white transition shadow-sm">
+                                        {/* 듣기 버튼: 표제어 읽기 */}
+                                        <button onClick={() => speak(curr.word || curr.headword || 'word')} 
+                                            className="p-3 bg-indigo-600 hover:bg-indigo-500 rounded-full text-white transition shadow-lg flex items-center justify-center">
                                             <Icon path={I.Volume} />
                                         </button>
                                     </div>
                                     
-                                    <div className="h-px bg-slate-700 my-1"></div>
+                                    <div className="h-px bg-slate-700 my-2"></div>
                                     
-                                    {/* 뜻 (meaning) */}
-                                    <p className="text-base text-emerald-400 font-medium break-keep">
-                                        {curr.meaning || curr.word_meaning || '-'}
-                                    </p>
+                                    {/* 뜻 표시 (meaning) */}
+                                    <div className="flex items-start gap-2">
+                                        <span className="text-slate-500 mt-1"><Icon path={I.Info}/></span>
+                                        <p className="text-base text-emerald-400 font-medium break-keep leading-snug">
+                                            {curr.meaning || curr.word_meaning || '단어의 뜻이 여기에 표시됩니다.'}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
