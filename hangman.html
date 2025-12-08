@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syntax Hangman: Sheet Master</title>
+    <title>Syntax Hangman: Hybrid</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- 문법 변형을 위한 NLP 엔진 -->
     <script src="https://unpkg.com/compromise"></script>
 
     <style>
@@ -25,13 +24,131 @@
 
     <script type="text/babel">
         // =============================================================================
-        // 1. CONFIGURATION
+        // 1. CONFIGURATION & FALLBACK DATA
         // =============================================================================
         const API_URL = "https://script.google.com/macros/s/AKfycbzPzXmZVfTwNFVgNOuL7nnVbupVcbVw3IrHBvfAr9MTr6HwBFTSJcJVyjvLah6AT_nLnw/exec";
+
+        // [Fallback Data] 시트 연결 실패 시 사용할 기본 데이터
+        const RAW_TEXT_DATA = `
+wear — She wears a blue jacket every day.
+(그녀는 매일 파란 재킷을 입는다.)
+fit — These shoes fit me well.
+(이 신발은 나에게 잘 맞는다.)
+move — My family moves to a new house this month.
+(우리 가족은 이번 달에 새 집으로 이사한다.)
+turn — He turns the handle slowly.
+(그는 손잡이를 천천히 돌린다.)
+lend — I lend my friend a pencil in class.
+(나는 수업 시간에 친구에게 연필을 빌려준다.)
+rent — They rent a small apartment near school.
+(그들은 학교 근처의 작은 아파트를 빌린다.)
+build — Workers build a new bridge over the river.
+(근로자들은 강 위에 새 다리를 건설한다.)
+suit — The dress suits her very well.
+(그 드레스는 그녀에게 정말 잘 어울린다.)
+use — We use this room for meetings.
+(우리는 이 방을 회의에 사용한다.)
+comfortable — This sofa feels very comfortable.
+(이 소파는 매우 편안하게 느껴진다.)
+convenient — Online shopping is convenient for busy people.
+(온라인 쇼핑은 바쁜 사람들에게 편리하다.)
+empty — The classroom is empty after school.
+(방과 후에는 교실이 비어 있다.)
+loose — These pants are too loose for me.
+(이 바지는 나에게 너무 헐렁하다.)
+tight — Her shoes are tight on her feet.
+(그녀의 신발은 발에 꽉 낀다.)
+other — He helps other students with homework.
+(그는 다른 학생들을 숙제로 도와준다.)
+upstairs — My parents sleep upstairs.
+(우리 부모님은 위층에서 주무신다.)
+stair — The cat sits on the stair quietly.
+(그 고양이는 계단에 조용히 앉아 있다.)
+cloth — She cleans the table with a soft cloth.
+(그녀는 부드러운 천으로 테이블을 닦는다.)
+closet — His closet is full of clothes.
+(그의 벽장은 옷으로 가득 차 있다.)
+furniture — This room needs more furniture.
+(이 방은 가구가 더 필요하다.)
+laundry — Mom does the laundry on weekends.
+(엄마는 주말에 빨래를 한다.)
+mirror — I look in the mirror every morning.
+(나는 매일 아침 거울을 본다.)
+address — She writes her new address on the form.
+(그녀는 양식에 새 주소를 적는다.)
+floor — The floor gets cold in winter.
+(겨울에는 바닥이 차가워진다.)
+garbage — He takes out the garbage every night.
+(그는 매일 밤 쓰레기를 버린다.)
+trash — The trash smells bad in hot weather.
+(더운 날씨에는 쓰레기에서 냄새가 난다.)
+community — Our community holds a festival every year.
+(우리 지역 사회는 매년 축제를 연다.)
+lock — She locks the door before bed.
+(그녀는 잠자기 전에 문을 잠근다.)
+refrigerator — The refrigerator keeps the food fresh.
+(냉장고는 음식을 신선하게 유지한다.)
+besides — He studies math, and besides, he learns music.
+(그는 수학을 공부하고, 게다가 음악도 배운다.)
+put on — She puts on her coat before going out.
+(그녀는 나가기 전에 코트를 입는다.)
+take off — He takes off his shoes at the door.
+(그는 현관에서 신발을 벗는다.)
+had better — You had better finish your homework now.
+(너는 지금 숙제를 끝내는 것이 좋겠다.)
+turn on — Dad turns on the TV after dinner.
+(아빠는 저녁 식사 후 TV를 켠다.)
+turn off — Please turn off the lights when you leave.
+(나갈 때 불을 꺼 주세요.)
+be able to — She is able to speak three languages.
+(그녀는 세 가지 언어를 할 수 있다.)
+repair — He repairs old bikes in his garage.
+(그는 차고에서 오래된 자전거들을 수리한다.)
+borrow — I borrow books from the library every week.
+(나는 매주 도서관에서 책을 빌린다.)
+kitchen — Our kitchen has a large window.
+(우리 부엌에는 큰 창문이 있다.)
+garage — The garage holds two cars.
+(그 차고에는 차 두 대가 들어간다.)
+`;
 
         // =============================================================================
         // 2. UTILS
         // =============================================================================
+        // 텍스트 파서 (안전 장치)
+        const parseTextData = (text) => {
+            if (!text) return [];
+            const lines = text.split('\n').filter(line => line.trim() !== "");
+            const parsedData = [];
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line.includes('—') || line.includes('- ')) {
+                    const separator = line.includes('—') ? '—' : '-';
+                    const parts = line.split(separator);
+                    const headword = parts[0].trim();
+                    const english = parts.slice(1).join(separator).trim();
+                    let korean = "해석 없음";
+                    if (i + 1 < lines.length) {
+                        const nextLine = lines[i+1].trim();
+                        if (nextLine.startsWith('(') && nextLine.endsWith(')')) {
+                            korean = nextLine.slice(1, -1);
+                            i++;
+                        }
+                    }
+                    if (english) {
+                        parsedData.push({
+                            id: parsedData.length + 1,
+                            headword,
+                            english,
+                            korean,
+                            structure: 'BASIC'
+                        });
+                    }
+                }
+            }
+            return parsedData;
+        };
+
         const speakText = (text) => {
             if (!window.speechSynthesis) return;
             window.speechSynthesis.cancel();
@@ -42,36 +159,22 @@
         };
 
         const GrammarEngine = {
-            // NLP를 이용해 평서문을 원하는 문법으로 변환
             transform: (baseSentence, config) => {
                 if (!window.nlp || !baseSentence) return baseSentence || "";
                 let doc = window.nlp(baseSentence);
-                
-                // 1. Reset (기본형 복구)
                 doc.verbs().toPresent(); 
                 doc.verbs().toActive();
-
-                // 2. Tense (시제)
                 if (config.tense === 'past') doc.verbs().toPast();
                 if (config.tense === 'future') doc.verbs().toFuture();
                 if (config.tense === 'present_progressive') doc.verbs().toContinuous();
                 if (config.tense === 'past_progressive') doc.verbs().toPast().toContinuous();
-                
-                // 3. Negative (부정문)
                 if (config.type === 'negative') doc.verbs().toNegative();
-                
                 let result = doc.text();
-
-                // 4. Question (의문문) - 문장 전체 구조 변경
-                if (config.type === 'question') {
-                    result = doc.sentences().toQuestion().text();
-                }
-
+                if (config.type === 'question') result = doc.sentences().toQuestion().text();
                 return result;
             }
         };
 
-        // Icons
         const Icon = ({ d }) => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>;
         const I = {
             User: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8",
@@ -80,22 +183,15 @@
             Settings: "M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
         };
 
-        // =============================================================================
-        // 3. REACT COMPONENTS
-        // =============================================================================
-        
         const { useState, useEffect, useRef, useCallback } = React;
 
         const HangmanCanvas = ({ mistakes }) => {
             const canvasRef = useRef(null);
             const drawnRef = useRef(0);
-
             useEffect(() => {
                 const ctx = canvasRef.current.getContext('2d');
                 ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 4; ctx.lineCap = 'round';
-
                 if (mistakes === 0) { ctx.clearRect(0, 0, 300, 300); drawnRef.current = 0; return; }
-
                 const draw = (step) => {
                     ctx.beginPath();
                     if(step===1) { ctx.moveTo(50,250); ctx.lineTo(250,250); ctx.moveTo(100,250); ctx.lineTo(100,50); ctx.lineTo(200,50); ctx.lineTo(200,80); }
@@ -105,27 +201,21 @@
                     if(step===5) { ctx.moveTo(200,190); ctx.lineTo(170,230); ctx.moveTo(200,190); ctx.lineTo(230,230); }
                     ctx.stroke();
                 };
-
                 if (mistakes > drawnRef.current) {
                     for (let i = drawnRef.current + 1; i <= mistakes; i++) setTimeout(() => draw(i), (i - drawnRef.current - 1) * 300);
                     drawnRef.current = mistakes;
                 }
             }, [mistakes]);
-
             return <div className="bg-slate-800 rounded-xl p-4 flex justify-center border border-slate-700"><canvas ref={canvasRef} width={300} height={300} className="w-full h-auto" /></div>;
         };
 
         function App() {
             const [step, setStep] = useState('LOGIN'); 
             const [username, setUsername] = useState('');
-            
-            // Data Selection
             const [sheetList, setSheetList] = useState([]);
-            const [selectedSheet, setSelectedSheet] = useState('');
+            const [selectedSheet, setSelectedSheet] = useState('기본 데이터 (6과)'); // 기본값 설정
             const [grammarConfig, setGrammarConfig] = useState({ tense: 'simple', type: 'affirmative' });
             const [isLoading, setIsLoading] = useState(false);
-
-            // Game State
             const [gameData, setGameData] = useState([]);
             const [currentIndex, setCurrentIndex] = useState(0);
             const [targetWords, setTargetWords] = useState([]);
@@ -135,64 +225,72 @@
             const [score, setScore] = useState(0);
             const [isShake, setIsShake] = useState(false);
 
-            // 1. Fetch Sheet List on Load
             useEffect(() => {
+                // 시트 목록 가져오기 시도, 실패하면 기본값만 유지
                 fetch(`${API_URL}?action=getSheetNames`)
                     .then(res => res.json())
                     .then(json => {
-                        // [FIX] 데이터 유효성 검사 강화 (length 에러 방지)
-                        if(json.status === 'success' && Array.isArray(json.data)) {
-                            setSheetList(json.data);
-                            if(json.data.length > 0) setSelectedSheet(json.data[0]);
+                        if(json.status === 'success' && Array.isArray(json.data) && json.data.length > 0) {
+                            setSheetList(['기본 데이터 (6과)', ...json.data]);
                         } else {
-                            console.warn("시트 목록을 가져오지 못했습니다.", json);
+                            setSheetList(['기본 데이터 (6과)']);
                         }
                     })
-                    .catch(err => console.error("API Error:", err));
+                    .catch(err => {
+                        console.log("Sheet fetch failed, using fallback.");
+                        setSheetList(['기본 데이터 (6과)']);
+                    });
             }, []);
 
-            // 2. Fetch Data from Selected Sheet & Start Game
             const handleStartGame = async () => {
                 if(!username) return alert("이름을 입력하세요.");
                 setIsLoading(true);
                 try {
-                    const res = await fetch(`${API_URL}?action=getData&sheet=${selectedSheet}`);
-                    const json = await res.json();
+                    let dataToUse = [];
                     
-                    // [FIX] 데이터 유효성 검사 강화 (length 에러 방지)
-                    if(json.status === 'success' && Array.isArray(json.data) && json.data.length > 0) {
-                        // 데이터 셔플
-                        const shuffled = json.data.sort(() => Math.random() - 0.5);
+                    // [핵심] 시트 연결이 안되거나 '기본 데이터' 선택 시 내장 데이터 사용
+                    if (selectedSheet === '기본 데이터 (6과)') {
+                        dataToUse = parseTextData(RAW_TEXT_DATA);
+                    } else {
+                        const res = await fetch(`${API_URL}?action=getData&sheet=${selectedSheet}`);
+                        const json = await res.json();
+                        if(json.status === 'success' && Array.isArray(json.data)) {
+                            dataToUse = json.data;
+                        }
+                    }
+
+                    if (dataToUse.length > 0) {
+                        const shuffled = dataToUse.sort(() => Math.random() - 0.5);
                         setGameData(shuffled);
                         initLevel(shuffled[0]);
                         setStep('GAME');
                     } else {
-                        alert("선택한 시트에 데이터가 없거나 불러오지 못했습니다.");
+                        alert("데이터를 불러올 수 없습니다. 기본 데이터를 확인해주세요.");
                     }
                 } catch(e) {
-                    console.error(e);
-                    alert("통신 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+                    // 에러 발생 시에도 기본 데이터로 실행 시도
+                    const dataToUse = parseTextData(RAW_TEXT_DATA);
+                    if (dataToUse.length > 0) {
+                        setGameData(dataToUse.sort(() => Math.random() - 0.5));
+                        initLevel(dataToUse[0]);
+                        setStep('GAME');
+                    } else {
+                        alert("치명적 오류: 기본 데이터도 로드할 수 없습니다.");
+                    }
                 } finally {
                     setIsLoading(false);
                 }
             };
 
             const initLevel = (problem) => {
-                // 문법 엔진 가동: 기본 문장을 가져와 설정된 문법으로 변형
-                const baseSentence = problem.english || ""; 
+                const baseSentence = problem.english || "";
                 const targetSentence = GrammarEngine.transform(baseSentence, grammarConfig);
-                
-                // 변형된 문장 저장 (문제용)
                 problem.targetSentence = targetSentence;
-
-                // 단어 분리 [FIX] null 체크 추가 (length 에러 방지)
                 const cleanSentence = targetSentence.replace(/[.!?]$/, '');
                 const words = targetSentence.match(/[\w']+|[.,!?;]/g) || [];
-
                 setTargetWords(words);
                 setUserSelection([]);
                 setMistakes(0);
-                
                 const bank = words.map((w, i) => ({ text: w, id: i, used: false }));
                 for (let i = bank.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
@@ -204,12 +302,10 @@
             const handleWordClick = (wordObj) => {
                 const nextIndex = userSelection.length;
                 const correctWord = targetWords[nextIndex];
-
                 if (wordObj.text.toLowerCase() === correctWord.toLowerCase()) {
                     speakText(correctWord);
                     setUserSelection([...userSelection, correctWord]);
                     setScrambledWords(scrambledWords.map(w => w.id === wordObj.id ? { ...w, used: true } : w));
-
                     if (userSelection.length + 1 === targetWords.length) {
                         setScore(prev => prev + 10);
                         setTimeout(() => {
@@ -257,27 +353,19 @@
 
             return (
                 <div className="min-h-screen flex flex-col items-center justify-center p-4">
-                    {/* LOGIN & SETTINGS */}
                     {step === 'LOGIN' && (
                         <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-slate-700 animate-fade-in">
                             <h1 className="text-2xl font-bold text-indigo-400 mb-6 text-center">Syntax Hangman</h1>
-                            
-                            {/* 1. Name */}
                             <div className="mb-4">
                                 <label className="block text-slate-400 text-xs mb-1 flex items-center gap-1"><Icon d={I.User}/> 학생 이름</label>
                                 <input type="text" value={username} onChange={e=>setUsername(e.target.value)} className="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white outline-none focus:border-indigo-500" placeholder="이름 입력" />
                             </div>
-
-                            {/* 2. Sheet Selection */}
                             <div className="mb-4">
                                 <label className="block text-slate-400 text-xs mb-1 flex items-center gap-1"><Icon d={I.List}/> 학습할 과 (Sheet)</label>
                                 <select value={selectedSheet} onChange={e=>setSelectedSheet(e.target.value)} className="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white outline-none focus:border-indigo-500">
-                                    {sheetList.length === 0 && <option>로딩 중... (시트가 없거나 로딩 실패)</option>}
                                     {sheetList.map(s => <option key={s} value={s}>{s}</option>)}
                                 </select>
                             </div>
-
-                            {/* 3. Grammar Settings */}
                             <div className="mb-6 p-3 bg-slate-900 rounded border border-slate-700">
                                 <label className="block text-slate-400 text-xs mb-2 flex items-center gap-1"><Icon d={I.Settings}/> 문법 설정</label>
                                 <div className="grid grid-cols-2 gap-2">
@@ -294,14 +382,11 @@
                                     </select>
                                 </div>
                             </div>
-
                             <button onClick={handleStartGame} disabled={isLoading} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-lg transition flex justify-center items-center gap-2">
                                 {isLoading ? "로딩 중..." : <><Icon d={I.Play}/> 게임 시작</>}
                             </button>
                         </div>
                     )}
-
-                    {/* GAME UI */}
                     {step === 'GAME' && gameData[currentIndex] && (
                         <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade-in">
                             <div className="lg:col-span-4 flex flex-col gap-4">
@@ -312,13 +397,10 @@
                                 </div>
                                 <HangmanCanvas mistakes={mistakes} />
                             </div>
-
                             <div className="lg:col-span-8 bg-slate-800 p-6 rounded-xl border border-slate-700 shadow flex flex-col justify-between min-h-[400px]">
                                 <div className="text-center mt-4">
                                     <p className="text-indigo-400 text-xs font-bold uppercase mb-2">Translate This</p>
                                     <h2 className="text-2xl font-bold text-white mb-6">"{gameData[currentIndex].korean}"</h2>
-                                    
-                                    {/* 정답 슬롯 */}
                                     <div className="flex flex-wrap justify-center gap-2 min-h-[50px]">
                                         {targetWords.map((word, idx) => (
                                             <div key={idx} className={`px-4 py-2 rounded-lg text-lg font-medium border-b-4 min-w-[40px] text-center ${idx < userSelection.length ? 'bg-indigo-600 border-indigo-800 text-white' : 'bg-slate-700 border-slate-600 text-transparent'}`}>
@@ -327,8 +409,6 @@
                                         ))}
                                     </div>
                                 </div>
-
-                                {/* 단어 선택지 */}
                                 <div className={`grid grid-cols-3 sm:grid-cols-4 gap-3 p-4 ${isShake ? 'shake' : ''}`}>
                                     {scrambledWords.map((wordObj) => (
                                         <button key={wordObj.id} onClick={() => !wordObj.used && handleWordClick(wordObj)} disabled={wordObj.used}
@@ -340,8 +420,6 @@
                             </div>
                         </div>
                     )}
-
-                    {/* RESULT UI */}
                     {step === 'RESULT' && (
                         <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-slate-700 text-center animate-fade-in">
                             <h2 className="text-3xl font-bold text-white mb-2">Game Over</h2>
