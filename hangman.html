@@ -146,7 +146,7 @@
                             setSheetList(json.data);
                             setSelectedSheet(json.data[0]);
                         } else {
-                            setErrorMsg("시트가 없습니다.");
+                            setErrorMsg("시트를 찾을 수 없습니다.");
                         }
                     })
                     .catch(() => setErrorMsg("연결 실패"))
@@ -299,7 +299,7 @@
                                             <span className="inline-block bg-slate-700 text-slate-300 text-[10px] px-2 py-0.5 rounded-full border border-slate-600">{curr.pos || curr['word class'] || '품사'}</span>
                                         </div>
                                         <button onClick={() => speak(curr.word || curr.headword || 'word')} 
-                                            className="p-3 bg-indigo-600 hover:bg-indigo-500 rounded-full text-white transition shadow-lg flex items-center justify-center">
+                                            className="p-3 bg-indigo-600 hover:bg-indigo-500 rounded-full text-white transition shadow-lg flex items-center justify-center" title="단어 듣기">
                                             <Icon path={I.Volume} />
                                         </button>
                                     </div>
