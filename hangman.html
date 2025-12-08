@@ -113,7 +113,7 @@
                     const res = await fetch(`${API_URL}?action=getData&sheet=${selectedSheet}`);
                     const json = await res.json();
                     
-                    if (json.status === 'success' && json.data.length > 0) {
+                    if (json.status === 'success' && json.data && json.data.length > 0) {
                         // 문제 섞기
                         const shuffled = json.data.sort(() => Math.random() - 0.5);
                         setGameData(shuffled);
@@ -132,8 +132,8 @@
 
             // 3. 레벨 초기화 (문장 -> 단어 카드 변환)
             const initLevel = (problem) => {
-                // 시트에 'english', 'korean' 헤더가 있어야 함
-                const sentence = problem.english || "No English Data";
+                // 시트에 'english' 또는 'English' 헤더가 있어야 함 (대소문자 호환)
+                const sentence = problem.english || problem.English || "No English Data";
                 
                 // 구두점 처리: 마침표 등은 제거하고 단어만 추출
                 const clean = sentence.trim().replace(/[.!?]$/, ''); 
@@ -167,7 +167,10 @@
                     if (userWords.length + 1 === targetWords.length) {
                         setScore(s => s + 10);
                         setTimeout(() => {
-                            speak(gameData[qIndex].english); // 완성된 문장 읽기
+                            // 완성된 문장 읽기
+                            const currentSentence = gameData[qIndex].english || gameData[qIndex].English;
+                            speak(currentSentence); 
+                            
                             if (qIndex + 1 < gameData.length) {
                                 setTimeout(() => {
                                     setQIndex(q => q + 1);
@@ -185,7 +188,8 @@
                     setTimeout(() => setShake(false), 500);
                     setMistakes(m => m + 1);
                     if (mistakes + 1 >= 5) {
-                        alert(`정답: ${gameData[qIndex].english}`);
+                        const correctSentence = gameData[qIndex].english || gameData[qIndex].English;
+                        alert(`정답: ${correctSentence}`);
                         if (qIndex + 1 < gameData.length) {
                             setQIndex(q => q + 1);
                             initLevel(gameData[qIndex + 1]);
@@ -268,7 +272,7 @@
                                 <div className="text-center mt-4">
                                     <p className="text-indigo-400 text-xs font-bold uppercase tracking-wider mb-2">TRANSLATE THIS</p>
                                     <h2 className="text-xl md:text-2xl font-bold text-white mb-6 break-keep leading-relaxed">
-                                        "{gameData[qIndex].korean || '해석 없음'}"
+                                        "{gameData[qIndex].korean || gameData[qIndex].Korean || '해석 없음'}"
                                     </h2>
                                     
                                     {/* 정답 슬롯 */}
