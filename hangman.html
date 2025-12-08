@@ -3,326 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syntax Hangman: Hybrid</title>
+    <title>Syntax Hangman: Final</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/compromise"></script>
-
     <style>
-        body { background-color: #0f172a; color: #e2e8f0; user-select: none; font-family: 'Segoe UI', sans-serif; }
-        .animate-fade-in { animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
-        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
-        select { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem; -webkit-appearance: none; appearance: none; }
+        body { background-color: #0f172a; color: #f8fafc; user-select: none; font-family: sans-serif; }
+        .btn-word { transition: all 0.2s; }
+        .btn-word:active { transform: scale(0.95); }
+        .shake { animation: shake 0.4s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        // =============================================================================
-        // 1. CONFIGURATION & FALLBACK DATA
-        // =============================================================================
+        // [설정] 배포하신 GAS 웹 앱 URL을 정확히 넣어야 합니다.
         const API_URL = "https://script.google.com/macros/s/AKfycbzPzXmZVfTwNFVgNOuL7nnVbupVcbVw3IrHBvfAr9MTr6HwBFTSJcJVyjvLah6AT_nLnw/exec";
 
-        // [Fallback Data] 시트 연결 실패 시 사용할 기본 데이터 (6과)
-        const RAW_TEXT_DATA = `
-wear — She wears a blue jacket every day.
-(그녀는 매일 파란 재킷을 입는다.)
-fit — These shoes fit me well.
-(이 신발은 나에게 잘 맞는다.)
-move — My family moves to a new house this month.
-(우리 가족은 이번 달에 새 집으로 이사한다.)
-turn — He turns the handle slowly.
-(그는 손잡이를 천천히 돌린다.)
-lend — I lend my friend a pencil in class.
-(나는 수업 시간에 친구에게 연필을 빌려준다.)
-rent — They rent a small apartment near school.
-(그들은 학교 근처의 작은 아파트를 빌린다.)
-build — Workers build a new bridge over the river.
-(근로자들은 강 위에 새 다리를 건설한다.)
-suit — The dress suits her very well.
-(그 드레스는 그녀에게 정말 잘 어울린다.)
-use — We use this room for meetings.
-(우리는 이 방을 회의에 사용한다.)
-comfortable — This sofa feels very comfortable.
-(이 소파는 매우 편안하게 느껴진다.)
-convenient — Online shopping is convenient for busy people.
-(온라인 쇼핑은 바쁜 사람들에게 편리하다.)
-empty — The classroom is empty after school.
-(방과 후에는 교실이 비어 있다.)
-loose — These pants are too loose for me.
-(이 바지는 나에게 너무 헐렁하다.)
-tight — Her shoes are tight on her feet.
-(그녀의 신발은 발에 꽉 낀다.)
-other — He helps other students with homework.
-(그는 다른 학생들을 숙제로 도와준다.)
-upstairs — My parents sleep upstairs.
-(우리 부모님은 위층에서 주무신다.)
-stair — The cat sits on the stair quietly.
-(그 고양이는 계단에 조용히 앉아 있다.)
-cloth — She cleans the table with a soft cloth.
-(그녀는 부드러운 천으로 테이블을 닦는다.)
-closet — His closet is full of clothes.
-(그의 벽장은 옷으로 가득 차 있다.)
-furniture — This room needs more furniture.
-(이 방은 가구가 더 필요하다.)
-laundry — Mom does the laundry on weekends.
-(엄마는 주말에 빨래를 한다.)
-mirror — I look in the mirror every morning.
-(나는 매일 아침 거울을 본다.)
-address — She writes her new address on the form.
-(그녀는 양식에 새 주소를 적는다.)
-floor — The floor gets cold in winter.
-(겨울에는 바닥이 차가워진다.)
-garbage — He takes out the garbage every night.
-(그는 매일 밤 쓰레기를 버린다.)
-trash — The trash smells bad in hot weather.
-(더운 날씨에는 쓰레기에서 냄새가 난다.)
-community — Our community holds a festival every year.
-(우리 지역 사회는 매년 축제를 연다.)
-lock — She locks the door before bed.
-(그녀는 잠자기 전에 문을 잠근다.)
-refrigerator — The refrigerator keeps the food fresh.
-(냉장고는 음식을 신선하게 유지한다.)
-besides — He studies math, and besides, he learns music.
-(그는 수학을 공부하고, 게다가 음악도 배운다.)
-put on — She puts on her coat before going out.
-(그녀는 나가기 전에 코트를 입는다.)
-take off — He takes off his shoes at the door.
-(그는 현관에서 신발을 벗는다.)
-had better — You had better finish your homework now.
-(너는 지금 숙제를 끝내는 것이 좋겠다.)
-turn on — Dad turns on the TV after dinner.
-(아빠는 저녁 식사 후 TV를 켠다.)
-turn off — Please turn off the lights when you leave.
-(나갈 때 불을 꺼 주세요.)
-be able to — She is able to speak three languages.
-(그녀는 세 가지 언어를 할 수 있다.)
-repair — He repairs old bikes in his garage.
-(그는 차고에서 오래된 자전거들을 수리한다.)
-borrow — I borrow books from the library every week.
-(나는 매주 도서관에서 책을 빌린다.)
-kitchen — Our kitchen has a large window.
-(우리 부엌에는 큰 창문이 있다.)
-garage — The garage holds two cars.
-(그 차고에는 차 두 대가 들어간다.)
-`;
+        const { useState, useEffect, useRef } = React;
 
-        // =============================================================================
-        // 2. UTILS
-        // =============================================================================
-        
-        // 텍스트 파서 (안전 장치 추가)
-        const parseTextData = (text) => {
-            if (!text) return [];
-            const lines = text.split('\n').filter(line => line.trim() !== "");
-            const parsedData = [];
-            
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                // 구분자 처리 강화
-                if (line.includes('—') || line.includes('- ')) {
-                    const separator = line.includes('—') ? '—' : '-';
-                    const parts = line.split(separator);
-                    const headword = parts[0].trim();
-                    const english = parts.slice(1).join(separator).trim();
-                    
-                    let korean = "해석 없음";
-                    if (i + 1 < lines.length) {
-                        const nextLine = lines[i+1].trim();
-                        if (nextLine.startsWith('(') && nextLine.endsWith(')')) {
-                            korean = nextLine.slice(1, -1);
-                            i++;
-                        }
-                    }
-                    if (english) {
-                        parsedData.push({
-                            id: parsedData.length + 1,
-                            headword, english, korean, structure: 'BASIC'
-                        });
-                    }
-                }
-            }
-            return parsedData;
-        };
-
-        const speakText = (text) => {
+        // --- 1. 유틸리티 함수 ---
+        const speak = (text) => {
             if (!window.speechSynthesis) return;
             window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.85; 
-            window.speechSynthesis.speak(utterance);
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'en-US'; u.rate = 0.85;
+            window.speechSynthesis.speak(u);
         };
 
-        const GrammarEngine = {
-            transform: (baseSentence, config) => {
-                if (!window.nlp || !baseSentence) return baseSentence || "";
-                let doc = window.nlp(baseSentence);
-                doc.verbs().toPresent(); 
-                doc.verbs().toActive();
-                if (config.tense === 'past') doc.verbs().toPast();
-                if (config.tense === 'future') doc.verbs().toFuture();
-                if (config.tense === 'present_progressive') doc.verbs().toContinuous();
-                if (config.tense === 'past_progressive') doc.verbs().toPast().toContinuous();
-                if (config.type === 'negative') doc.verbs().toNegative();
-                let result = doc.text();
-                if (config.type === 'question') result = doc.sentences().toQuestion().text();
-                return result;
-            }
-        };
-
-        const Icon = ({ d }) => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>;
-        const I = {
-            User: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8",
-            List: "M8 6h13 M8 12h13 M8 18h13 M3 6h.01 M3 12h.01 M3 18h.01",
-            Play: "M5 3l14 9-14 9V3z",
-            Settings: "M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
-        };
-
-        const { useState, useEffect, useRef, useCallback } = React;
-
+        // --- 2. 컴포넌트: 행맨 캔버스 ---
         const HangmanCanvas = ({ mistakes }) => {
             const canvasRef = useRef(null);
-            const drawnRef = useRef(0);
             useEffect(() => {
                 const ctx = canvasRef.current.getContext('2d');
                 ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 4; ctx.lineCap = 'round';
-                if (mistakes === 0) { ctx.clearRect(0, 0, 300, 300); drawnRef.current = 0; return; }
-                const draw = (step) => {
+                ctx.clearRect(0, 0, 300, 300);
+                
+                const draw = (s) => {
                     ctx.beginPath();
-                    if(step===1) { ctx.moveTo(50,250); ctx.lineTo(250,250); ctx.moveTo(100,250); ctx.lineTo(100,50); ctx.lineTo(200,50); ctx.lineTo(200,80); }
-                    if(step===2) { ctx.moveTo(220,100); ctx.arc(200,100,20,0,Math.PI*2); }
-                    if(step===3) { ctx.moveTo(200,120); ctx.lineTo(200,190); }
-                    if(step===4) { ctx.moveTo(200,130); ctx.lineTo(170,160); ctx.moveTo(200,130); ctx.lineTo(230,160); }
-                    if(step===5) { ctx.moveTo(200,190); ctx.lineTo(170,230); ctx.moveTo(200,190); ctx.lineTo(230,230); }
+                    if(s>=1) { ctx.moveTo(50,250); ctx.lineTo(250,250); ctx.moveTo(100,250); ctx.lineTo(100,50); ctx.lineTo(200,50); ctx.lineTo(200,80); }
+                    if(s>=2) { ctx.moveTo(220,100); ctx.arc(200,100,20,0,Math.PI*2); }
+                    if(s>=3) { ctx.moveTo(200,120); ctx.lineTo(200,190); }
+                    if(s>=4) { ctx.moveTo(200,130); ctx.lineTo(170,160); ctx.moveTo(200,130); ctx.lineTo(230,160); }
+                    if(s>=5) { ctx.moveTo(200,190); ctx.lineTo(170,230); ctx.moveTo(200,190); ctx.lineTo(230,230); }
                     ctx.stroke();
                 };
-                if (mistakes > drawnRef.current) {
-                    for (let i = drawnRef.current + 1; i <= mistakes; i++) setTimeout(() => draw(i), (i - drawnRef.current - 1) * 300);
-                    drawnRef.current = mistakes;
-                }
+                draw(mistakes);
             }, [mistakes]);
-            return <div className="bg-slate-800 rounded-xl p-4 flex justify-center border border-slate-700"><canvas ref={canvasRef} width={300} height={300} className="w-full h-auto" /></div>;
+            return <div className="bg-slate-800 p-4 rounded-xl flex justify-center"><canvas ref={canvasRef} width={300} height={300} className="h-48 w-auto" /></div>;
         };
 
+        // --- 3. 메인 앱 ---
         function App() {
             const [step, setStep] = useState('LOGIN'); 
             const [username, setUsername] = useState('');
-            const [sheetList, setSheetList] = useState([]);
-            const [selectedSheet, setSelectedSheet] = useState('기본 데이터 (6과)'); // Default
-            const [grammarConfig, setGrammarConfig] = useState({ tense: 'simple', type: 'affirmative' });
-            const [isLoading, setIsLoading] = useState(false);
+            const [sheets, setSheets] = useState([]);
+            const [selectedSheet, setSelectedSheet] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [errorMsg, setErrorMsg] = useState('');
+
             const [gameData, setGameData] = useState([]);
-            const [currentIndex, setCurrentIndex] = useState(0);
+            const [qIndex, setQIndex] = useState(0);
             const [targetWords, setTargetWords] = useState([]);
-            const [scrambledWords, setScrambledWords] = useState([]);
-            const [userSelection, setUserSelection] = useState([]);
+            const [userWords, setUserWords] = useState([]);
+            const [wordBank, setWordBank] = useState([]);
             const [mistakes, setMistakes] = useState(0);
             const [score, setScore] = useState(0);
-            const [isShake, setIsShake] = useState(false);
+            const [shake, setShake] = useState(false);
 
-            // [FIXED] 데이터 로드 로직 강화 (에러 방지)
+            // 앱 시작 시 시트 목록 가져오기
             useEffect(() => {
                 fetch(`${API_URL}?action=getSheetNames`)
                     .then(res => res.json())
                     .then(json => {
-                        // 데이터가 배열인지 확실히 체크
-                        if(json && json.status === 'success' && Array.isArray(json.data) && json.data.length > 0) {
-                            setSheetList(['기본 데이터 (6과)', ...json.data]);
+                        if (json.status === 'success' && json.data.length > 0) {
+                            setSheets(json.data);
+                            setSelectedSheet(json.data[0]);
                         } else {
-                            setSheetList(['기본 데이터 (6과)']);
+                            setErrorMsg("시트를 찾을 수 없습니다. 스프레드시트를 확인하세요.");
                         }
                     })
-                    .catch(err => {
-                        console.log("Sheet fetch failed, using fallback.");
-                        setSheetList(['기본 데이터 (6과)']);
-                    });
+                    .catch(err => setErrorMsg("서버 연결 실패. URL을 확인하세요."));
             }, []);
 
-            const handleStartGame = async () => {
-                if(!username) return alert("이름을 입력하세요.");
-                setIsLoading(true);
+            // 게임 데이터 로드
+            const loadGameData = async () => {
+                if (!username) return alert("이름을 입력하세요.");
+                setLoading(true);
                 try {
-                    let dataToUse = [];
-                    
-                    if (selectedSheet === '기본 데이터 (6과)') {
-                        dataToUse = parseTextData(RAW_TEXT_DATA);
-                    } else {
-                        const res = await fetch(`${API_URL}?action=getData&sheet=${selectedSheet}`);
-                        const json = await res.json();
-                        // [FIXED] 데이터 존재 여부 확인
-                        if(json && json.status === 'success' && Array.isArray(json.data)) {
-                            dataToUse = json.data;
-                        }
-                    }
-
-                    if (dataToUse && dataToUse.length > 0) {
-                        const shuffled = dataToUse.sort(() => Math.random() - 0.5);
+                    const res = await fetch(`${API_URL}?action=getData&sheet=${selectedSheet}`);
+                    const json = await res.json();
+                    if (json.status === 'success' && json.data.length > 0) {
+                        const shuffled = json.data.sort(() => Math.random() - 0.5);
                         setGameData(shuffled);
                         initLevel(shuffled[0]);
                         setStep('GAME');
                     } else {
-                        // 데이터가 없으면 강제로 기본 데이터 사용 (에러 방지)
-                        console.warn("데이터 로드 실패, 기본 데이터 사용");
-                        const fallbackData = parseTextData(RAW_TEXT_DATA);
-                        setGameData(fallbackData.sort(() => Math.random() - 0.5));
-                        initLevel(fallbackData[0]);
-                        setStep('GAME');
+                        alert("선택한 시트에 데이터가 없습니다.");
                     }
-                } catch(e) {
-                    // 네트워크 에러 시에도 기본 데이터 사용
-                    const fallbackData = parseTextData(RAW_TEXT_DATA);
-                    setGameData(fallbackData.sort(() => Math.random() - 0.5));
-                    initLevel(fallbackData[0]);
-                    setStep('GAME');
+                } catch (e) {
+                    alert("데이터 로드 중 오류가 발생했습니다.");
                 } finally {
-                    setIsLoading(false);
+                    setLoading(false);
                 }
             };
 
+            // 레벨 초기화 (문장 -> 단어 분리)
             const initLevel = (problem) => {
-                // [FIXED] problem이나 english가 없을 경우 대비
-                if (!problem || !problem.english) return;
+                // 구두점 처리를 위해 정규식 사용
+                const sentence = problem.english.trim();
+                // 마침표 등 제거 후 공백 기준 분리
+                const clean = sentence.replace(/[.!?]$/, ''); 
+                const words = sentence.match(/[\w']+|[.,!?;]/g) || clean.split(' ');
 
-                const baseSentence = problem.english;
-                const targetSentence = GrammarEngine.transform(baseSentence, grammarConfig);
-                problem.targetSentence = targetSentence;
-                
-                const cleanSentence = targetSentence.replace(/[.!?]$/, '');
-                // [FIXED] match 결과가 null일 경우 빈 배열 반환
-                const words = targetSentence.match(/[\w']+|[.,!?;]/g) || [];
-                
                 setTargetWords(words);
-                setUserSelection([]);
+                setUserWords([]);
                 setMistakes(0);
-                const bank = words.map((w, i) => ({ text: w, id: i, used: false }));
-                for (let i = bank.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [bank[i], bank[j]] = [bank[j], bank[i]];
-                }
-                setScrambledWords(bank);
+                
+                // 단어 섞기
+                const bank = words.map((t, i) => ({ id: i, text: t, used: false }));
+                setWordBank(bank.sort(() => Math.random() - 0.5));
+                speak(sentence);
             };
 
-            const handleWordClick = (wordObj) => {
-                const nextIndex = userSelection.length;
-                const correctWord = targetWords[nextIndex];
-                if (wordObj.text.toLowerCase() === correctWord.toLowerCase()) {
-                    speakText(correctWord);
-                    setUserSelection([...userSelection, correctWord]);
-                    setScrambledWords(scrambledWords.map(w => w.id === wordObj.id ? { ...w, used: true } : w));
-                    if (userSelection.length + 1 === targetWords.length) {
-                        setScore(prev => prev + 10);
+            // 단어 클릭 처리
+            const handleWordClick = (wObj) => {
+                const nextIdx = userWords.length;
+                const correctWord = targetWords[nextIdx];
+
+                // 대소문자 무시 비교
+                if (wObj.text.toLowerCase() === correctWord.toLowerCase()) {
+                    // 정답
+                    speak(wObj.text);
+                    setUserWords([...userWords, wObj]); // 화면엔 내가 선택한 단어 표시
+                    setWordBank(wordBank.map(w => w.id === wObj.id ? { ...w, used: true } : w));
+
+                    // 문장 완성 체크
+                    if (userWords.length + 1 === targetWords.length) {
+                        setScore(s => s + 10);
                         setTimeout(() => {
-                            speakText(gameData[currentIndex].targetSentence);
-                            if (currentIndex + 1 < gameData.length) {
+                            speak(gameData[qIndex].english);
+                            if (qIndex + 1 < gameData.length) {
                                 setTimeout(() => {
-                                    setCurrentIndex(prev => prev + 1);
-                                    initLevel(gameData[currentIndex + 1]);
+                                    setQIndex(q => q + 1);
+                                    initLevel(gameData[qIndex + 1]);
                                 }, 1500);
                             } else {
                                 setStep('RESULT');
@@ -331,14 +158,15 @@ garage — The garage holds two cars.
                         }, 500);
                     }
                 } else {
-                    setIsShake(true);
-                    setTimeout(() => setIsShake(false), 500);
-                    setMistakes(prev => prev + 1);
+                    // 오답
+                    setShake(true);
+                    setTimeout(() => setShake(false), 500);
+                    setMistakes(m => m + 1);
                     if (mistakes + 1 >= 5) {
-                        alert(`정답: ${gameData[currentIndex].targetSentence}`);
-                        if (currentIndex + 1 < gameData.length) {
-                            setCurrentIndex(prev => prev + 1);
-                            initLevel(gameData[currentIndex + 1]);
+                        alert(`정답: ${gameData[qIndex].english}`);
+                        if (qIndex + 1 < gameData.length) {
+                            setQIndex(q => q + 1);
+                            initLevel(gameData[qIndex + 1]);
                         } else {
                             setStep('RESULT');
                             saveScore();
@@ -355,84 +183,98 @@ garage — The garage holds two cars.
                         action: 'saveScore',
                         username: username,
                         score: score,
-                        log: `Sheet: ${selectedSheet}, Mode: ${grammarConfig.tense}/${grammarConfig.type}`
+                        log: `Completed: ${selectedSheet}`
                     })
                 });
             };
 
             return (
                 <div className="min-h-screen flex flex-col items-center justify-center p-4">
+                    {/* 1. 로그인 및 시트 선택 */}
                     {step === 'LOGIN' && (
-                        <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-slate-700 animate-fade-in">
+                        <div className="bg-slate-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-700">
                             <h1 className="text-2xl font-bold text-indigo-400 mb-6 text-center">Syntax Hangman</h1>
+                            
                             <div className="mb-4">
-                                <label className="block text-slate-400 text-xs mb-1 flex items-center gap-1"><Icon d={I.User}/> 학생 이름</label>
-                                <input type="text" value={username} onChange={e=>setUsername(e.target.value)} className="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white outline-none focus:border-indigo-500" placeholder="이름 입력" />
+                                <label className="block text-slate-400 text-xs mb-1">학생 이름</label>
+                                <input type="text" value={username} onChange={e=>setUsername(e.target.value)} 
+                                    className="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:outline-none focus:border-indigo-500" placeholder="이름을 입력하세요" />
                             </div>
-                            <div className="mb-4">
-                                <label className="block text-slate-400 text-xs mb-1 flex items-center gap-1"><Icon d={I.List}/> 학습할 과 (Sheet)</label>
-                                <select value={selectedSheet} onChange={e=>setSelectedSheet(e.target.value)} className="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white outline-none focus:border-indigo-500">
-                                    {sheetList.map(s => <option key={s} value={s}>{s}</option>)}
-                                </select>
-                            </div>
-                            <div className="mb-6 p-3 bg-slate-900 rounded border border-slate-700">
-                                <label className="block text-slate-400 text-xs mb-2 flex items-center gap-1"><Icon d={I.Settings}/> 문법 설정</label>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <select value={grammarConfig.tense} onChange={e=>setGrammarConfig({...grammarConfig, tense: e.target.value})} className="bg-slate-800 text-white text-xs border border-slate-600 rounded p-2 outline-none">
-                                        <option value="simple">단순 시제 (Simple)</option>
-                                        <option value="present_progressive">현재 진행 (Pres. Prog)</option>
-                                        <option value="past">과거 (Past)</option>
-                                        <option value="future">미래 (Future)</option>
+
+                            <div className="mb-6">
+                                <label className="block text-slate-400 text-xs mb-1">학습할 과 (Sheet)</label>
+                                {sheets.length > 0 ? (
+                                    <select value={selectedSheet} onChange={e=>setSelectedSheet(e.target.value)} 
+                                        className="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:outline-none">
+                                        {sheets.map(s => <option key={s} value={s}>{s}</option>)}
                                     </select>
-                                    <select value={grammarConfig.type} onChange={e=>setGrammarConfig({...grammarConfig, type: e.target.value})} className="bg-slate-800 text-white text-xs border border-slate-600 rounded p-2 outline-none">
-                                        <option value="affirmative">긍정문 (Affirmative)</option>
-                                        <option value="negative">부정문 (Negative)</option>
-                                        <option value="question">의문문 (Question)</option>
-                                    </select>
-                                </div>
+                                ) : (
+                                    <div className="p-3 bg-slate-900 text-slate-500 text-sm rounded border border-slate-600">
+                                        {errorMsg || "로딩 중... (시트가 없거나 로딩 실패)"}
+                                    </div>
+                                )}
                             </div>
-                            <button onClick={handleStartGame} disabled={isLoading} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-lg transition flex justify-center items-center gap-2">
-                                {isLoading ? "로딩 중..." : <><Icon d={I.Play}/> 게임 시작</>}
+
+                            <button onClick={loadGameData} disabled={loading || sheets.length === 0} 
+                                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-lg transition disabled:opacity-50">
+                                {loading ? "로딩 중..." : "게임 시작"}
                             </button>
                         </div>
                     )}
-                    {step === 'GAME' && gameData[currentIndex] && (
-                        <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade-in">
-                            <div className="lg:col-span-4 flex flex-col gap-4">
-                                <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow text-center">
-                                    <p className="text-slate-400 text-xs">Player</p>
-                                    <p className="text-white font-bold">{username}</p>
-                                    <div className="mt-2 text-xs font-mono text-indigo-400">Score: {score}</div>
+
+                    {/* 2. 게임 화면 */}
+                    {step === 'GAME' && gameData[qIndex] && (
+                        <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-12 gap-6">
+                            {/* 왼쪽: 행맨 */}
+                            <div className="md:col-span-4 flex flex-col gap-4">
+                                <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 text-center">
+                                    <span className="text-slate-400 text-xs">Player: </span>
+                                    <span className="text-white font-bold">{username}</span>
+                                    <div className="flex justify-center gap-3 mt-2 text-xs font-mono">
+                                        <span className="bg-indigo-900 px-2 py-1 rounded text-indigo-200">Score: {score}</span>
+                                        <span className="bg-pink-900 px-2 py-1 rounded text-pink-200">Q: {qIndex+1}/{gameData.length}</span>
+                                    </div>
                                 </div>
                                 <HangmanCanvas mistakes={mistakes} />
                             </div>
-                            <div className="lg:col-span-8 bg-slate-800 p-6 rounded-xl border border-slate-700 shadow flex flex-col justify-between min-h-[400px]">
+
+                            {/* 오른쪽: 문제 풀이 */}
+                            <div className="md:col-span-8 bg-slate-800 p-6 rounded-xl border border-slate-700 flex flex-col justify-between min-h-[400px]">
                                 <div className="text-center mt-4">
-                                    <p className="text-indigo-400 text-xs font-bold uppercase mb-2">Translate This</p>
-                                    <h2 className="text-2xl font-bold text-white mb-6">"{gameData[currentIndex].korean}"</h2>
+                                    <p className="text-indigo-400 text-xs font-bold uppercase tracking-wider mb-2">TRANSLATE THIS</p>
+                                    <h2 className="text-xl md:text-2xl font-bold text-white mb-6">"{gameData[qIndex].korean}"</h2>
+                                    
+                                    {/* 정답 슬롯 */}
                                     <div className="flex flex-wrap justify-center gap-2 min-h-[50px]">
-                                        {targetWords.map((word, idx) => (
-                                            <div key={idx} className={`px-4 py-2 rounded-lg text-lg font-medium border-b-4 min-w-[40px] text-center ${idx < userSelection.length ? 'bg-indigo-600 border-indigo-800 text-white' : 'bg-slate-700 border-slate-600 text-transparent'}`}>
-                                                {idx < userSelection.length ? word : '?'}
+                                        {targetWords.map((w, i) => (
+                                            <div key={i} className={`px-3 py-2 rounded text-lg font-medium border-b-4 min-w-[40px] text-center
+                                                ${i < userWords.length ? 'bg-indigo-600 border-indigo-800 text-white' : 'bg-slate-700 border-slate-600 text-transparent'}`}>
+                                                {i < userWords.length ? userWords[i].text : '?'}
                                             </div>
                                         ))}
                                     </div>
                                 </div>
-                                <div className={`grid grid-cols-3 sm:grid-cols-4 gap-3 p-4 ${isShake ? 'shake' : ''}`}>
-                                    {scrambledWords.map((wordObj) => (
-                                        <button key={wordObj.id} onClick={() => !wordObj.used && handleWordClick(wordObj)} disabled={wordObj.used}
-                                            className={`p-3 rounded-lg text-sm font-semibold border ${wordObj.used ? 'bg-slate-900 border-slate-800 opacity-50' : 'bg-slate-700 border-slate-600 hover:bg-slate-600 text-white'}`}>
-                                            {wordObj.text}
+
+                                {/* 단어 선택지 */}
+                                <div className={`grid grid-cols-3 sm:grid-cols-4 gap-3 p-4 ${shake ? 'shake' : ''}`}>
+                                    {wordBank.map((w) => (
+                                        <button key={w.id} onClick={() => !w.used && handleWordClick(w)} disabled={w.used}
+                                            className={`p-3 rounded text-sm font-bold shadow-md border-b-4 transition active:mt-1 active:border-b-0
+                                                ${w.used ? 'bg-slate-900 border-slate-900 text-slate-700 opacity-50' : 'bg-slate-700 border-slate-900 text-slate-200 hover:bg-slate-600'}`}>
+                                            {w.text}
                                         </button>
                                     ))}
                                 </div>
                             </div>
                         </div>
                     )}
+
+                    {/* 3. 결과 화면 */}
                     {step === 'RESULT' && (
-                        <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-slate-700 text-center animate-fade-in">
+                        <div className="bg-slate-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-700 text-center">
                             <h2 className="text-3xl font-bold text-white mb-2">Game Over</h2>
-                            <div className="text-5xl font-black text-yellow-400 mb-8">{score} <span className="text-lg text-slate-500 font-normal">pts</span></div>
+                            <p className="text-slate-400 mb-6">{username}님의 최종 점수</p>
+                            <div className="text-5xl font-black text-yellow-400 mb-8">{score}</div>
                             <button onClick={() => window.location.reload()} className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-lg">처음으로</button>
                         </div>
                     )}
