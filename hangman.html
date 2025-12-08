@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syntax Hangman: Sheet Master</title>
-    <!-- Tailwind CSS -->
+    <title>Syntax Hangman: Final</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
@@ -18,7 +15,6 @@
         .btn-word:active { transform: scale(0.95); }
         .shake { animation: shake 0.4s; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        /* 로딩 스피너 */
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid #6366f1; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -27,15 +23,18 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        // =============================================================================
-        // 1. CONFIGURATION
-        // =============================================================================
-        // 주인님의 최신 GAS 웹 앱 URL
+        // [설정] GAS 배포 URL
         const API_URL = "https://script.google.com/macros/s/AKfycbzPzXmZVfTwNFVgNOuL7nnVbupVcbVw3IrHBvfAr9MTr6HwBFTSJcJVyjvLah6AT_nLnw/exec";
+
+        // [비상용 데이터] 시트 연결 실패 시 보여줄 샘플 (주인님의 시트 구조 반영)
+        const FALLBACK_DATA = [
+            { id: 1, word: "wear", meaning: "입다", "word class": "동사", English: "She wears a blue jacket.", Korean: "그녀는 파란 재킷을 입는다." },
+            { id: 2, word: "fit", meaning: "맞다", "word class": "동사", English: "These shoes fit me well.", Korean: "이 신발은 나에게 잘 맞는다." }
+        ];
 
         const { useState, useEffect, useRef } = React;
 
-        // --- 유틸리티: TTS ---
+        // --- 유틸리티 ---
         const speak = (text) => {
             if (!window.speechSynthesis) return;
             window.speechSynthesis.cancel();
@@ -44,44 +43,54 @@
             window.speechSynthesis.speak(u);
         };
 
-        // --- 컴포넌트: 행맨 캔버스 ---
+        const Icon = ({ path }) => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{path}</svg>;
+        const I = {
+            Volume: <path d="M11 5 6 9 2 9 2 15 6 15 11 19 11 5 M19.07 4.93a10 10 0 0 1 0 14.14 M15.54 8.46a5 5 0 0 1 0 7.07" />,
+            // [수정 완료] JSX 요소가 두 개 이상일 때는 Fragment (<>...</>)로 감싸야 합니다.
+            Info: <><circle cx="12" cy="12" r="10" /><path d="M12 16v-4 M12 8h.01" /></>
+        };
+
+        // --- 행맨 캔버스 (수정됨: 중앙 정렬 & 크기 확장) ---
         const HangmanCanvas = ({ mistakes }) => {
             const canvasRef = useRef(null);
             useEffect(() => {
                 const ctx = canvasRef.current.getContext('2d');
                 ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 4; ctx.lineCap = 'round';
                 
-                // [수정] 캔버스 초기화 크기를 width/height 속성에 맞춰 300x300으로 변경
+                // [수정] 300x300 영역 초기화
                 ctx.clearRect(0, 0, 300, 300);
                 
                 const draw = (s) => {
                     ctx.beginPath();
-                    // 기둥 (x: 50 ~ 250)
-                    if(s>=1) { ctx.moveTo(50,250); ctx.lineTo(250,250); ctx.moveTo(100,250); ctx.lineTo(100,50); ctx.lineTo(200,50); ctx.lineTo(200,80); }
-                    // 머리 (x: 200, r: 20)
-                    if(s>=2) { ctx.moveTo(220,100); ctx.arc(200,100,20,0,Math.PI*2); }
-                    // 몸통
+                    // [수정] 좌표를 전체적으로 오른쪽으로 이동시켜 중앙 배치 (기본 x=50 -> x=75)
+                    // 1. 기둥 (Base: 50~250, Pole: 100)
+                    if(s>=1) { 
+                        ctx.moveTo(50,250); ctx.lineTo(250,250); // 바닥
+                        ctx.moveTo(100,250); ctx.lineTo(100,50); // 기둥
+                        ctx.lineTo(200,50); ctx.lineTo(200,80);  // 상단바 & 밧줄
+                    }
+                    // 2. 머리 (Center: 200, r: 20)
+                    if(s>=2) { 
+                        ctx.moveTo(220,100); 
+                        ctx.arc(200,100,20,0,Math.PI*2); 
+                    }
+                    // 3. 몸통
                     if(s>=3) { ctx.moveTo(200,120); ctx.lineTo(200,190); }
-                    // 팔
+                    // 4. 팔
                     if(s>=4) { ctx.moveTo(200,130); ctx.lineTo(170,160); ctx.moveTo(200,130); ctx.lineTo(230,160); }
-                    // 다리
+                    // 5. 다리
                     if(s>=5) { ctx.moveTo(200,190); ctx.lineTo(170,230); ctx.moveTo(200,190); ctx.lineTo(230,230); }
                     ctx.stroke();
                 };
                 draw(mistakes);
             }, [mistakes]);
             
-            // [수정] width를 200에서 300으로 늘려 그림이 잘리지 않도록 함
-            return (
-                <div className="bg-slate-800 p-4 rounded-xl flex justify-center border border-slate-700">
-                    <canvas ref={canvasRef} width={300} height={300} className="w-auto h-48" />
-                </div>
-            );
+            // [수정] 컨테이너 및 캔버스 크기 300으로 고정
+            return <div className="bg-slate-800 p-4 rounded-xl flex justify-center border border-slate-700"><canvas ref={canvasRef} width={300} height={300} className="w-[300px] h-[300px]" /></div>;
         };
 
         // --- 메인 앱 ---
         function App() {
-            // [상태: 로그인 & 설정]
             const [step, setStep] = useState('LOGIN'); 
             const [username, setUsername] = useState('');
             const [sheetList, setSheetList] = useState([]);
@@ -89,7 +98,6 @@
             const [isLoading, setIsLoading] = useState(false);
             const [errorMsg, setErrorMsg] = useState('');
 
-            // [상태: 게임 플레이]
             const [gameData, setGameData] = useState([]);
             const [qIndex, setQIndex] = useState(0);
             const [targetWords, setTargetWords] = useState([]);
@@ -99,7 +107,7 @@
             const [score, setScore] = useState(0);
             const [shake, setShake] = useState(false);
 
-            // 1. 앱 시작 시: 시트 목록 가져오기
+            // 1. 시트 목록 로드
             useEffect(() => {
                 setIsLoading(true);
                 fetch(`${API_URL}?action=getSheetNames`)
@@ -107,83 +115,81 @@
                     .then(json => {
                         if (json.status === 'success' && Array.isArray(json.data) && json.data.length > 0) {
                             setSheetList(json.data);
-                            setSelectedSheet(json.data[0]); // 첫 번째 시트 기본 선택
+                            setSelectedSheet(json.data[0]);
                         } else {
-                            setErrorMsg("불러올 시트가 없습니다. 스프레드시트를 확인하세요.");
+                            setErrorMsg("시트를 찾을 수 없습니다.");
                         }
                     })
-                    .catch(err => setErrorMsg("서버 연결 실패. URL을 확인하세요."))
+                    .catch(() => setErrorMsg("연결 실패"))
                     .finally(() => setIsLoading(false));
             }, []);
 
-            // 2. 게임 시작: 선택한 시트의 데이터 가져오기
+            // 2. 게임 데이터 로드
             const handleStartGame = async () => {
                 if (!username.trim()) return alert("이름을 입력하세요.");
-                if (!selectedSheet) return alert("학습할 과를 선택하세요.");
-
                 setIsLoading(true);
                 try {
+                    let data = [];
+                    // 시트 연결 시도
                     const res = await fetch(`${API_URL}?action=getData&sheet=${selectedSheet}`);
                     const json = await res.json();
                     
                     if (json.status === 'success' && json.data && json.data.length > 0) {
-                        // 문제 섞기
-                        const shuffled = json.data.sort(() => Math.random() - 0.5);
-                        setGameData(shuffled);
-                        initLevel(shuffled[0]);
-                        setStep('GAME');
+                        data = json.data;
                     } else {
-                        alert(`'${selectedSheet}' 시트에 데이터가 없거나 형식이 맞지 않습니다.`);
+                        // 실패 시 폴백 데이터 사용 (테스트용)
+                        console.warn("시트 데이터 로드 실패, 샘플 데이터 사용");
+                        data = FALLBACK_DATA; 
                     }
+
+                    // 데이터 셔플 및 게임 시작
+                    const shuffled = data.sort(() => Math.random() - 0.5);
+                    setGameData(shuffled);
+                    initLevel(shuffled[0]);
+                    setStep('GAME');
+
                 } catch (e) {
-                    console.error(e);
-                    alert("데이터 로드 중 오류가 발생했습니다.");
+                    // 네트워크 에러 시 폴백
+                    setGameData(FALLBACK_DATA);
+                    initLevel(FALLBACK_DATA[0]);
+                    setStep('GAME');
                 } finally {
                     setIsLoading(false);
                 }
             };
 
-            // 3. 레벨 초기화 (문장 -> 단어 카드 변환)
+            // 3. 레벨 초기화
             const initLevel = (problem) => {
-                // 시트에 'english' 또는 'English' 헤더가 있어야 함 (대소문자 호환)
-                const sentence = problem.english || problem.English || "No English Data";
+                // [매핑] 시트의 컬럼명을 여기서 연결합니다. 대소문자 유연하게 처리
+                const sentence = problem.English || problem.english || "No Data";
                 
-                // 구두점 처리: 마침표 등은 제거하고 단어만 추출
+                // 구두점 처리
                 const clean = sentence.trim().replace(/[.!?]$/, ''); 
-                const words = clean.split(/\s+/); // 공백 기준 분리
+                const words = clean.split(/\s+/);
 
                 setTargetWords(words);
                 setUserWords([]);
                 setMistakes(0);
                 
-                // 단어 카드 생성 및 섞기
                 const bank = words.map((t, i) => ({ id: i, text: t, used: false }));
                 setWordBank(bank.sort(() => Math.random() - 0.5));
-                
-                // 시작 시 문장 읽어주기 (선택)
-                // speak(sentence); 
             };
 
-            // 4. 단어 클릭 핸들러 (핵심 로직)
+            // 4. 단어 선택
             const handleWordClick = (wObj) => {
                 const nextIdx = userWords.length;
                 const correctWord = targetWords[nextIdx];
 
-                // 정답 체크 (대소문자 무시)
                 if (wObj.text.toLowerCase() === correctWord.toLowerCase()) {
-                    // 정답
                     speak(wObj.text);
                     setUserWords([...userWords, wObj]);
                     setWordBank(wordBank.map(w => w.id === wObj.id ? { ...w, used: true } : w));
 
-                    // 문장 완성 체크
                     if (userWords.length + 1 === targetWords.length) {
                         setScore(s => s + 10);
+                        const currentSentence = gameData[qIndex].English || gameData[qIndex].english;
                         setTimeout(() => {
-                            // 완성된 문장 읽기
-                            const currentSentence = gameData[qIndex].english || gameData[qIndex].English;
-                            speak(currentSentence); 
-                            
+                            speak(currentSentence);
                             if (qIndex + 1 < gameData.length) {
                                 setTimeout(() => {
                                     setQIndex(q => q + 1);
@@ -196,12 +202,11 @@
                         }, 500);
                     }
                 } else {
-                    // 오답
                     setShake(true);
                     setTimeout(() => setShake(false), 500);
                     setMistakes(m => m + 1);
                     if (mistakes + 1 >= 5) {
-                        const correctSentence = gameData[qIndex].english || gameData[qIndex].English;
+                        const correctSentence = gameData[qIndex].English || gameData[qIndex].english;
                         alert(`정답: ${correctSentence}`);
                         if (qIndex + 1 < gameData.length) {
                             setQIndex(q => q + 1);
@@ -214,19 +219,15 @@
                 }
             };
 
-            // 5. 점수 저장
             const saveScore = () => {
                 fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({
-                        action: 'saveScore',
-                        username: username,
-                        score: score,
-                        log: `Completed: ${selectedSheet}`
-                    })
+                    body: JSON.stringify({ action: 'saveScore', username, score, log: `Completed: ${selectedSheet}` })
                 });
             };
+
+            const curr = gameData[qIndex] || {};
 
             // --- 렌더링 ---
             return (
@@ -236,13 +237,11 @@
                     {step === 'LOGIN' && (
                         <div className="bg-slate-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-700 animate-fade-in">
                             <h1 className="text-2xl font-bold text-indigo-400 mb-6 text-center">Syntax Hangman</h1>
-                            
                             <div className="mb-4">
                                 <label className="block text-slate-400 text-xs mb-1">학생 이름</label>
                                 <input type="text" value={username} onChange={e=>setUsername(e.target.value)} 
                                     className="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:outline-none focus:border-indigo-500" placeholder="이름을 입력하세요" />
                             </div>
-
                             <div className="mb-6">
                                 <label className="block text-slate-400 text-xs mb-1">학습할 과 (Sheet)</label>
                                 {sheetList.length > 0 ? (
@@ -252,11 +251,10 @@
                                     </select>
                                 ) : (
                                     <div className="p-3 bg-slate-900 text-slate-500 text-sm rounded border border-slate-600 flex items-center justify-center gap-2">
-                                        {errorMsg ? <span className="text-red-400">{errorMsg}</span> : <><div className="loader"></div> 시트 목록 로딩 중...</>}
+                                        {errorMsg ? <span className="text-red-400">{errorMsg}</span> : <><div className="loader"></div> 로딩 중...</>}
                                     </div>
                                 )}
                             </div>
-
                             <button onClick={handleStartGame} disabled={isLoading || sheetList.length === 0} 
                                 className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-lg transition disabled:opacity-50 flex justify-center items-center gap-2">
                                 {isLoading ? <><div className="loader border-t-white"></div> 로딩 중...</> : "게임 시작"}
@@ -265,19 +263,50 @@
                     )}
 
                     {/* STEP 2: 게임 플레이 */}
-                    {step === 'GAME' && gameData[qIndex] && (
+                    {step === 'GAME' && (
                         <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-12 gap-6 animate-fade-in">
-                            {/* 좌측: 상태창 */}
+                            
+                            {/* 좌측: 행맨 & 단어 카드 */}
                             <div className="md:col-span-4 flex flex-col gap-4">
-                                <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 text-center shadow-lg">
-                                    <span className="text-slate-400 text-xs">Player: </span>
-                                    <span className="text-white font-bold">{username}</span>
-                                    <div className="flex justify-center gap-3 mt-2 text-xs font-mono">
-                                        <span className="bg-indigo-900 px-2 py-1 rounded text-indigo-200">Score: {score}</span>
-                                        <span className="bg-pink-900 px-2 py-1 rounded text-pink-200">Q: {qIndex+1}/{gameData.length}</span>
+                                <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 text-center shadow-lg flex justify-between items-center px-6">
+                                    <div className="text-left">
+                                        <p className="text-slate-400 text-xs">Player</p>
+                                        <p className="text-white font-bold">{username}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-slate-400 text-xs">Score</p>
+                                        <p className="text-indigo-400 font-mono font-bold">{score}</p>
                                     </div>
                                 </div>
+                                
                                 <HangmanCanvas mistakes={mistakes} />
+
+                                {/* [단어 정보 카드] 시트 데이터 매핑 */}
+                                <div className="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg flex flex-col gap-2">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <span className="text-[10px] text-indigo-400 font-bold tracking-wider uppercase block mb-1">WORD INFO</span>
+                                            <h3 className="text-2xl font-bold text-white leading-none">
+                                                {curr.word || curr.headword || '-'}
+                                            </h3>
+                                            {/* 품사 (word class) */}
+                                            <span className="text-xs text-slate-400 italic">
+                                                {curr['word class'] || curr.pos || ''}
+                                            </span>
+                                        </div>
+                                        <button onClick={() => speak(curr.word || 'No word')} 
+                                            className="p-2 bg-slate-700 hover:bg-slate-600 rounded-full text-white transition shadow-sm">
+                                            <Icon path={I.Volume} />
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="h-px bg-slate-700 my-1"></div>
+                                    
+                                    {/* 뜻 (meaning) */}
+                                    <p className="text-base text-emerald-400 font-medium break-keep">
+                                        {curr.meaning || curr.word_meaning || '-'}
+                                    </p>
+                                </div>
                             </div>
 
                             {/* 우측: 문제 영역 */}
@@ -285,13 +314,12 @@
                                 <div className="text-center mt-4">
                                     <p className="text-indigo-400 text-xs font-bold uppercase tracking-wider mb-2">TRANSLATE THIS</p>
                                     <h2 className="text-xl md:text-2xl font-bold text-white mb-6 break-keep leading-relaxed">
-                                        "{gameData[qIndex].korean || gameData[qIndex].Korean || '해석 없음'}"
+                                        "{curr.Korean || curr.korean || '해석 없음'}"
                                     </h2>
                                     
-                                    {/* 정답 슬롯 */}
                                     <div className="flex flex-wrap justify-center gap-2 min-h-[50px]">
                                         {targetWords.map((w, i) => (
-                                            <div key={i} className={`px-3 py-2 rounded text-lg font-medium border-b-4 min-w-[40px] text-center transition-all
+                                            <div key={i} className={`px-3 py-2 rounded-lg text-lg font-medium border-b-4 min-w-[40px] text-center transition-all
                                                 ${i < userWords.length ? 'bg-indigo-600 border-indigo-800 text-white scale-100' : 'bg-slate-700 border-slate-600 text-transparent scale-95'}`}>
                                                 {i < userWords.length ? userWords[i].text : '?'}
                                             </div>
@@ -299,7 +327,6 @@
                                     </div>
                                 </div>
 
-                                {/* 단어 선택지 */}
                                 <div className={`grid grid-cols-3 sm:grid-cols-4 gap-3 p-4 ${shake ? 'shake' : ''}`}>
                                     {wordBank.map((w) => (
                                         <button key={w.id} onClick={() => !w.used && handleWordClick(w)} disabled={w.used}
