@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syntax Hangman: Ultimate</title>
+    <title>Syntax Hangman: Audio Enhanced</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -13,10 +13,19 @@
         body { background-color: #0f172a; color: #f8fafc; user-select: none; font-family: 'Segoe UI', sans-serif; }
         .btn-word { transition: all 0.1s; }
         .btn-word:active { transform: scale(0.95); }
-        .shake { animation: shake 0.4s; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        
+        /* 애니메이션 정의 */
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake { 
+            10%, 90% { transform: translate3d(-1px, 0, 0); } 
+            20%, 80% { transform: translate3d(2px, 0, 0); } 
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 
+            40%, 60% { transform: translate3d(4px, 0, 0); } 
+        }
+        
         .fade-in-up { animation: fadeInUp 0.5s ease-out forwards; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid #6366f1; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -30,6 +39,7 @@
         // =============================================================================
         const API_URL = "https://script.google.com/macros/s/AKfycbzPzXmZVfTwNFVgNOuL7nnVbupVcbVw3IrHBvfAr9MTr6HwBFTSJcJVyjvLah6AT_nLnw/exec";
 
+        // [비상용 데이터]
         const FALLBACK_DATA = [
             { id: 1, word: "wear", pos: "verb", meaning: "입다", english: "She wears a blue jacket.", korean: "그녀는 파란 재킷을 입는다." },
             { id: 2, word: "fit", pos: "verb", meaning: "맞다", english: "These shoes fit me well.", korean: "이 신발은 나에게 잘 맞는다." }
@@ -38,44 +48,44 @@
         const { useState, useEffect, useRef } = React;
 
         // =============================================================================
-        // 2. AUDIO ENGINE (Synthesizer & Oscillator)
+        // 2. AUDIO ENGINE (TTS & SFX)
         // =============================================================================
         
-        // [TTS] 최적의 영어 목소리 찾기 및 재생
+        // [TTS] 최적화된 목소리 선택 및 재생
         const speak = (text) => {
             if (!window.speechSynthesis) return;
-            window.speechSynthesis.cancel();
+            window.speechSynthesis.cancel(); // 겹침 방지
             
             const u = new SpeechSynthesisUtterance(text);
-            u.rate = 0.85; 
-            
-            // 목소리 로드 대기 및 선택
-            let voices = window.speechSynthesis.getVoices();
-            if (voices.length === 0) {
+            u.rate = 0.85; // 학습용 속도
+            u.pitch = 1.0;
+
+            // 목소리 로드 및 선택 (Google US English 우선)
+            const setBestVoice = () => {
+                const voices = window.speechSynthesis.getVoices();
+                const preferred = voices.find(v => v.name.includes("Google US English")) || 
+                                  voices.find(v => v.name.includes("Samantha")) || 
+                                  voices.find(v => v.lang.startsWith("en-US")) ||
+                                  voices.find(v => v.lang.startsWith("en"));
+                if (preferred) u.voice = preferred;
+            };
+
+            if (window.speechSynthesis.getVoices().length === 0) {
                 window.speechSynthesis.onvoiceschanged = () => {
-                    voices = window.speechSynthesis.getVoices();
-                    setVoice(u, voices);
+                    setBestVoice();
                     window.speechSynthesis.speak(u);
                 };
             } else {
-                setVoice(u, voices);
+                setBestVoice();
                 window.speechSynthesis.speak(u);
             }
         };
 
-        const setVoice = (u, voices) => {
-            // Google US English > Microsoft Zira > 일반 영어 순으로 우선순위
-            const preferred = voices.find(v => v.name.includes("Google US English")) || 
-                              voices.find(v => v.name.includes("Zira")) ||
-                              voices.find(v => v.lang.startsWith("en-US")) ||
-                              voices.find(v => v.lang.startsWith("en"));
-            if (preferred) u.voice = preferred;
-        };
-
-        // [SFX] 코드로 만드는 효과음 (파일 로딩 없음)
+        // [SFX] OscillatorNode를 이용한 즉석 효과음 생성 (파일 로딩 없음)
         const playSfx = (type) => {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (!AudioContext) return;
+            
             const ctx = new AudioContext();
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
@@ -85,15 +95,18 @@
 
             const now = ctx.currentTime;
 
-            if (type === 'correct') { // 딩동 (High Chime)
+            if (type === 'correct') { 
+                // 딩동 (High Chime): 시원하고 청량하게
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(660, now);
-                osc.frequency.setValueAtTime(880, now + 0.1);
+                osc.frequency.setValueAtTime(660, now); // E5
+                osc.frequency.exponentialRampToValueAtTime(880, now + 0.1); // A5
                 gain.gain.setValueAtTime(0.1, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
                 osc.start(now);
                 osc.stop(now + 0.5);
-            } else if (type === 'wrong') { // 땡 (Low Buzz)
+            } 
+            else if (type === 'wrong') { 
+                // 땡 (Low Buzz): 짧고 굵게
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(150, now);
                 osc.frequency.linearRampToValueAtTime(100, now + 0.3);
@@ -101,25 +114,47 @@
                 gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
                 osc.start(now);
                 osc.stop(now + 0.3);
-            } else if (type === 'clear') { // 팡파레 (Major Triad)
-                // 복잡하므로 간단한 상승음으로 대체
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(523.25, now); // C5
-                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
-                osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
-                osc.frequency.setValueAtTime(1046.50, now + 0.3); // C6
-                gain.gain.setValueAtTime(0.1, now);
-                gain.gain.linearRampToValueAtTime(0.001, now + 0.8);
-                osc.start(now);
-                osc.stop(now + 0.8);
-            } else if (type === 'gameover') { // 으스스한 소리 (Dissident)
+            } 
+            else if (type === 'crisis') {
+                // 위기 (Tense): 불협화음 느낌
                 osc.type = 'square';
-                osc.frequency.setValueAtTime(100, now);
-                osc.frequency.linearRampToValueAtTime(50, now + 1.0);
+                osc.frequency.setValueAtTime(110, now); // Low A
+                // 약간의 떨림 효과 (Vibrato similar)
                 gain.gain.setValueAtTime(0.1, now);
-                gain.gain.linearRampToValueAtTime(0.001, now + 1.0);
+                gain.gain.linearRampToValueAtTime(0.05, now + 0.1);
+                gain.gain.linearRampToValueAtTime(0.1, now + 0.2);
+                gain.gain.linearRampToValueAtTime(0.001, now + 0.6);
                 osc.start(now);
-                osc.stop(now + 1.0);
+                osc.stop(now + 0.6);
+            }
+            else if (type === 'clear') { 
+                // 팡파레 (Fanfare): 도-미-솔-도 (Major Arpeggio)
+                osc.type = 'triangle';
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C, E, G, High C
+                const timeStep = 0.12;
+                
+                // 단음으로는 구현이 복잡하므로, 슬라이딩 효과로 대체
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(659.25, now + timeStep);
+                osc.frequency.setValueAtTime(783.99, now + timeStep*2);
+                osc.frequency.setValueAtTime(1046.50, now + timeStep*3);
+                
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0.1, now + 0.6);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+                
+                osc.start(now);
+                osc.stop(now + 1.2);
+            } 
+            else if (type === 'gameover') { 
+                // 게임 오버 (Dissident): 으스스하게 떨어지는 소리
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, now);
+                osc.frequency.exponentialRampToValueAtTime(30, now + 1.5);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0.001, now + 1.5);
+                osc.start(now);
+                osc.stop(now + 1.5);
             }
         };
 
@@ -131,7 +166,7 @@
             Refresh: <path d="M23 4v6h-6 M1 20v-6h6" />
         };
 
-        // --- 컴포넌트: 행맨 캔버스 (중앙 정렬 300x300) ---
+        // --- 컴포넌트: 행맨 캔버스 ---
         const HangmanCanvas = ({ mistakes }) => {
             const canvasRef = useRef(null);
             const drawnRef = useRef(0);
@@ -156,9 +191,7 @@
                     ctx.stroke();
                 };
 
-                // 순차적 그리기 (애니메이션 효과)
                 if (mistakes > drawnRef.current) {
-                    // 예: 3 -> 5로 점프 시, 4번 그리고 5번 그림
                     for (let i = drawnRef.current + 1; i <= mistakes; i++) {
                         setTimeout(() => draw(i), (i - drawnRef.current - 1) * 300);
                     }
@@ -185,10 +218,10 @@
             const [wordBank, setWordBank] = useState([]);
             const [mistakes, setMistakes] = useState(0);
             const [score, setScore] = useState(0);
-            const [shake, setShake] = useState(false);
             
-            // [라운드 상태] playing: 진행중, success: 성공(결과화면), fail: 실패(결과화면)
-            const [roundStatus, setRoundStatus] = useState('playing');
+            // [UI 상태]
+            const [shakeWordId, setShakeWordId] = useState(null); // 특정 단어만 흔들기
+            const [roundStatus, setRoundStatus] = useState('playing'); // playing, success, fail
 
             // 1. 시트 목록 로드
             useEffect(() => {
@@ -238,13 +271,13 @@
                 setTargetWords(words);
                 setUserWords([]);
                 setMistakes(0);
-                setRoundStatus('playing'); // 상태 리셋
+                setRoundStatus('playing');
                 
                 const bank = words.map((t, i) => ({ id: i, text: t, used: false }));
                 setWordBank(bank.sort(() => Math.random() - 0.5));
             };
 
-            // 4. 단어 선택 로직
+            // 4. 단어 선택 로직 (수정됨: 소리 & 흔들림 효과)
             const handleWordClick = (wObj) => {
                 if (roundStatus !== 'playing') return;
 
@@ -253,39 +286,46 @@
 
                 if (wObj.text.toLowerCase() === correctWord.toLowerCase()) {
                     // [정답]
-                    playSfx('correct'); // 딩동!
-                    // speak(wObj.text); // 단어 읽기는 선택 사항 (여기선 흐름을 위해 생략 가능)
+                    playSfx('correct');
+                    // speak(wObj.text); // 선택 시 단어 읽기 (선택사항)
                     
                     const newUserWords = [...userWords, wObj];
                     setUserWords(newUserWords);
                     setWordBank(wordBank.map(w => w.id === wObj.id ? { ...w, used: true } : w));
 
-                    // 문장 완성 시
+                    // 문장 완성
                     if (newUserWords.length === targetWords.length) {
                         setScore(s => s + 10);
-                        setRoundStatus('success'); // 즉시 결과 화면 전환
-                        playSfx('clear'); // 팡파레!
+                        setRoundStatus('success');
+                        playSfx('clear');
                         
-                        // 문장 읽기
-                        const currentSentence = gameData[qIndex].english || gameData[qIndex].English;
-                        speak(currentSentence);
+                        // 1.5초 후 문장 읽기
+                        setTimeout(() => {
+                            const currentSentence = gameData[qIndex].english || gameData[qIndex].English;
+                            speak(currentSentence);
+                        }, 1500);
                     }
                 } else {
                     // [오답]
-                    playSfx('wrong'); // 땡!
-                    setShake(true);
-                    setTimeout(() => setShake(false), 500);
-                    
                     const newMistakes = mistakes + 1;
                     setMistakes(newMistakes);
+
+                    // 마지막 기회 직전(4번째 실수)이면 위기음, 아니면 일반 오답음
+                    if (newMistakes === 4) playSfx('crisis');
+                    else if (newMistakes < 5) playSfx('wrong');
+
+                    // 틀린 그 단어만 흔들기
+                    setShakeWordId(wObj.id);
+                    setTimeout(() => setShakeWordId(null), 500);
                     
                     if (newMistakes >= 5) {
-                        setRoundStatus('fail'); // 실패 결과 화면 전환
-                        playSfx('gameover'); // 으스스한 소리
-                        
-                        // 실패 시에도 문장 읽어주기 (학습용)
-                        const currentSentence = gameData[qIndex].english || gameData[qIndex].English;
-                        setTimeout(() => speak(currentSentence), 1000);
+                        setRoundStatus('fail');
+                        playSfx('gameover');
+                        // 2초 후 정답 읽어주기
+                        setTimeout(() => {
+                             const currentSentence = gameData[qIndex].english || gameData[qIndex].English;
+                             speak(currentSentence);
+                        }, 2000);
                     }
                 }
             };
@@ -402,24 +442,25 @@
                                 </div>
 
                                 {/* 단어 선택지 */}
-                                <div className={`grid grid-cols-3 sm:grid-cols-4 gap-3 p-4 transition-opacity duration-300 ${shake ? 'shake' : ''} ${roundStatus !== 'playing' ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
+                                <div className={`grid grid-cols-3 sm:grid-cols-4 gap-3 p-4 transition-opacity duration-300 ${roundStatus !== 'playing' ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
                                     {wordBank.map((w) => (
                                         <button key={w.id} onClick={() => !w.used && handleWordClick(w)} disabled={w.used}
                                             className={`p-3 rounded text-sm font-bold shadow-md border-b-4 transition active:mt-1 active:border-b-0
-                                                ${w.used ? 'bg-slate-900 border-slate-900 text-slate-700 opacity-50' : 'bg-slate-700 border-slate-900 text-slate-200 hover:bg-slate-600 hover:text-white'}`}>
+                                                ${w.used ? 'bg-slate-900 border-slate-900 text-slate-700 opacity-50' : 'bg-slate-700 border-slate-900 text-slate-200 hover:bg-slate-600 hover:text-white'}
+                                                ${shakeWordId === w.id ? 'shake border-red-500 text-red-300' : ''}
+                                            `}>
                                             {w.text}
                                         </button>
                                     ))}
                                 </div>
 
-                                {/* [복원 완료] 결과 제어 패널 */}
+                                {/* 결과 패널 */}
                                 {roundStatus !== 'playing' && (
                                     <div className="absolute inset-0 bg-slate-900/95 rounded-xl flex flex-col items-center justify-center z-20 fade-in-up">
                                         <h3 className={`text-4xl font-bold mb-4 ${roundStatus === 'success' ? 'text-green-400' : 'text-red-400'}`}>
                                             {roundStatus === 'success' ? 'Correct!' : 'Try Again'}
                                         </h3>
                                         
-                                        {/* 정답 문장 표시 */}
                                         <p className="text-slate-300 text-xl font-medium mb-8 text-center px-4 leading-relaxed bg-slate-800 py-4 px-6 rounded-lg border border-slate-700">
                                             {curr.English || curr.english}
                                         </p>
