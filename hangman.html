@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syntax Hangman: Final Scored</title>
+    <title>Syntax Hangman: Split Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React & ReactDOM -->
@@ -31,10 +31,11 @@
         // =============================================================================
         // 1. CONFIGURATION
         // =============================================================================
+        // 주인님의 Apps Script 배포 URL (최신 버전 확인 필요)
         const API_URL = "https://script.google.com/macros/s/AKfycbzPzXmZVfTwNFVgNOuL7nnVbupVcbVw3IrHBvfAr9MTr6HwBFTSJcJVyjvLah6AT_nLnw/exec";
 
         const FALLBACK_DATA = [
-            { id: 1, word: "wear", pos: "verb", meaning: "입다", english: "She wears a blue jacket.", korean: "그녀는 파란 재킷을 입는다." }
+            { id: 1, word: "wear", pos: "verb", meaning: "입다", english: "She wears a blue jacket.", korean: "그녀는 파란 재킷을 입는다.", "add words": "wearing, worn" }
         ];
 
         const { useState, useEffect, useRef } = React;
@@ -71,12 +72,12 @@
                 osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now); osc.frequency.linearRampToValueAtTime(100, now + 0.3);
                 gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
                 osc.start(now); osc.stop(now + 0.3);
-            } else if (type === 'clear') { // 성공 (팡파레)
+            } else if (type === 'clear') { // 성공
                 osc.type = 'triangle'; 
                 osc.frequency.setValueAtTime(523, now); osc.frequency.setValueAtTime(659, now+0.1); osc.frequency.setValueAtTime(784, now+0.2); osc.frequency.setValueAtTime(1046, now+0.3);
                 gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0.001, now + 1.2);
                 osc.start(now); osc.stop(now + 1.2);
-            } else if (type === 'fail') { // 실패 (음산함)
+            } else if (type === 'fail') { // 실패
                 osc.type = 'square'; osc.frequency.setValueAtTime(100, now); osc.frequency.linearRampToValueAtTime(40, now + 1.0);
                 gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0.001, now + 1.0);
                 osc.start(now); osc.stop(now + 1.0);
@@ -95,7 +96,6 @@
         // 3. COMPONENTS
         // =============================================================================
 
-        // 행맨 캔버스 (중앙 정렬)
         const HangmanCanvas = ({ mistakes }) => {
             const canvasRef = useRef(null);
             useEffect(() => {
@@ -117,7 +117,6 @@
             return <div className="bg-slate-800 p-2 rounded-xl flex justify-center border border-slate-700"><canvas ref={canvasRef} width={300} height={300} className="w-[200px] h-[200px] sm:w-[300px] sm:h-[300px]" /></div>;
         };
 
-        // 메인 앱
         function App() {
             const [step, setStep] = useState('LOGIN'); 
             const [username, setUsername] = useState('');
@@ -125,6 +124,9 @@
             const [selectedSheet, setSelectedSheet] = useState('');
             const [isLoading, setIsLoading] = useState(false);
             const [errorMsg, setErrorMsg] = useState('');
+
+            // URL 파라미터 감지용
+            const [urlSheet, setUrlSheet] = useState(null);
 
             const [gameData, setGameData] = useState([]);
             const [qIndex, setQIndex] = useState(0);
@@ -134,38 +136,75 @@
             const [mistakes, setMistakes] = useState(0);
             const [score, setScore] = useState(0);
             const [shake, setShake] = useState(false);
-            const [roundStatus, setRoundStatus] = useState('playing'); // playing, success, fail
+            const [roundStatus, setRoundStatus] = useState('playing'); 
 
-            // 1. 시트 목록 로드
+            // 1. 초기 로드: URL 파라미터 확인 및 시트 목록 로드
             useEffect(() => {
+                // URL에서 sheet 파라미터 추출 (?sheet=lesson_1)
+                const params = new URLSearchParams(window.location.search);
+                const sheetParam = params.get('sheet');
+                
+                if (sheetParam) {
+                    setUrlSheet(sheetParam);
+                    setSelectedSheet(sheetParam);
+                    // URL로 들어왔어도 시트 목록은 가져와서 유효성 체크 등 수행 (선택사항이나 안전을 위해)
+                    fetchSheets(); 
+                } else {
+                    fetchSheets();
+                }
+            }, []);
+
+            const fetchSheets = () => {
                 setIsLoading(true);
                 fetch(`${API_URL}?action=getSheetNames`)
                     .then(res => res.json())
                     .then(json => {
                         if (json.status === 'success' && Array.isArray(json.data) && json.data.length > 0) {
                             setSheetList(json.data);
-                            setSelectedSheet(json.data[0]);
+                            // URL 파라미터가 없으면 첫번째 시트 기본 선택
+                            if (!new URLSearchParams(window.location.search).get('sheet')) {
+                                setSelectedSheet(json.data[0]);
+                            }
                         } else {
-                            setErrorMsg("시트를 찾을 수 없습니다.");
+                            setErrorMsg("시트 목록을 불러올 수 없습니다.");
                         }
                     })
-                    .catch(() => setErrorMsg("연결 실패"))
+                    .catch(() => setErrorMsg("서버 연결 실패"))
                     .finally(() => setIsLoading(false));
-            }, []);
+            };
 
-            // 2. 게임 데이터 로드
-            const handleStartGame = async () => {
+            // 2. 게임 시작 (파트 선택)
+            const handleStartGame = async (part) => {
                 if (!username.trim()) return alert("이름을 입력하세요.");
                 setIsLoading(true);
                 try {
                     const res = await fetch(`${API_URL}?action=getData&sheet=${selectedSheet}`);
                     const json = await res.json();
                     let data = (json.status === 'success' && json.data.length > 0) ? json.data : FALLBACK_DATA;
-                    const shuffled = data.sort(() => Math.random() - 0.5);
+                    
+                    // [중요] 파트 분할 로직 (Part 1: 0~19, Part 2: 20~끝)
+                    let slicedData = [];
+                    if (part === 'A') { // 전반부 (1~20)
+                        slicedData = data.slice(0, 20);
+                    } else if (part === 'B') { // 후반부 (21~)
+                        slicedData = data.slice(20);
+                    } else {
+                        slicedData = data; // 전체 (혹시 모를 경우)
+                    }
+
+                    if (slicedData.length === 0) {
+                        alert("해당 파트에 문제가 없습니다.");
+                        setIsLoading(false);
+                        return;
+                    }
+
+                    // 랜덤 섞기
+                    const shuffled = slicedData.sort(() => Math.random() - 0.5);
                     setGameData(shuffled);
                     initLevel(shuffled[0]);
                     setStep('GAME');
                 } catch (e) {
+                    alert("데이터 로드 실패. 샘플 데이터로 시작합니다.");
                     setGameData(FALLBACK_DATA);
                     initLevel(FALLBACK_DATA[0]);
                     setStep('GAME');
@@ -175,12 +214,26 @@
             const initLevel = (problem) => {
                 const sentence = problem.english || problem.English || "No Data";
                 const clean = sentence.trim().replace(/[.!?]$/, ''); 
-                const words = clean.split(/\s+/);
-                setTargetWords(words);
+                const correctWords = clean.split(/\s+/);
+                
+                setTargetWords(correctWords);
                 setUserWords([]);
                 setMistakes(0);
                 setRoundStatus('playing');
-                const bank = words.map((t, i) => ({ id: i, text: t, used: false }));
+
+                // [중요] 오답 유도 (Distractors) 추가 로직
+                // 'add words' 컬럼에 있는 단어들을 가져옴
+                let distractors = [];
+                if (problem['add words']) {
+                    // 콤마로 구분된 문자열을 배열로 변환하고 공백 제거
+                    distractors = String(problem['add words']).split(',').map(w => w.trim()).filter(w => w);
+                }
+
+                // 정답 단어 + 오답 단어 합치기
+                const pool = [...correctWords, ...distractors];
+
+                // 칩 생성 및 섞기
+                const bank = pool.map((t, i) => ({ id: `${t}-${i}-${Math.random()}`, text: t, used: false }));
                 setWordBank(bank.sort(() => Math.random() - 0.5));
             };
 
@@ -189,15 +242,17 @@
                 const nextIdx = userWords.length;
                 const correctWord = targetWords[nextIdx];
 
+                // 대소문자 구분 없이 비교하되, 화면엔 원래 텍스트 유지
                 if (wObj.text.toLowerCase() === correctWord.toLowerCase()) {
                     // [정답]
                     playSfx('correct');
-                    const newUserWords = [...userWords, wObj];
+                    const newUserWords = [...userWords, { ...wObj, text: correctWord }]; // 정답 단어의 원래 형태로 표시
                     setUserWords(newUserWords);
+                    // 사용된 칩 처리 (오답 단어여도 정답과 텍스트가 같으면 사용 처리)
                     setWordBank(wordBank.map(w => w.id === wObj.id ? { ...w, used: true } : w));
 
                     if (newUserWords.length === targetWords.length) {
-                        // [점수 계산] 10점 - 틀린횟수 (최소 0점)
+                        // [점수 계산]
                         const earnedPoints = Math.max(0, 10 - mistakes);
                         setScore(s => s + earnedPoints);
                         
@@ -206,7 +261,7 @@
                         setTimeout(() => {
                             const sent = gameData[qIndex].english || gameData[qIndex].English;
                             speak(sent);
-                        }, 1500);
+                        }, 1000);
                     }
                 } else {
                     // [오답]
@@ -217,11 +272,11 @@
                     
                     if (newMistakes >= 5) {
                         setRoundStatus('fail');
-                        playSfx('gameover');
+                        playSfx('fail'); // 실패음
                         setTimeout(() => {
                             const sent = gameData[qIndex].english || gameData[qIndex].English;
                             speak(sent);
-                        }, 1500);
+                        }, 1000);
                     } else {
                         playSfx('wrong');
                     }
@@ -234,7 +289,7 @@
                     initLevel(gameData[qIndex + 1]);
                 } else {
                     setStep('RESULT');
-                    saveScore(score); // 현재 점수 전달
+                    saveScore(score); 
                 }
             };
 
@@ -250,32 +305,57 @@
 
             return (
                 <div className="min-h-screen flex flex-col items-center justify-center p-4">
-                    {/* STEP 1: 로그인 */}
+                    {/* STEP 1: 로그인 & 파트 선택 */}
                     {step === 'LOGIN' && (
                         <div className="bg-slate-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-700 animate-fade-in">
                             <h1 className="text-2xl font-bold text-indigo-400 mb-6 text-center">Syntax Hangman</h1>
+                            
                             <div className="mb-4">
                                 <label className="block text-slate-400 text-xs mb-1">학생 이름</label>
                                 <input type="text" value={username} onChange={e=>setUsername(e.target.value)} 
                                     className="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:outline-none focus:border-indigo-500" placeholder="이름을 입력하세요" />
                             </div>
-                            <div className="mb-6">
-                                <label className="block text-slate-400 text-xs mb-1">학습할 과 (Sheet)</label>
-                                {sheetList.length > 0 ? (
-                                    <select value={selectedSheet} onChange={e=>setSelectedSheet(e.target.value)} 
-                                        className="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:outline-none">
-                                        {sheetList.map(s => <option key={s} value={s}>{s}</option>)}
-                                    </select>
-                                ) : (
-                                    <div className="p-3 bg-slate-900 text-slate-500 text-sm rounded border border-slate-600 flex items-center justify-center gap-2">
-                                        {errorMsg ? <span className="text-red-400">{errorMsg}</span> : <><div className="loader"></div> 로딩 중...</>}
-                                    </div>
-                                )}
+                            
+                            {/* URL로 시트가 지정되지 않았을 때만 드롭다운 표시 */}
+                            {!urlSheet && (
+                                <div className="mb-6">
+                                    <label className="block text-slate-400 text-xs mb-1">학습할 과 (Sheet)</label>
+                                    {sheetList.length > 0 ? (
+                                        <select value={selectedSheet} onChange={e=>setSelectedSheet(e.target.value)} 
+                                            className="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:outline-none">
+                                            {sheetList.map(s => <option key={s} value={s}>{s}</option>)}
+                                        </select>
+                                    ) : (
+                                        <div className="p-3 bg-slate-900 text-slate-500 text-sm rounded border border-slate-600 flex items-center justify-center gap-2">
+                                            {errorMsg ? <span className="text-red-400">{errorMsg}</span> : <><div className="loader"></div> 로딩 중...</>}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* 시트가 URL로 지정되었거나 선택되었을 때 안내 문구 */}
+                            {urlSheet && (
+                                <div className="mb-6 text-center">
+                                    <span className="bg-indigo-900 text-indigo-200 px-3 py-1 rounded-full text-sm font-bold border border-indigo-700">
+                                        선택된 과제: {selectedSheet}
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* 전반부 / 후반부 버튼 분리 */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <button onClick={() => handleStartGame('A')} disabled={isLoading || (!urlSheet && sheetList.length === 0)} 
+                                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg transition disabled:opacity-50 flex flex-col justify-center items-center gap-1">
+                                    <span className="text-lg">전반부 시작</span>
+                                    <span className="text-xs text-emerald-200 font-normal">(1번 ~ 20번)</span>
+                                </button>
+                                <button onClick={() => handleStartGame('B')} disabled={isLoading || (!urlSheet && sheetList.length === 0)} 
+                                    className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-lg transition disabled:opacity-50 flex flex-col justify-center items-center gap-1">
+                                    <span className="text-lg">후반부 시작</span>
+                                    <span className="text-xs text-indigo-200 font-normal">(21번 ~ 끝)</span>
+                                </button>
                             </div>
-                            <button onClick={handleStartGame} disabled={isLoading || sheetList.length === 0} 
-                                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-lg transition disabled:opacity-50 flex justify-center items-center gap-2">
-                                {isLoading ? <><div className="loader border-t-white"></div> 로딩 중...</> : "게임 시작"}
-                            </button>
+                            {isLoading && <div className="mt-4 text-center text-slate-400 text-sm flex justify-center items-center gap-2"><div className="loader"></div> 데이터를 불러오는 중...</div>}
                         </div>
                     )}
 
@@ -283,7 +363,7 @@
                     {step === 'GAME' && (
                         <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-12 gap-6 animate-fade-in">
                             
-                            {/* 좌측 패널: 행맨 + 단어 정보 */}
+                            {/* 좌측 패널 */}
                             <div className="md:col-span-4 flex flex-col gap-4">
                                 <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 text-center shadow-lg flex justify-between items-center px-6">
                                     <div className="text-left"><p className="text-slate-400 text-xs">Player</p><p className="text-white font-bold">{username}</p></div>
@@ -311,7 +391,7 @@
                                 </div>
                             </div>
 
-                            {/* 우측 패널: 문제 & 결과 */}
+                            {/* 우측 패널 */}
                             <div className="md:col-span-8 bg-slate-800 p-6 rounded-xl border border-slate-700 flex flex-col justify-between min-h-[400px] shadow-lg relative overflow-hidden">
                                 <div className="text-center mt-4 relative">
                                     <p className="text-indigo-400 text-xs font-bold uppercase tracking-wider mb-2">TRANSLATE THIS</p>
@@ -325,7 +405,7 @@
                                     </div>
                                 </div>
 
-                                {/* 단어 선택지 */}
+                                {/* 단어 선택지 (add words 포함) */}
                                 <div className={`grid grid-cols-3 sm:grid-cols-4 gap-3 p-4 transition-opacity duration-300 ${shake ? 'shake' : ''} ${roundStatus !== 'playing' ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
                                     {wordBank.map((w) => (
                                         <button key={w.id} onClick={() => !w.used && handleWordClick(w)} disabled={w.used}
@@ -335,7 +415,7 @@
                                     ))}
                                 </div>
 
-                                {/* 결과 제어 패널 */}
+                                {/* 결과 패널 */}
                                 {roundStatus !== 'playing' && (
                                     <div className="absolute inset-0 bg-slate-900/95 rounded-xl flex flex-col items-center justify-center z-20 fade-in-up p-6">
                                         <h3 className={`text-4xl font-bold mb-2 ${roundStatus === 'success' ? 'text-green-400' : 'text-red-400'}`}>
