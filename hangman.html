@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syntax Hangman: Split Edition</title>
+    <title>영어 어순감각 익히기</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React & ReactDOM -->
@@ -31,11 +31,21 @@
         // =============================================================================
         // 1. CONFIGURATION
         // =============================================================================
-        // 주인님의 Apps Script 배포 URL (최신 버전 확인 필요)
+        // 주인님의 Apps Script 배포 URL
         const API_URL = "https://script.google.com/macros/s/AKfycbzPzXmZVfTwNFVgNOuL7nnVbupVcbVw3IrHBvfAr9MTr6HwBFTSJcJVyjvLah6AT_nLnw/exec";
 
+        // FALLBACK DATA (샘플) - forms 필드 추가 예시
         const FALLBACK_DATA = [
-            { id: 1, word: "wear", pos: "verb", meaning: "입다", english: "She wears a blue jacket.", korean: "그녀는 파란 재킷을 입는다.", "add words": "wearing, worn" }
+            { 
+                id: 1, 
+                word: "wear", 
+                pos: "verb", 
+                meaning: "입다", 
+                english: "She wears a blue jacket.", 
+                korean: "그녀는 파란 재킷을 입는다.", 
+                "add words": "wearing, worn",
+                forms: "wear - wore - worn" // 예시: 변화형 데이터
+            }
         ];
 
         const { useState, useEffect, useRef } = React;
@@ -89,6 +99,7 @@
             Volume: <path d="M11 5 6 9 2 9 2 15 6 15 11 19 11 5 M19.07 4.93a10 10 0 0 1 0 14.14 M15.54 8.46a5 5 0 0 1 0 7.07" />,
             Info: <><circle cx="12" cy="12" r="10" /><path d="M12 16v-4 M12 8h.01" /></>,
             Next: <path d="M5 12h14 M12 5l7 7-7 7" />,
+            Home: <><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></>,
             Refresh: <path d="M23 4v6h-6 M1 20v-6h6" />
         };
 
@@ -96,6 +107,7 @@
         // 3. COMPONENTS
         // =============================================================================
 
+        // 캔버스 컴포넌트
         const HangmanCanvas = ({ mistakes }) => {
             const canvasRef = useRef(null);
             useEffect(() => {
@@ -116,6 +128,42 @@
             }, [mistakes]);
             return <div className="bg-slate-800 p-2 rounded-xl flex justify-center border border-slate-700"><canvas ref={canvasRef} width={300} height={300} className="w-[200px] h-[200px] sm:w-[300px] sm:h-[300px]" /></div>;
         };
+
+        // 변화형 정보 처리 함수
+        const getMorphologyInfo = (item) => {
+            if (!item) return null;
+            
+            const pos = (item.pos || item['word class'] || '').toLowerCase();
+            const forms = item.forms || item.conjugation || ''; // 스프레드시트에 'forms' 열이 필요함
+
+            // 1. 동사 (Verb)
+            if (pos.includes('동사') || pos.includes('verb')) {
+                return {
+                    label: '동사 변화',
+                    desc: '현재 - 과거 - 과거분사',
+                    value: forms || '변화형 정보 없음'
+                };
+            }
+            // 2. 명사 (Noun)
+            if (pos.includes('명사') || pos.includes('noun')) {
+                return {
+                    label: '수 변화',
+                    desc: '단수 / 복수',
+                    value: forms || '복수형 정보 없음'
+                };
+            }
+            // 3. 형용사/부사 (Adjective/Adverb)
+            if (pos.includes('형용사') || pos.includes('adj') || pos.includes('부사') || pos.includes('adv')) {
+                return {
+                    label: '비교 변화',
+                    desc: '원급 - 비교급 - 최상급',
+                    value: forms || '비교급 정보 없음'
+                };
+            }
+            
+            return null; // 그 외 품사
+        };
+
 
         function App() {
             const [step, setStep] = useState('LOGIN'); 
@@ -138,16 +186,14 @@
             const [shake, setShake] = useState(false);
             const [roundStatus, setRoundStatus] = useState('playing'); 
 
-            // 1. 초기 로드: URL 파라미터 확인 및 시트 목록 로드
+            // 1. 초기 로드
             useEffect(() => {
-                // URL에서 sheet 파라미터 추출 (?sheet=lesson_1)
                 const params = new URLSearchParams(window.location.search);
                 const sheetParam = params.get('sheet');
                 
                 if (sheetParam) {
                     setUrlSheet(sheetParam);
                     setSelectedSheet(sheetParam);
-                    // URL로 들어왔어도 시트 목록은 가져와서 유효성 체크 등 수행 (선택사항이나 안전을 위해)
                     fetchSheets(); 
                 } else {
                     fetchSheets();
@@ -161,7 +207,6 @@
                     .then(json => {
                         if (json.status === 'success' && Array.isArray(json.data) && json.data.length > 0) {
                             setSheetList(json.data);
-                            // URL 파라미터가 없으면 첫번째 시트 기본 선택
                             if (!new URLSearchParams(window.location.search).get('sheet')) {
                                 setSelectedSheet(json.data[0]);
                             }
@@ -173,7 +218,7 @@
                     .finally(() => setIsLoading(false));
             };
 
-            // 2. 게임 시작 (파트 선택)
+            // 2. 게임 시작
             const handleStartGame = async (part) => {
                 if (!username.trim()) return alert("이름을 입력하세요.");
                 setIsLoading(true);
@@ -182,15 +227,10 @@
                     const json = await res.json();
                     let data = (json.status === 'success' && json.data.length > 0) ? json.data : FALLBACK_DATA;
                     
-                    // [중요] 파트 분할 로직 (Part 1: 0~19, Part 2: 20~끝)
                     let slicedData = [];
-                    if (part === 'A') { // 전반부 (1~20)
-                        slicedData = data.slice(0, 20);
-                    } else if (part === 'B') { // 후반부 (21~)
-                        slicedData = data.slice(20);
-                    } else {
-                        slicedData = data; // 전체 (혹시 모를 경우)
-                    }
+                    if (part === 'A') { slicedData = data.slice(0, 20); } 
+                    else if (part === 'B') { slicedData = data.slice(20); } 
+                    else { slicedData = data; }
 
                     if (slicedData.length === 0) {
                         alert("해당 파트에 문제가 없습니다.");
@@ -198,7 +238,6 @@
                         return;
                     }
 
-                    // 랜덤 섞기
                     const shuffled = slicedData.sort(() => Math.random() - 0.5);
                     setGameData(shuffled);
                     initLevel(shuffled[0]);
@@ -221,18 +260,12 @@
                 setMistakes(0);
                 setRoundStatus('playing');
 
-                // [중요] 오답 유도 (Distractors) 추가 로직
-                // 'add words' 컬럼에 있는 단어들을 가져옴
                 let distractors = [];
                 if (problem['add words']) {
-                    // 콤마로 구분된 문자열을 배열로 변환하고 공백 제거
                     distractors = String(problem['add words']).split(',').map(w => w.trim()).filter(w => w);
                 }
 
-                // 정답 단어 + 오답 단어 합치기
                 const pool = [...correctWords, ...distractors];
-
-                // 칩 생성 및 섞기
                 const bank = pool.map((t, i) => ({ id: `${t}-${i}-${Math.random()}`, text: t, used: false }));
                 setWordBank(bank.sort(() => Math.random() - 0.5));
             };
@@ -242,17 +275,13 @@
                 const nextIdx = userWords.length;
                 const correctWord = targetWords[nextIdx];
 
-                // 대소문자 구분 없이 비교하되, 화면엔 원래 텍스트 유지
                 if (wObj.text.toLowerCase() === correctWord.toLowerCase()) {
-                    // [정답]
                     playSfx('correct');
-                    const newUserWords = [...userWords, { ...wObj, text: correctWord }]; // 정답 단어의 원래 형태로 표시
+                    const newUserWords = [...userWords, { ...wObj, text: correctWord }];
                     setUserWords(newUserWords);
-                    // 사용된 칩 처리 (오답 단어여도 정답과 텍스트가 같으면 사용 처리)
                     setWordBank(wordBank.map(w => w.id === wObj.id ? { ...w, used: true } : w));
 
                     if (newUserWords.length === targetWords.length) {
-                        // [점수 계산]
                         const earnedPoints = Math.max(0, 10 - mistakes);
                         setScore(s => s + earnedPoints);
                         
@@ -264,7 +293,6 @@
                         }, 1000);
                     }
                 } else {
-                    // [오답]
                     const newMistakes = mistakes + 1;
                     setMistakes(newMistakes);
                     setShake(true);
@@ -272,7 +300,7 @@
                     
                     if (newMistakes >= 5) {
                         setRoundStatus('fail');
-                        playSfx('fail'); // 실패음
+                        playSfx('fail');
                         setTimeout(() => {
                             const sent = gameData[qIndex].english || gameData[qIndex].English;
                             speak(sent);
@@ -302,13 +330,14 @@
             };
 
             const curr = gameData[qIndex] || {};
+            const morphInfo = getMorphologyInfo(curr); // 변화형 정보 가져오기
 
             return (
                 <div className="min-h-screen flex flex-col items-center justify-center p-4">
-                    {/* STEP 1: 로그인 & 파트 선택 */}
+                    {/* STEP 1: 로그인 */}
                     {step === 'LOGIN' && (
                         <div className="bg-slate-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-700 animate-fade-in">
-                            <h1 className="text-2xl font-bold text-indigo-400 mb-6 text-center">Syntax Hangman</h1>
+                            <h1 className="text-2xl font-bold text-indigo-400 mb-6 text-center">영어 어순감각 익히기</h1>
                             
                             <div className="mb-4">
                                 <label className="block text-slate-400 text-xs mb-1">학생 이름</label>
@@ -316,7 +345,6 @@
                                     className="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:outline-none focus:border-indigo-500" placeholder="이름을 입력하세요" />
                             </div>
                             
-                            {/* URL로 시트가 지정되지 않았을 때만 드롭다운 표시 */}
                             {!urlSheet && (
                                 <div className="mb-6">
                                     <label className="block text-slate-400 text-xs mb-1">학습할 과 (Sheet)</label>
@@ -333,7 +361,6 @@
                                 </div>
                             )}
 
-                            {/* 시트가 URL로 지정되었거나 선택되었을 때 안내 문구 */}
                             {urlSheet && (
                                 <div className="mb-6 text-center">
                                     <span className="bg-indigo-900 text-indigo-200 px-3 py-1 rounded-full text-sm font-bold border border-indigo-700">
@@ -342,7 +369,6 @@
                                 </div>
                             )}
 
-                            {/* 전반부 / 후반부 버튼 분리 */}
                             <div className="grid grid-cols-2 gap-3">
                                 <button onClick={() => handleStartGame('A')} disabled={isLoading || (!urlSheet && sheetList.length === 0)} 
                                     className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg transition disabled:opacity-50 flex flex-col justify-center items-center gap-1">
@@ -367,7 +393,13 @@
                             <div className="md:col-span-4 flex flex-col gap-4">
                                 <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 text-center shadow-lg flex justify-between items-center px-6">
                                     <div className="text-left"><p className="text-slate-400 text-xs">Player</p><p className="text-white font-bold">{username}</p></div>
-                                    <div className="text-right"><p className="text-slate-400 text-xs">Score</p><p className="text-indigo-400 font-mono font-bold">{score}</p></div>
+                                    <div className="text-right">
+                                        <p className="text-slate-400 text-xs">Score</p>
+                                        <div className="flex items-baseline gap-2 justify-end">
+                                            <p className="text-indigo-400 font-mono font-bold">{score}</p>
+                                            <span className="text-slate-500 text-xs font-normal">({qIndex + 1}/{gameData.length})</span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <HangmanCanvas mistakes={mistakes} />
                                 {/* 단어 카드 */}
@@ -388,13 +420,26 @@
                                         <span className="text-slate-500 mt-1"><Icon path={I.Info}/></span>
                                         <p className="text-base text-emerald-400 font-medium break-keep leading-snug">{curr.meaning || curr.word_meaning || '뜻'}</p>
                                     </div>
+
+                                    {/* 변화형 정보 표시 (Morphology) */}
+                                    {morphInfo && (
+                                        <div className="mt-2 pt-2 border-t border-slate-700/50">
+                                            <div className="flex justify-between items-baseline mb-1">
+                                                <span className="text-[10px] text-slate-400 uppercase">{morphInfo.label}</span>
+                                                <span className="text-[9px] text-slate-500">{morphInfo.desc}</span>
+                                            </div>
+                                            <p className={`text-sm font-medium ${morphInfo.value.includes('없음') ? 'text-slate-500 italic' : 'text-indigo-300'}`}>
+                                                {morphInfo.value}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
                             {/* 우측 패널 */}
                             <div className="md:col-span-8 bg-slate-800 p-6 rounded-xl border border-slate-700 flex flex-col justify-between min-h-[400px] shadow-lg relative overflow-hidden">
                                 <div className="text-center mt-4 relative">
-                                    <p className="text-indigo-400 text-xs font-bold uppercase tracking-wider mb-2">TRANSLATE THIS</p>
+                                    <p className="text-indigo-400 text-xs font-bold uppercase tracking-wider mb-2">영어 어순으로 배열하세요</p>
                                     <h2 className="text-xl md:text-2xl font-bold text-white mb-6 break-keep leading-relaxed">"{curr.Korean || curr.korean || '해석 없음'}"</h2>
                                     <div className="flex flex-wrap justify-center gap-2 min-h-[50px]">
                                         {targetWords.map((w, i) => (
@@ -405,7 +450,7 @@
                                     </div>
                                 </div>
 
-                                {/* 단어 선택지 (add words 포함) */}
+                                {/* 단어 선택지 */}
                                 <div className={`grid grid-cols-3 sm:grid-cols-4 gap-3 p-4 transition-opacity duration-300 ${shake ? 'shake' : ''} ${roundStatus !== 'playing' ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
                                     {wordBank.map((w) => (
                                         <button key={w.id} onClick={() => !w.used && handleWordClick(w)} disabled={w.used}
@@ -447,7 +492,7 @@
                             <p className="text-slate-400 mb-6">{username}님의 최종 점수</p>
                             <div className="text-5xl font-black text-yellow-400 mb-8">{score}</div>
                             <button onClick={() => window.location.reload()} className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-lg transition flex justify-center items-center gap-2">
-                                <Icon path={I.Refresh} /> 처음으로
+                                <Icon path={I.Home} /> 처음으로
                             </button>
                         </div>
                     )}
