@@ -190,7 +190,6 @@
             );
         };
 
-        // 형태소(변화형) 정보 로직
         const getMorphologyInfo = (item) => {
             if (!item) return null;
             const pos = (item.pos || item['word class'] || '').toLowerCase();
@@ -425,18 +424,28 @@
                             
                             {/* 상단/좌측: 정보 패널 */}
                             <div className="md:col-span-4 flex flex-col gap-3 order-1">
-                                {/* 점수판 */}
-                                <div className="bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-md">
-                                    <div className="flex flex-col">
-                                        <span className="text-[10px] text-slate-400">Player</span>
-                                        <span className="text-sm font-bold text-white truncate max-w-[100px]">{username}</span>
+                                {/* [수정] 점수판 레이아웃 개선 (3단 그리드: 플레이어 - 점수 - 진행상황) */}
+                                <div className="bg-slate-800 p-3 rounded-xl border border-slate-700 grid grid-cols-3 gap-2 items-center shadow-md">
+                                    {/* 플레이어 */}
+                                    <div className="flex flex-col items-start border-r border-slate-700/50 pr-2">
+                                        <span className="text-[10px] text-slate-400 uppercase tracking-wider">Player</span>
+                                        <span className="text-sm font-bold text-white truncate w-full">{username}</span>
                                     </div>
-                                    <div className="flex flex-col items-end">
-                                        <span className="text-[10px] text-slate-400">Score</span>
-                                        <div className="flex items-baseline gap-1">
-                                            <span className="text-lg font-mono font-bold text-indigo-400">{score}</span>
-                                            <span className="text-[10px] text-slate-500">({qIndex + 1}/{gameData.length})</span>
-                                        </div>
+                                    
+                                    {/* 점수 (가운데 정렬, 크게) */}
+                                    <div className="flex flex-col items-center border-r border-slate-700/50 px-2">
+                                        <span className="text-[10px] text-slate-400 uppercase tracking-wider">Score</span>
+                                        <span className="text-xl font-bold text-indigo-400 whitespace-nowrap">
+                                            {score} <span className="text-xs text-slate-500 font-normal">점</span>
+                                        </span>
+                                    </div>
+
+                                    {/* 진행 상황 (우측 정렬, 크게) */}
+                                    <div className="flex flex-col items-end pl-2">
+                                        <span className="text-[10px] text-slate-400 uppercase tracking-wider">Progress</span>
+                                        <span className="text-xl font-bold text-emerald-400 whitespace-nowrap">
+                                            {qIndex + 1}<span className="text-sm text-slate-500 mx-1 font-normal">/</span>{gameData.length}
+                                        </span>
                                     </div>
                                 </div>
 
