@@ -70,7 +70,6 @@
         // 2. AUDIO ENGINE (Robust Mobile Version)
         // =============================================================================
         
-        // 전역 오디오 컨텍스트 (하나만 생성하여 재사용)
         let audioCtx = null;
 
         const initAudioContext = () => {
@@ -84,14 +83,12 @@
 
         const speak = (text) => {
             if (!window.speechSynthesis) return;
-            // 기존 발화 취소 (중복 방지)
             window.speechSynthesis.cancel();
             
             const u = new SpeechSynthesisUtterance(text);
             u.lang = 'en-US'; 
-            u.rate = 0.85; // 약간 천천히
+            u.rate = 0.85; 
             
-            // 모바일에서 음성 목록 로딩이 느릴 수 있으므로 방어 로직
             const voices = window.speechSynthesis.getVoices();
             if (voices.length > 0) {
                 const preferred = voices.find(v => v.name.includes("Google US English")) || voices.find(v => v.lang.startsWith("en-US"));
@@ -136,18 +133,16 @@
                 gain.gain.linearRampToValueAtTime(0.001, now + 1.2);
                 osc.start(now); osc.stop(now + 1.2);
             } else if (type === 'fail') { 
-                // 장송곡 느낌의 무거운 소리
                 osc.type = 'square'; 
                 osc.frequency.setValueAtTime(100, now); 
-                osc.frequency.exponentialRampToValueAtTime(30, now + 1.5); // 주파수 급격히 하강
+                osc.frequency.exponentialRampToValueAtTime(30, now + 1.5); 
                 gain.gain.setValueAtTime(0.15, now); 
                 gain.gain.linearRampToValueAtTime(0.001, now + 1.5);
                 osc.start(now); osc.stop(now + 1.5);
             } else if (type === 'warning') {
-                // 마지막 기회 경고음 (긴장감)
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(100, now);
-                osc.frequency.linearRampToValueAtTime(800, now + 0.4); // 사이렌처럼 상승
+                osc.frequency.linearRampToValueAtTime(800, now + 0.4); 
                 gain.gain.setValueAtTime(0.05, now);
                 gain.gain.linearRampToValueAtTime(0.001, now + 0.4);
                 osc.start(now); osc.stop(now + 0.4);
@@ -171,7 +166,6 @@
             const canvasRef = useRef(null);
             useEffect(() => {
                 const ctx = canvasRef.current.getContext('2d');
-                // 캔버스 내부 해상도는 고정, 표시는 CSS로 조절
                 ctx.strokeStyle = '#cbd5e1'; 
                 ctx.lineWidth = 4; 
                 ctx.lineCap = 'round';
@@ -179,22 +173,16 @@
                 
                 const draw = (s) => {
                     ctx.beginPath();
-                    // 바닥 & 기둥
                     if(s>=1) { ctx.moveTo(50,270); ctx.lineTo(250,270); ctx.moveTo(100,270); ctx.lineTo(100,50); ctx.lineTo(150,50); ctx.lineTo(150,80); }
-                    // 머리
                     if(s>=2) { ctx.moveTo(170,100); ctx.arc(150,100,20,0,Math.PI*2); }
-                    // 몸통
                     if(s>=3) { ctx.moveTo(150,120); ctx.lineTo(150,190); }
-                    // 팔
                     if(s>=4) { ctx.moveTo(150,130); ctx.lineTo(120,160); ctx.moveTo(150,130); ctx.lineTo(180,160); }
-                    // 다리 (최종)
                     if(s>=5) { ctx.moveTo(150,190); ctx.lineTo(120,230); ctx.moveTo(150,190); ctx.lineTo(180,230); }
                     ctx.stroke();
                 };
                 draw(mistakes);
             }, [mistakes]);
             
-            // [수정] 높이 100% 및 최소 높이 설정으로 옆의 단어 카드와 높이 맞춤
             return (
                 <div className="bg-slate-800 p-2 rounded-xl flex justify-center border border-slate-700 hangman-wrapper h-full min-h-[160px] items-center">
                     <canvas ref={canvasRef} width={300} height={300} className="max-h-full w-auto" />
@@ -202,14 +190,15 @@
             );
         };
 
+        // 형태소(변화형) 정보 로직
         const getMorphologyInfo = (item) => {
             if (!item) return null;
             const pos = (item.pos || item['word class'] || '').toLowerCase();
             const forms = item.forms || item.conjugation || ''; 
 
-            if (pos.includes('동사') || pos.includes('verb')) return { label: '동사 변화', desc: '현재-과거-분사', value: forms || '정보 없음' };
-            if (pos.includes('명사') || pos.includes('noun')) return { label: '수 변화', desc: '단수 / 복수', value: forms || '정보 없음' };
-            if (pos.includes('형용사') || pos.includes('adj') || pos.includes('부사') || pos.includes('adv')) return { label: '비교 변화', desc: '원급-비교-최상', value: forms || '정보 없음' };
+            if (pos.includes('동사') || pos.includes('verb')) return { label: '동사 변화', value: forms || '변화형 정보 없음' };
+            if (pos.includes('명사') || pos.includes('noun')) return { label: '수 변화', value: forms || '복수형 정보 없음' };
+            if (pos.includes('형용사') || pos.includes('adj') || pos.includes('부사') || pos.includes('adv')) return { label: '비교 변화', value: forms || '비교급 정보 없음' };
             return null; 
         };
 
@@ -265,7 +254,6 @@
             const handleStartGame = async (part) => {
                 if (!username.trim()) return alert("이름을 입력하세요.");
                 
-                // [중요] 게임 시작 시 오디오 컨텍스트 활성화 (모바일 정책 대응)
                 initAudioContext();
 
                 setIsLoading(true);
@@ -320,7 +308,6 @@
             const handleWordClick = (wObj) => {
                 if (roundStatus !== 'playing') return;
                 
-                // 오디오 컨텍스트가 끊겼을 경우를 대비해 재개 시도
                 if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
 
                 const nextIdx = userWords.length;
@@ -338,7 +325,6 @@
                         
                         setRoundStatus('success');
                         playSfx('clear');
-                        // 성공음이 묻히지 않게 1.5초 후 발음 재생
                         setTimeout(() => {
                             const sent = gameData[qIndex].english || gameData[qIndex].English;
                             speak(sent);
@@ -351,16 +337,13 @@
                     setTimeout(() => setShake(false), 500);
                     
                     if (newMistakes >= 5) {
-                        // 게임 오버
                         setRoundStatus('fail');
-                        playSfx('fail'); // 장송곡
-                        // 실패음 충분히 들려준 후 발음 재생
+                        playSfx('fail'); 
                         setTimeout(() => {
                             const sent = gameData[qIndex].english || gameData[qIndex].English;
                             speak(sent);
                         }, 2000);
                     } else if (newMistakes === 4) {
-                        // 마지막 기회 경고음
                         playSfx('warning'); 
                     } else {
                         playSfx('wrong');
@@ -436,7 +419,7 @@
                         </div>
                     )}
 
-                    {/* STEP 2: 게임 플레이 (모바일 레이아웃 최적화) */}
+                    {/* STEP 2: 게임 플레이 (모바일 레이아웃 최적화 + UI 개선) */}
                     {step === 'GAME' && (
                         <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-12 gap-4 animate-fade-in">
                             
@@ -457,31 +440,47 @@
                                     </div>
                                 </div>
 
-                                {/* 행맨 캔버스 & 단어 카드 (모바일에서는 가로 배치 or 컴팩트) */}
+                                {/* 행맨 캔버스 & 단어 카드 */}
                                 <div className="grid grid-cols-2 md:grid-cols-1 gap-3">
                                     <HangmanCanvas mistakes={mistakes} />
                                     
-                                    {/* [수정] 단어 카드에 h-full 추가하여 캔버스와 높이 맞춤 */}
+                                    {/* [개선된 단어 정보 레이아웃] */}
                                     <div className="bg-slate-800 p-3 rounded-xl border border-slate-700 shadow-md flex flex-col justify-center h-full">
                                         <div className="flex justify-between items-start mb-2">
-                                            <div>
+                                            <div className="flex-grow">
                                                 <span className="text-[9px] text-indigo-400 font-bold tracking-wider uppercase block">KEY WORD</span>
                                                 <h3 className="text-xl font-bold text-white leading-tight break-all">{curr.word || 'Word'}</h3>
-                                                <span className="inline-block bg-slate-700 text-slate-300 text-[9px] px-1.5 py-0.5 rounded border border-slate-600 mt-1">{curr.pos || '품사'}</span>
+                                                
+                                                {/* 품사와 뜻을 한 줄에 배치하여 공간 활용 최적화 */}
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <span className="inline-block bg-slate-700 text-slate-300 text-[10px] px-1.5 py-0.5 rounded border border-slate-600">
+                                                        {curr.pos || curr['word class'] || '품사'}
+                                                    </span>
+                                                    <span className="text-sm text-emerald-400 font-medium truncate max-w-[100px] md:max-w-none">
+                                                        {curr.meaning || '뜻'}
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <button onClick={() => speak(curr.word)} className="p-2 bg-indigo-600 active:bg-indigo-700 rounded-full text-white shadow touch-manipulation">
+                                            <button onClick={() => speak(curr.word)} className="p-2 bg-indigo-600 active:bg-indigo-700 rounded-full text-white shadow touch-manipulation flex-shrink-0 ml-1">
                                                 <Icon path={I.Volume} />
                                             </button>
                                         </div>
-                                        <div className="text-sm text-emerald-400 font-medium leading-snug border-t border-slate-700 pt-2 mt-auto">
-                                            {curr.meaning || '뜻'}
-                                        </div>
-                                        {morphInfo && (
-                                            <div className="mt-1 pt-1 border-t border-slate-700/50">
-                                                <div className="flex justify-between">
-                                                    <span className="text-[9px] text-slate-500">{morphInfo.label}</span>
-                                                    <span className="text-[9px] text-indigo-300">{morphInfo.value}</span>
+
+                                        {/* 형태소/변화형 정보 영역 강조 */}
+                                        {morphInfo ? (
+                                            <div className="mt-auto pt-2 border-t border-slate-700/50">
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] text-slate-400 uppercase mb-0.5">{morphInfo.label}</span>
+                                                    {/* 줄바꿈을 허용하여 긴 텍스트도 표시 (break-words) */}
+                                                    <p className={`text-base font-bold leading-tight break-words ${morphInfo.value.includes('없음') ? 'text-slate-500 italic font-normal text-xs' : 'text-indigo-300'}`}>
+                                                        {morphInfo.value}
+                                                    </p>
                                                 </div>
+                                            </div>
+                                        ) : (
+                                            /* 변화형 정보가 없을 때도 레이아웃 유지 */
+                                            <div className="mt-auto pt-2 border-t border-slate-700/50 min-h-[3rem] flex items-center justify-center">
+                                                <span className="text-[10px] text-slate-600">변화형 정보 없음</span>
                                             </div>
                                         )}
                                     </div>
@@ -494,7 +493,6 @@
                                     <p className="text-indigo-400 text-[10px] font-bold uppercase tracking-wider mb-1">영어 어순으로 배열하세요</p>
                                     <h2 className="text-lg md:text-xl font-bold text-white mb-4 break-keep leading-snug">"{curr.Korean || curr.korean}"</h2>
                                     
-                                    {/* 정답 표시 영역 (Wrap 처리) */}
                                     <div className="flex flex-wrap justify-center gap-1.5 min-h-[40px]">
                                         {targetWords.map((w, i) => (
                                             <div key={i} className={`px-2 py-1.5 rounded-md text-sm md:text-base font-medium border-b-2 transition-all ${i < userWords.length ? 'bg-indigo-600 border-indigo-800 text-white' : 'bg-slate-700 border-slate-600 text-transparent min-w-[30px]'}`}>
@@ -504,7 +502,6 @@
                                     </div>
                                 </div>
 
-                                {/* 단어 선택지 (모바일 그리드 최적화) */}
                                 <div className={`grid grid-cols-3 sm:grid-cols-4 gap-2 mt-auto transition-opacity duration-300 ${shake ? 'shake' : ''} ${roundStatus !== 'playing' ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
                                     {wordBank.map((w) => (
                                         <button key={w.id} onClick={() => !w.used && handleWordClick(w)} disabled={w.used}
@@ -514,7 +511,6 @@
                                     ))}
                                 </div>
 
-                                {/* 결과 오버레이 */}
                                 {roundStatus !== 'playing' && (
                                     <div className="absolute inset-0 bg-slate-900/95 rounded-xl flex flex-col items-center justify-center z-20 fade-in-up p-4 text-center">
                                         <h3 className={`text-3xl font-bold mb-2 ${roundStatus === 'success' ? 'text-green-400' : 'text-red-400'}`}>
