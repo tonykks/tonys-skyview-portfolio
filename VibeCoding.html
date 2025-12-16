@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Coding: AI와 함께 만드는 계절별 타이머</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+        code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #2563eb, #0ea5e9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .chat-bubble {
+            position: relative;
+            padding: 1.25rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+        }
+        .chat-bubble::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header Section -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 bg-opacity-90 backdrop-blur-md">
+        <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="cpu" class="text-blue-600"></i>
+                <span class="font-bold text-slate-800 text-lg">Drone & Coding Class</span>
+            </div>
+            <a href="#" onclick="window.print()" class="text-sm font-medium text-slate-500 hover:text-blue-600 flex items-center gap-1 transition-colors">
+                <i data-lucide="printer" class="w-4 h-4"></i> PDF 저장/인쇄
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12">
+        
+        <!-- Title Section -->
+        <section class="text-center mb-16">
+            <div class="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold tracking-wide mb-4">CASE STUDY</div>
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4 text-slate-900 tracking-tight">
+                Vibe Coding:<br>
+                <span class="gradient-text">AI와 함께 만드는 계절별 타이머</span>
+            </h1>
+            <p class="text-xl text-slate-500 font-light">자연어 대화로 완성하는 소프트웨어 교육 사례</p>
+            <div class="mt-8 flex justify-center items-center space-x-4 text-sm text-slate-400">
+                <span>By Drone & Coding Instructor</span>
+                <span>•</span>
+                <span>2025 Education Reference</span>
+            </div>
+        </section>
+
+        <!-- Definition Section -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="zap" class="text-yellow-500"></i>
+                바이브 코딩(Vibe Coding)이란?
+            </h2>
+            <p class="text-lg mb-6 text-slate-600">
+                복잡한 프로그래밍 문법(Syntax)을 암기하여 한 줄씩 작성하는 전통적인 방식에서 벗어나, 
+                <strong class="text-blue-600 bg-blue-50 px-1 rounded">자연어(Natural Language)</strong>로 
+                AI에게 자신의 의도와 느낌(Vibe)을 전달하며 협력적으로 코드를 완성해 나가는 새로운 코딩 패러다임입니다.
+            </p>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                    <h3 class="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                        <i data-lucide="brain-circuit" class="w-5 h-5 text-purple-500"></i> 핵심 역량
+                    </h3>
+                    <p class="text-sm text-slate-600">문법 암기보다는 <strong>논리적 사고(Logic)</strong>, <strong>소통 능력</strong>, 그리고 원하는 것을 정확히 요구하는 <strong>질문하는 힘(Prompt Engineering)</strong>이 중요합니다.</p>
+                </div>
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                    <h3 class="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                        <i data-lucide="graduation-cap" class="w-5 h-5 text-green-500"></i> 교육적 가치
+                    </h3>
+                    <p class="text-sm text-slate-600">학생들은 '어떻게 짤까(How)'보다 <strong>'무엇을 만들까(What)'</strong>에 집중하며, 실패를 두려워하지 않고 즉각적인 수정(Debugging)을 경험합니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Case Study Phase 1 -->
+        <section class="mb-16">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">1</div>
+                <h2 class="text-2xl font-bold text-slate-800">문제 발생과 의도 전달 (Problem Definition)</h2>
+            </div>
+            
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden mb-6">
+                <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    Collaboration Log
+                </div>
+                <div class="p-6 space-y-6">
+                    <!-- User Dialogue -->
+                    <div class="flex gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-xl">👨‍🏫</div>
+                        <div class="flex-1">
+                            <div class="text-sm font-bold text-slate-700 mb-1">선생님 (User)</div>
+                            <div class="bg-blue-50 text-slate-700 p-4 rounded-2xl rounded-tl-none border border-blue-100 shadow-sm">
+                                "아~ 안되는데... 난 12월을 동영상 파일을 찾아서 링크를 걸었고, 나머지 계절별 동영상을 찾지 못해서 일단 이미지로 붙여 넣었다고 했는데... 동영상이면 모두 동영상, 이미지면 모두 이미지여야 한다는 뜻인가보네."
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Dialogue -->
+                    <div class="flex gap-4 flex-row-reverse">
+                        <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-xl">🤖</div>
+                        <div class="flex-1 text-right">
+                            <div class="text-sm font-bold text-slate-700 mb-1">AI (Gemini)</div>
+                            <div class="bg-green-50 text-slate-700 p-4 rounded-2xl rounded-tr-none border border-green-100 shadow-sm text-left">
+                                "기술적인 제약은 없지만 관리의 편의성을 위해 말씀드렸던 것입니다. <strong>'하이브리드 방식(이미지와 동영상 혼용)'</strong>을 유지하되, 주소가 .mp4로 끝나면 자동으로 동영상 모드로 변환되도록 로직을 수정하겠습니다."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-start gap-3 bg-yellow-50 p-4 rounded-lg border border-yellow-100">
+                <i data-lucide="lightbulb" class="text-yellow-600 flex-shrink-0 mt-1"></i>
+                <div>
+                    <strong class="text-yellow-800 block mb-1">📝 학습 포인트</strong>
+                    <p class="text-sm text-yellow-800">AI가 의도를 오해했을 때 포기하지 않고, <strong>자신의 상황(동영상과 이미지 혼용)</strong>을 정확히 재설명하여 맞춤형 해결책을 유도했습니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Case Study Phase 2 -->
+        <section class="mb-16">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">2</div>
+                <h2 class="text-2xl font-bold text-slate-800">심리적 효과를 고려한 기능 확장</h2>
+            </div>
+            
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden mb-6">
+                <div class="p-6 space-y-6">
+                    <!-- User Dialogue -->
+                    <div class="flex gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-xl">👨‍🏫</div>
+                        <div class="flex-1">
+                            <div class="text-sm font-bold text-slate-700 mb-1">선생님 (User)</div>
+                            <div class="bg-blue-50 text-slate-700 p-4 rounded-2xl rounded-tl-none border border-blue-100 shadow-sm">
+                                "버튼을 두어서 Spring, Summer... 내가 원하는 영상으로 선택할 수 있도록 해주면 좋겠어. <strong>여름에도 겨울 동영상을 배경으로 삼아 시원하게 느낄 수 있을테니까?</strong>"
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Dialogue -->
+                    <div class="flex gap-4 flex-row-reverse">
+                        <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-xl">🤖</div>
+                        <div class="flex-1 text-right">
+                            <div class="text-sm font-bold text-slate-700 mb-1">AI (Gemini)</div>
+                            <div class="bg-green-50 text-slate-700 p-4 rounded-2xl rounded-tr-none border border-green-100 shadow-sm text-left">
+                                "탁월한 발상입니다. '시간 기반' 제어 방식에서 <strong>'사용자 중심' 제어 방식</strong>으로 전환하겠습니다. 여름에 겨울 영상을 보며 심리적 냉각 효과를 얻는 것은 공학적으로도 유효한 <strong>감성 제어(Affective Computing)</strong>입니다."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-start gap-3 bg-yellow-50 p-4 rounded-lg border border-yellow-100">
+                <i data-lucide="lightbulb" class="text-yellow-600 flex-shrink-0 mt-1"></i>
+                <div>
+                    <strong class="text-yellow-800 block mb-1">📝 학습 포인트</strong>
+                    <p class="text-sm text-yellow-800">코딩은 단순한 기능 구현이 아니라, <strong>사용자의 경험(UX)과 감성까지 설계</strong>하는 창의적인 과정임을 보여줍니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Evolution -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-8 text-slate-800 border-l-4 border-blue-600 pl-4">코드의 진화 (Code Evolution)</h2>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Before -->
+                <div class="group">
+                    <h3 class="font-bold text-slate-500 mb-3 flex items-center gap-2">
+                        <span class="bg-slate-200 text-slate-600 px-2 py-0.5 rounded text-xs">Before</span>
+                        단순 조건문 (Static)
+                    </h3>
+                    <div class="bg-slate-900 rounded-xl p-4 shadow-lg overflow-x-auto border border-slate-800 group-hover:border-slate-600 transition-colors">
+<pre><code class="language-javascript text-sm text-slate-300">
+<span class="text-purple-400">if</span> (month == <span class="text-orange-400">12</span>) {
+    background = <span class="text-green-400">"christmas.jpg"</span>;
+} <span class="text-purple-400">else if</span> (month >= <span class="text-orange-400">3</span>) {
+    background = <span class="text-green-400">"spring.jpg"</span>;
+}
+<span class="text-slate-500">// ❌ 사용자가 계절을 바꿀 수 없음</span>
+</code></pre>
+                    </div>
+                </div>
+
+                <!-- After -->
+                <div class="group">
+                    <h3 class="font-bold text-blue-600 mb-3 flex items-center gap-2">
+                        <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs">After</span>
+                        객체 지향 & 인터랙티브
+                    </h3>
+                    <div class="bg-slate-900 rounded-xl p-4 shadow-lg overflow-x-auto border border-blue-900 group-hover:border-blue-500 transition-colors ring-2 ring-blue-500/10">
+<pre><code class="language-javascript text-sm text-slate-300">
+<span class="text-purple-400">const</span> backgrounds = {
+    <span class="text-blue-400">spring</span>: { url: <span class="text-green-400">"video.mp4"</span>, name: <span class="text-green-400">"Spring"</span> },
+    <span class="text-blue-400">winter</span>: { url: <span class="text-green-400">"snow.mp4"</span>, name: <span class="text-green-400">"Winter"</span> },
+    <span class="text-slate-500">// ✅ 언제든 데이터만 추가하면 됨</span>
+};
+
+<span class="text-purple-400">function</span> <span class="text-yellow-400">changeSeason</span>(seasonKey) {
+    bgVideo.src = backgrounds[seasonKey].url;
+    <span class="text-slate-500">// 사용자의 클릭에 즉시 반응</span>
+}
+</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conclusion -->
+        <section class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-8 text-white shadow-xl">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="check-circle-2" class="text-green-400"></i>
+                결론: AI 시대의 코딩 교육
+            </h2>
+            <ul class="space-y-4">
+                <li class="flex items-start gap-3">
+                    <div class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 mt-0.5 text-sm font-bold">1</div>
+                    <p class="text-slate-300"><strong class="text-white">AI는 도구이자 파트너입니다:</strong> 선생님의 아이디어를 실현해 주는 기술적 파트너 역할을 수행했습니다.</p>
+                </li>
+                <li class="flex items-start gap-3">
+                    <div class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 mt-0.5 text-sm font-bold">2</div>
+                    <p class="text-slate-300"><strong class="text-white">완벽한 문법보다 명확한 의도:</strong> "여름에도 겨울 동영상을 보고 싶다"는 창의적인 의도가 더 좋은 소프트웨어를 만들었습니다.</p>
+                </li>
+                <li class="flex items-start gap-3">
+                    <div class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 mt-0.5 text-sm font-bold">3</div>
+                    <p class="text-slate-300"><strong class="text-white">지속적인 개선(Iteration):</strong> 한 번에 완성하는 것이 아니라, 대화를 통해 점진적으로 결과물을 발전시키는 과정이 바로 '바이브 코딩'입니다.</p>
+                </li>
+            </ul>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-8 text-slate-400 text-sm border-t border-slate-200 mt-12">
+        <p>&copy; 2025 Drone & Coding Instructor. All rights reserved.</p>
+        <p class="mt-2 text-xs text-slate-300">Generated with Gemini Vibe Coding</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
