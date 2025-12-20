@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Carotid US 요약 기록 (주인님 보관용)</title>
+  <style>
+    :root{
+      --bg:#0b0f14; --card:#111827; --muted:#94a3b8; --text:#e5e7eb;
+      --accent:#38bdf8; --warn:#fb7185; --ok:#34d399; --line:#243041;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:linear-gradient(180deg,#070a0f, #0b0f14);
+      color:var(--text); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+      line-height:1.55;
+    }
+    header{
+      padding:28px 18px 16px; border-bottom:1px solid var(--line);
+      position:sticky; top:0; background:rgba(11,15,20,.88); backdrop-filter: blur(10px);
+      z-index:10;
+    }
+    .wrap{max-width:980px; margin:0 auto; padding:0 14px 36px;}
+    h1{font-size:20px; margin:0 0 6px;}
+    .sub{color:var(--muted); font-size:13px}
+    main{padding:18px 0 36px;}
+    .grid{display:grid; grid-template-columns:1fr; gap:12px;}
+    @media(min-width:900px){ .grid{grid-template-columns:1fr 1fr;} }
+    .card{
+      background:rgba(17,24,39,.75);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px 14px 12px;
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+    }
+    .card h2{margin:0 0 8px; font-size:15px;}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px; border-radius:999px; border:1px solid var(--line);
+      background:rgba(56,189,248,.10); color:var(--text); font-size:12px;
+    }
+    .pill b{color:var(--accent); font-weight:700}
+    .kv{display:grid; grid-template-columns:150px 1fr; gap:8px 10px; margin-top:10px;}
+    .k{color:var(--muted); font-size:12px}
+    .v{font-size:13px}
+    .hr{height:1px; background:var(--line); margin:12px 0;}
+    ul{margin:8px 0 0 18px; padding:0}
+    li{margin:6px 0; font-size:13px}
+    code{background:rgba(148,163,184,.12); padding:2px 6px; border-radius:8px; border:1px solid var(--line)}
+    .note{color:var(--muted); font-size:12px}
+    .warn{color:var(--warn)}
+    .ok{color:var(--ok)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;}
+    footer{border-top:1px solid var(--line); padding:14px 0; color:var(--muted); font-size:12px}
+    .btnrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
+    button{
+      cursor:pointer; border-radius:12px; padding:10px 12px; border:1px solid var(--line);
+      background:rgba(148,163,184,.10); color:var(--text); font-size:13px;
+    }
+    button:hover{border-color:rgba(56,189,248,.55)}
+    .table{
+      width:100%; border-collapse:separate; border-spacing:0; overflow:hidden;
+      border:1px solid var(--line); border-radius:12px;
+    }
+    .table th,.table td{padding:10px 10px; border-bottom:1px solid var(--line); font-size:13px; vertical-align:top}
+    .table th{background:rgba(148,163,184,.10); text-align:left; color:#cbd5e1}
+    .table tr:last-child td{border-bottom:0}
+    .muted{color:var(--muted)}
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Carotid US 기록 요약 (재검 비교용)</h1>
+      <div class="sub">
+        목적: 경동맥 초음파(US) 결과를 보관하고, 재검 시 진행 정도(Progression)를 동일 양식으로 비교.
+      </div>
+      <div class="btnrow">
+        <button onclick="window.print()">인쇄 / PDF 저장</button>
+        <button onclick="copyAll()">전체 요약 복사</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <section class="card">
+        <h2>1) 기본 정보</h2>
+        <div class="pill"><b>Date</b> 2025-11-29</div>
+        <div class="kv">
+          <div class="k">검사</div><div class="v">Carotid US (경동맥 초음파) + Doppler</div>
+          <div class="k">핵심 이슈</div><div class="v">IMT 증가 + carotid bulb plaque + (보고서상) ulceration → Plaque RADS 3C 언급</div>
+          <div class="k">추가 예정 검사</div><div class="v">뇌동맥 MRA (대학병원 예약: 24일)</div>
+        </div>
+        <div class="hr"></div>
+        <div class="note">
+          * 이 문서는 “대화 요약 + 사용자가 옮겨 적은 REPORT” 기반의 개인 기록입니다. 최종 의학 판단은 담당의 소견을 따릅니다.
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>2) REPORT 요약 (사용자 수기 입력)</h2>
+        <div class="kv">
+          <div class="k">판독 요지</div>
+          <div class="v">
+            Plaque RADS <b>3C</b>로 보임. Rt.CCA origin SCA 부위 IMT thickening → atherosclerosis 의심(2.0mm).<br/>
+            Rt.CCA & ICA IMT: 0.87mm, bulb area plaque: anterior(1.2mm), posterior(1.06mm).<br/>
+            Lt.CCA & ICA IMT: 1.021mm, bulb area plaque: anterior(10.7×2.2mm), posterior(20.1×2.1mm).<br/>
+            anterior wall plaque에 ulceration → wall thickness 3mm 미만이지만 Plaque RADS 3C로 판단.
+          </div>
+        </div>
+        <div class="hr"></div>
+        <div class="note">
+          용어 메모: <code>IMT</code> = intima-media thickness(내중막두께), <code>plaque</code> = 죽상경화반,
+          <code>ulceration</code> = 표면 궤양/불규칙(파열 취약성의 간접 단서로 언급되는 경우가 있음)
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>3) 주요 수치(이미지에서 확인된 값)</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="width:34%">구분</th>
+              <th>측정값</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Lt Posterior CCA Far Max</td>
+              <td class="mono">1.021 mm</td>
+            </tr>
+            <tr>
+              <td>Lt Posterior CCA Far Mean</td>
+              <td class="mono">0.931 mm</td>
+            </tr>
+            <tr>
+              <td>Lt Posterior CCA ROI Width</td>
+              <td class="mono">10.0 mm</td>
+            </tr>
+            <tr>
+              <td>Lt bulb plaque (anterior wall)</td>
+              <td class="mono">10.7 × 2.2 mm</td>
+            </tr>
+            <tr>
+              <td>Lt bulb plaque (posterior wall)</td>
+              <td class="mono">20.1 × 2.1 mm</td>
+            </tr>
+            <tr>
+              <td class="muted">참고(사용자 질문)</td>
+              <td class="muted">DistA는 보통 “두께/높이”, DistB는 “길이”로 해석되는 경우가 많으나, 화면의 캘리퍼 배치에 따라 의미가 바뀔 수 있음.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="hr"></div>
+        <div class="note">
+          * 주인님이 해석하신 것처럼 “한 덩어리 plaque의 두께와 길이”로 보는 방식은 합리적이지만,
+          장비/검사자 설정에 따라 DistA/B의 정의가 달라질 수 있어 원본 REPORT의 정의가 최우선입니다.
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>4) 대화에서 정리된 의사결정(검사 순서)</h2>
+        <ul>
+          <li><b>결론:</b> 심장초음파(Echocardiography)를 MRA 전에 해도 <b>MRA 판독에 결정적 도움은 크지 않다</b>.</li>
+          <li><b>우선순위:</b> 먼저 뇌동맥 MRA로 “뇌혈관 협착/위험 소견”을 확인하고, 결과에 따라 치료 우선순위 결정.</li>
+          <li><b>추적 검사:</b> 심장초음파는 급성 심장 증상/색전성 이벤트 단서가 없다면 <b>그 다음 단계로 해도 늦지 않다</b>.</li>
+        </ul>
+        <div class="hr"></div>
+        <div class="note">
+          주인님 정리문(최종): “MRA 먼저 → 의미 있는 소견이면 그 치료 우선 → 이후 심장초음파는 추적 평가로.” (대화에서 ‘정확’으로 합의)
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>5) MRA에서 “중점적으로 확인할 포인트” 체크리스트</h2>
+        <ul>
+          <li><b>Intracranial stenosis</b>(뇌혈관 협착): 위치/정도(%) / 다발성 여부</li>
+          <li><b>Flow limitation</b>: 혈류 감소/측부순환(collateral) 여부</li>
+          <li><b>Aneurysm / dissection</b>: 동맥류/박리 의심 소견</li>
+          <li><b>Prior ischemic change</b>: 과거 허혈 흔적/무증상 병변 가능성</li>
+          <li><b>Correlation</b>: 경동맥 plaque(특히 ulceration 언급)와 뇌혈관 소견의 정합성</li>
+        </ul>
+        <div class="note warn">
+          응급 신호(있으면 즉시 진료/응급실): 한쪽 마비/감각저하, 발음 이상, 한쪽 시야장애, 심한 어지럼+균형장애, 갑작스런 극심한 두통 등
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>6) 재검 비교(Progression) 입력 템플릿</h2>
+        <div class="note">재검사 때 아래 칸만 채우면 “전/후 비교”가 바로 됩니다.</div>
+        <div class="hr"></div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th style="width:28%">이번(2025-11-29)</th>
+              <th style="width:28%">다음 검사</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Rt.CCA origin IMT thickening</td>
+              <td class="mono">2.0 mm (report)</td>
+              <td class="mono">[ ]</td>
+            </tr>
+            <tr>
+              <td>Rt.CCA & ICA IMT</td>
+              <td class="mono">0.87 mm (report)</td>
+              <td class="mono">[ ]</td>
+            </tr>
+            <tr>
+              <td>Lt.CCA & ICA IMT</td>
+              <td class="mono">1.021 mm (report)</td>
+              <td class="mono">[ ]</td>
+            </tr>
+            <tr>
+              <td>Lt plaque anterior</td>
+              <td class="mono">10.7 × 2.2 mm</td>
+              <td class="mono">[ ]</td>
+            </tr>
+            <tr>
+              <td>Lt plaque posterior</td>
+              <td class="mono">20.1 × 2.1 mm</td>
+              <td class="mono">[ ]</td>
+            </tr>
+            <tr>
+              <td>Ulceration 언급</td>
+              <td>있음(보고서)</td>
+              <td>[ ]</td>
+            </tr>
+            <tr>
+              <td>Plaque RADS</td>
+              <td class="mono">3C (report)</td>
+              <td class="mono">[ ]</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="hr"></div>
+        <div class="note">
+          팁: 재검에서는 “두께(mm) 변화”뿐 아니라 <b>new plaque 출현</b>, <b>ulceration/표면 불규칙 변화</b>, <b>협착률(%)</b>이 기록되면 비교 가치가 큽니다.
+        </div>
+      </section>
+
+      <section class="card" id="copyTarget">
+        <h2>7) 한 페이지 핵심 요약(복사용)</h2>
+        <div class="kv">
+          <div class="k">진단 키워드</div>
+          <div class="v">atherosclerosis 의심, IMT thickening, carotid bulb plaque, ulceration 언급, Plaque RADS 3C</div>
+
+          <div class="k">Rt</div>
+          <div class="v">
+            Rt.CCA origin SCA IMT thickening: <span class="mono">2.0 mm</span><br/>
+            Rt.CCA & ICA IMT: <span class="mono">0.87 mm</span><br/>
+            bulb plaque: anterior <span class="mono">1.2 mm</span>, posterior <span class="mono">1.06 mm</span>
+          </div>
+
+          <div class="k">Lt</div>
+          <div class="v">
+            Lt.CCA & ICA IMT: <span class="mono">1.021 mm</span><br/>
+            bulb plaque: anterior <span class="mono">10.7 × 2.2 mm</span>, posterior <span class="mono">20.1 × 2.1 mm</span>
+          </div>
+
+          <div class="k">검사/우선순위</div>
+          <div class="v">
+            뇌동맥 MRA 먼저 → 결과 기반으로 치료 우선순위 결정 → 심장초음파는 추적 평가로 진행 가능(판독에 결정적 영향은 제한적).
+          </div>
+        </div>
+        <div class="hr"></div>
+        <div class="note">
+          저장 팁: 브라우저 인쇄에서 “PDF로 저장”하면, 날짜별로 파일을 누적 보관하기 좋습니다.
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <div>
+        생성 방식: 대화 요약 + 사용자가 옮겨 적은 REPORT 기반. 의료 최종 판단은 담당의에게 확인.
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    function copyAll(){
+      const el = document.getElementById('copyTarget');
+      const text = el.innerText.replace(/\n{3,}/g, "\n\n").trim();
+      navigator.clipboard.writeText(text).then(()=>{
+        alert("핵심 요약을 클립보드에 복사했습니다.");
+      }).catch(()=>{
+        alert("복사에 실패했습니다. 브라우저 권한을 확인해 주세요.");
+      });
+    }
+  </script>
+</body>
+</html>
