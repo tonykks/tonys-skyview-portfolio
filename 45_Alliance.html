@@ -16,10 +16,9 @@
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(6, 1fr); height: 100%; }
         video { transition: opacity 1s ease-in-out; }
         
-        /* [수정] 모바일 가로/세로 모든 환경에서 5열 대칭 레이아웃 강제 */
+        /* [기본] 세로 모드 및 공통 5열 대칭 레이아웃 */
         .header-section {
             display: grid;
-            /* 모바일에서는 사이드 요소들을 작게, 중앙을 크게 배치 */
             grid-template-columns: 45px 55px 1fr 55px 45px;
             align-items: center;
             gap: 0.25rem;
@@ -33,22 +32,31 @@
             .header-section { grid-template-columns: 140px 110px 1fr 110px 140px; gap: 1.5rem; }
         }
 
-        /* 미니 달력 숫자 크기 조절 */
         .mini-date { font-size: 0.35rem; text-align: center; }
         @media (min-width: 768px) { .mini-date { font-size: 0.5rem; } }
 
-        /* 모바일 가로 모드 대응 */
-        @media (max-height: 500px) {
-            .header-section { min-height: 70px !important; margin-bottom: 0.1rem !important; }
-            .calendar-container { height: 98vh !important; padding: 0.25rem !important; overflow-y: auto !important; }
-            .day-cell { min-height: 30px !important; font-size: 0.75rem !important; }
+        /* [수정] 모바일 가로 모드 (Landscape) 전용 최적화 */
+        @media (orientation: landscape) and (max-width: 950px) {
+            .header-section { 
+                grid-template-columns: 40px 50px 1fr 50px 40px !important;
+                min-height: 60px !important; 
+                height: auto !important; 
+                margin-bottom: 0.15rem !important; 
+                padding-bottom: 0.15rem !important;
+            }
+            .calendar-container { 
+                height: 98vh !important; 
+                padding: 0.25rem !important; 
+                overflow-y: auto !important; /* 높이가 낮을 때 스크롤 생성 */
+            }
+            .day-cell { min-height: 32px !important; font-size: 0.75rem !important; }
             .photo-box { width: 3rem !important; height: 3rem !important; }
             .month-text { font-size: 1.8rem !important; }
-            .mini-cal-box { display: none !important; } /* 가로모드에서는 공간부족으로 사진만 노출 */
-            .header-section { grid-template-columns: 1fr 2fr 1fr !important; }
+            .alliance-label { font-size: 0.5rem !important; margin-bottom: 0 !important; }
+            .nav-btn { width: 30px !important; height: 30px !important; }
+            .mini-cal-box { display: flex !important; } /* 가로모드에서도 미니달력 유지 */
         }
 
-        /* 내비게이션 버튼 스타일 */
         .nav-btn {
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -105,7 +113,6 @@
                 else if (nextM < 1) { nextM = 12; nextY--; }
                 if (nextY === 2025 && nextM < 12) return;
                 if (nextY === 2026 && nextM > 12) return;
-                if (nextY > 2026) return;
                 setCurrentM(nextM); setCurrentY(nextY);
             };
 
@@ -145,9 +152,9 @@
 
                     <div className="calendar-container relative z-10 w-full max-w-5xl h-[92vh] mx-2 p-3 md:p-8 flex flex-col rounded-3xl border border-white/10 shadow-2xl overflow-hidden" style={{ background: 'rgba(0, 0, 0, 0.2)' }}>
                         
-                        <header className="header-section pb-4 md:pb-6 mb-4 border-b border-white/20 min-h-[140px] md:min-h-[180px]">
+                        <header className="header-section pb-3 md:pb-6 mb-3 border-b border-white/20 min-h-[140px] md:min-h-[180px]">
                             
-                            {/* [수정] 1. 이전 달 미니 달력 (항상 노출, 폰트 조절) */}
+                            {/* 1. 이전 달 미니 달력 */}
                             <div onClick={() => move(-1)} className="mini-cal-box cursor-pointer group flex flex-col items-center">
                                 <div className="text-[0.55rem] md:text-[0.7rem] font-bold text-white mb-1">{prevInfo.m}월</div>
                                 <div className="grid grid-cols-7 gap-0.5 opacity-40 group-hover:opacity-100">
@@ -162,7 +169,7 @@
                                 </div>
                             </div>
 
-                            {/* 3. 중앙 타이틀: 대칭 축 */}
+                            {/* 3. 중앙 타이틀 */}
                             <div className="flex flex-col items-center justify-center space-y-1 text-center overflow-hidden">
                                 <span className="alliance-label text-[0.6rem] md:text-sm font-black tracking-[0.4em] text-white/90 drop-shadow-lg uppercase whitespace-nowrap mb-1">45 ALLIANCE</span>
                                 <div className="flex items-center space-x-1 md:space-x-8">
@@ -180,7 +187,7 @@
                                 </div>
                             </div>
 
-                            {/* [수정] 5. 다음 달 미니 달력 (항상 노출, 폰트 조절) */}
+                            {/* 5. 다음 달 미니 달력 */}
                             <div onClick={() => move(1)} className="mini-cal-box cursor-pointer group flex flex-col items-center">
                                 <div className="text-[0.55rem] md:text-[0.7rem] font-bold text-white mb-1">{nextInfo.m}월</div>
                                 <div className="grid grid-cols-7 gap-0.5 opacity-40 group-hover:opacity-100">
@@ -189,7 +196,7 @@
                             </div>
                         </header>
 
-                        <section className="flex-1 flex flex-col min-h-0">
+                        <section className="flex-1 flex flex-col min-h-0 overflow-y-auto">
                             <div className="grid grid-cols-7 mb-2 md:mb-4 text-[0.6rem] md:text-[0.8rem] font-bold tracking-widest text-white/60 text-center uppercase">
                                 <div className="text-red-500">SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div className="text-blue-400">SAT</div>
                             </div>
@@ -209,7 +216,7 @@
                     {/* 확대 모달 */}
                     {selectedImg && (
                         <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 md:p-6 overflow-hidden cursor-zoom-out" onClick={() => setSelectedImg(null)} style={{ background: 'rgba(0, 0, 0, 0.96)', backdropFilter: 'blur(15px)' }}>
-                            <div className="relative flex items-center justify-center w-[98vw] h-[95vh]" onClick={(e) => e.stopPropagation()}>
+                            <div className="relative flex items-center justify-center w-[98vw] h-[92vh]" onClick={(e) => e.stopPropagation()}>
                                 <img src={FRAME_IMG} className="absolute w-full h-full object-contain pointer-events-none drop-shadow-2xl" alt="F" />
                                 <div className="relative w-[92%] h-[92%] flex items-center justify-center overflow-hidden">
                                     <img src={selectedImg} className="w-full h-full object-contain shadow-2xl" alt="P" />
