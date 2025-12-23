@@ -16,59 +16,59 @@
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(6, 1fr); height: 100%; }
         video { transition: opacity 1s ease-in-out; }
         
-        /* [기본] 세로 모드 및 공통 5열 대칭 레이아웃 */
-        .header-section {
-            display: grid;
-            grid-template-columns: 45px 55px 1fr 55px 45px;
-            align-items: center;
-            gap: 0.25rem;
+        /* [중요] 방향성 기반 레이아웃 제어 */
+        
+        /* 1. 세로 모드 (Portrait) */
+        @media (orientation: portrait) {
+            .header-section {
+                grid-template-columns: 1fr 2fr 1fr !important; /* 미니 달력 자리 제외 */
+                gap: 0.5rem;
+            }
+            .mini-cal-box { display: none !important; } /* 세로 모드에서 숨김 */
+            .photo-box { width: 4.5rem !important; height: 4.5rem !important; }
+            .month-text { font-size: 3.5rem !important; }
         }
 
-        @media (min-width: 640px) {
-            .header-section { grid-template-columns: 80px 70px 1fr 70px 80px; gap: 0.5rem; }
+        /* 2. 가로 모드 (Landscape) */
+        @media (orientation: landscape) {
+            .header-section {
+                grid-template-columns: 0.7fr 1fr 2fr 1fr 0.7fr !important;
+                min-height: 80px !important;
+                gap: 0.25rem;
+            }
+            .mini-cal-box { display: flex !important; } /* 가로 모드에서 다시 노출 */
+            .calendar-container { overflow-y: auto !important; height: 98vh !important; }
+            .day-cell { min-height: 35px !important; font-size: 0.85rem !important; }
+            .photo-box { width: 4rem !important; height: 4rem !important; }
+            .month-text { font-size: 2.2rem !important; }
         }
 
+        /* PC (태블릿 이상 넓은 화면) */
         @media (min-width: 1024px) {
-            .header-section { grid-template-columns: 140px 110px 1fr 110px 140px; gap: 1.5rem; }
+            .header-section {
+                grid-template-columns: 140px 110px 1fr 110px 140px !important;
+                gap: 1.5rem;
+            }
+            .mini-cal-box { display: flex !important; }
+            .photo-box { width: 7rem !important; height: 7rem !important; }
         }
 
         .mini-date { font-size: 0.35rem; text-align: center; }
         @media (min-width: 768px) { .mini-date { font-size: 0.5rem; } }
 
-        /* [수정] 모바일 가로 모드 (Landscape) 전용 최적화 */
-        @media (orientation: landscape) and (max-width: 950px) {
-            .header-section { 
-                grid-template-columns: 40px 50px 1fr 50px 40px !important;
-                min-height: 60px !important; 
-                height: auto !important; 
-                margin-bottom: 0.15rem !important; 
-                padding-bottom: 0.15rem !important;
-            }
-            .calendar-container { 
-                height: 98vh !important; 
-                padding: 0.25rem !important; 
-                overflow-y: auto !important; /* 높이가 낮을 때 스크롤 생성 */
-            }
-            .day-cell { min-height: 32px !important; font-size: 0.75rem !important; }
-            .photo-box { width: 3rem !important; height: 3rem !important; }
-            .month-text { font-size: 1.8rem !important; }
-            .alliance-label { font-size: 0.5rem !important; margin-bottom: 0 !important; }
-            .nav-btn { width: 30px !important; height: 30px !important; }
-            .mini-cal-box { display: flex !important; } /* 가로모드에서도 미니달력 유지 */
-        }
-
         .nav-btn {
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            width: 38px;
-            height: 38px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
-        @media (min-width: 768px) { .nav-btn { width: 50px; height: 50px; } }
+        .nav-btn:active { transform: scale(0.8); background: rgba(255, 255, 255, 0.4); }
     </style>
 </head>
 <body>
@@ -85,7 +85,12 @@
             const FRAME_IMG = "https://cdn.pixabay.com/photo/2019/04/03/17/46/poster-4100927_1280.jpg";
 
             const config = useMemo(() => ({
-                "2025-12": { themeColor: "#F7D794", vid: "https://cdn.pixabay.com/video/2022/11/20/139834-773444672_large.mp4", p1: "https://drive.google.com/file/d/1QHfesNYkEwyt8KhCURamG41Odcc-lsfv/view?usp=drive_link", p2: "https://drive.google.com/file/d/1fkshsyCBhaZuDNG_18XC-MkVQFP28I0T/view?usp=drive_link" },
+                "2025-12": { 
+                    themeColor: "#F7D794", 
+                    vid: "https://cdn.pixabay.com/video/2022/11/20/139834-773444672_large.mp4",
+                    p1: "https://drive.google.com/file/d/1QHfesNYkEwyt8KhCURamG41Odcc-lsfv/view?usp=drive_link", 
+                    p2: "https://drive.google.com/file/d/1fkshsyCBhaZuDNG_18XC-MkVQFP28I0T/view?usp=drive_link" 
+                },
                 "2026-1": { themeColor: "#FF4D4D", vid: "https://cdn.pixabay.com/video/2025/02/23/260397_large.mp4", p1: "https://drive.google.com/file/d/17CUK6dgyD46m0qqobFDTibLslnqHHTs1/view?usp=drive_link", p2: "https://drive.google.com/file/d/1mqZ9GOBBk4d3mgxcck_8g1-R-xaINFtq/view?usp=drive_link" },
                 "2026-2": { themeColor: "#A29BFE", vid: "https://cdn.pixabay.com/video/2023/04/14/158830-817668585_large.mp4", p1: "https://drive.google.com/file/d/1GJFt-qfhl2LLsnPeCddaR2fbguFHJR5x/view?usp=drive_link", p2: "https://drive.google.com/file/d/1ts7DQa8J7VqKIwh2sX5KE8v3mT617HOx/view?usp=drive_link" },
                 "2026-3": { themeColor: "#55E6C1", vid: "https://cdn.pixabay.com/video/2023/04/03/157278-814358485_large.mp4", p1: "https://drive.google.com/file/d/1YnVZilMJoY25i5g8fWLOWTOv3vnyo3ld/view?usp=drive_link", p2: "https://drive.google.com/file/d/1Ec3J0E3Oduufr1FpJ6iHbyfQokKb3I43/view?usp=drive_link" },
@@ -131,18 +136,16 @@
             const currentData = config[currentKey];
             const calendarDays = generateDays(currentY, currentM);
             
-            const prevMonth = () => {
+            const prevInfo = (() => {
                 let m = currentM - 1; let y = currentY;
                 if (m < 1) { m = 12; y--; }
                 return { m, y };
-            };
-            const nextMonth = () => {
+            })();
+            const nextInfo = (() => {
                 let m = currentM + 1; let y = currentY;
                 if (m > 12) { m = 1; y++; }
                 return { m, y };
-            };
-            const prevInfo = prevMonth();
-            const nextInfo = nextMonth();
+            })();
 
             return (
                 <div className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-black text-white">
@@ -154,43 +157,43 @@
                         
                         <header className="header-section pb-3 md:pb-6 mb-3 border-b border-white/20 min-h-[140px] md:min-h-[180px]">
                             
-                            {/* 1. 이전 달 미니 달력 */}
+                            {/* 1. 이전 달 미니 달력 (Orientation 기반 노출) */}
                             <div onClick={() => move(-1)} className="mini-cal-box cursor-pointer group flex flex-col items-center">
                                 <div className="text-[0.55rem] md:text-[0.7rem] font-bold text-white mb-1">{prevInfo.m}월</div>
-                                <div className="grid grid-cols-7 gap-0.5 opacity-40 group-hover:opacity-100">
+                                <div className="grid grid-cols-7 gap-0.5 opacity-40">
                                     {generateDays(prevInfo.y, prevInfo.m).map((d, i) => <div key={i} className="mini-date">{d.other ? "" : d.date}</div>)}
                                 </div>
                             </div>
 
-                            {/* 2. 좌측 사진 */}
+                            {/* 2. 좌측 사진: 절대적인 대칭 배치 */}
                             <div className="flex justify-center">
-                                <div onClick={() => setSelectedImg(toDirect(currentData.p1))} className="photo-box w-14 h-14 md:w-28 md:h-28 rounded-xl overflow-hidden border border-white/20 shadow-lg cursor-zoom-in shrink-0">
+                                <div onClick={() => setSelectedImg(toDirect(currentData.p1))} className="photo-box w-16 h-16 md:w-28 md:h-28 rounded-xl overflow-hidden border border-white/20 shadow-lg cursor-zoom-in shrink-0">
                                     <img src={toDirect(currentData.p1)} className="w-full h-full object-cover" alt="Photo 1" />
                                 </div>
                             </div>
 
-                            {/* 3. 중앙 타이틀 */}
+                            {/* 3. 중앙 타이틀: 대칭의 핵 */}
                             <div className="flex flex-col items-center justify-center space-y-1 text-center overflow-hidden">
                                 <span className="alliance-label text-[0.6rem] md:text-sm font-black tracking-[0.4em] text-white/90 drop-shadow-lg uppercase whitespace-nowrap mb-1">45 ALLIANCE</span>
-                                <div className="flex items-center space-x-1 md:space-x-8">
-                                    <button onClick={() => move(-1)} className="nav-btn text-lg md:text-2xl font-bold">‹</button>
+                                <div className="flex items-center space-x-2 md:space-x-8">
+                                    <button onClick={() => move(-1)} className="nav-btn text-xl font-bold">‹</button>
                                     <h1 className="month-text whitespace-nowrap text-3xl md:text-7xl font-black tracking-tighter leading-none drop-shadow-[0_4px_12px_rgba(0,0,0,1)]" style={{ color: currentData.themeColor }}>{currentM}월</h1>
-                                    <button onClick={() => move(1)} className="nav-btn text-lg md:text-2xl font-bold">›</button>
+                                    <button onClick={() => move(1)} className="nav-btn text-xl font-bold">›</button>
                                 </div>
                                 <span className="text-[0.5rem] md:text-[0.7rem] tracking-[0.6em] font-light opacity-60 uppercase">{currentY}</span>
                             </div>
 
-                            {/* 4. 우측 사진 */}
+                            {/* 4. 우측 사진: 절대적인 대칭 배치 */}
                             <div className="flex justify-center">
-                                <div onClick={() => setSelectedImg(toDirect(currentData.p2))} className="photo-box w-14 h-14 md:w-28 md:h-28 rounded-xl overflow-hidden border border-white/20 shadow-lg cursor-zoom-in shrink-0">
+                                <div onClick={() => setSelectedImg(toDirect(currentData.p2))} className="photo-box w-16 h-16 md:w-28 md:h-28 rounded-xl overflow-hidden border border-white/20 shadow-lg cursor-zoom-in shrink-0">
                                     <img src={toDirect(currentData.p2)} className="w-full h-full object-cover" alt="Photo 2" />
                                 </div>
                             </div>
 
-                            {/* 5. 다음 달 미니 달력 */}
+                            {/* 5. 다음 달 미니 달력 (Orientation 기반 노출) */}
                             <div onClick={() => move(1)} className="mini-cal-box cursor-pointer group flex flex-col items-center">
                                 <div className="text-[0.55rem] md:text-[0.7rem] font-bold text-white mb-1">{nextInfo.m}월</div>
-                                <div className="grid grid-cols-7 gap-0.5 opacity-40 group-hover:opacity-100">
+                                <div className="grid grid-cols-7 gap-0.5 opacity-40">
                                     {generateDays(nextInfo.y, nextInfo.m).map((d, i) => <div key={i} className="mini-date">{d.other ? "" : d.date}</div>)}
                                 </div>
                             </div>
