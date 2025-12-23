@@ -4,30 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>45 Alliance Calendar</title>
-    <!-- React & ReactDOM CDN -->
+    <!-- React & ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
-        body { font-family: 'Noto Sans KR', sans-serif; background: #000; margin: 0; padding: 0; overflow: hidden; }
+        body { font-family: 'Noto Sans KR', sans-serif; background: #000; margin: 0; padding: 0; overflow: hidden; touch-action: manipulation; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(6, 1fr); height: 100%; }
         video { transition: opacity 1s ease-in-out; }
         
-        /* PC 레이아웃 최적화 */
-        .header-grid {
-            display: grid;
-            grid-template-columns: 140px 110px 1fr 110px 140px;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        @media (max-width: 768px) {
-            .header-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-            .mobile-hide { display: none !important; }
+        /* 모바일 가로 모드 (Height가 좁을 때) 대응 */
+        @media (max-height: 500px) {
+            .header-section { height: 120px !important; margin-bottom: 0.5rem !important; }
+            .calendar-container { height: 98vh !important; padding: 0.5rem !important; }
+            .day-cell { font-size: 0.9rem !important; }
         }
     </style>
 </head>
@@ -38,18 +31,17 @@
         const { useState, useMemo } = React;
 
         const App = () => {
-            // [초기화] 2025년 12월부터 시작
+            // [초기값] 2025년 12월부터 시작
             const [currentM, setCurrentM] = useState(12);
             const [currentY, setCurrentY] = useState(2025);
             const [selectedImg, setSelectedImg] = useState(null);
 
             const FRAME_IMG = "https://cdn.pixabay.com/photo/2019/04/03/17/46/poster-4100927_1280.jpg";
 
-            // [데이터] 13개월 (2025.12 ~ 2026.12) 리소스 매핑
             const config = useMemo(() => ({
                 "2025-12": { 
                     themeColor: "#F7D794", 
-                    vid: "https://cdn.pixabay.com/video/2022/11/20/139834-773444672_large.mp4", // 새 12월 영상
+                    vid: "https://cdn.pixabay.com/video/2022/11/20/139834-773444672_large.mp4", // 요청하신 새 영상
                     p1: "https://drive.google.com/file/d/1QHfesNYkEwyt8KhCURamG41Odcc-lsfv/view?usp=drive_link", 
                     p2: "https://drive.google.com/file/d/1fkshsyCBhaZuDNG_18XC-MkVQFP28I0T/view?usp=drive_link" 
                 },
@@ -66,7 +58,7 @@
                 "2026-11": { themeColor: "#636E72", vid: "https://cdn.pixabay.com/video/2025/01/22/254098_large.mp4", p1: "https://drive.google.com/file/d/1wFarZw1_j6nAY3vr4VeFWnEmw-iGKSH6/view?usp=drive_link", p2: "https://drive.google.com/file/d/1fW84FSFDDPwx27Geg6C0Q48XEz8kOCHB/view?usp=drive_link" },
                 "2026-12": { 
                     themeColor: "#F7D794", 
-                    vid: "https://cdn.pixabay.com/video/2020/12/31/60784-496654956_large.mp4", // 기존 2025.12 겨울 영상
+                    vid: "https://cdn.pixabay.com/video/2020/12/31/60784-496654956_large.mp4", // 기존 2025.12 겨울 영상 재사용
                     p1: "https://drive.google.com/file/d/1QHfesNYkEwyt8KhCURamG41Odcc-lsfv/view?usp=drive_link", 
                     p2: "https://drive.google.com/file/d/1fkshsyCBhaZuDNG_18XC-MkVQFP28I0T/view?usp=drive_link" 
                 },
@@ -83,14 +75,9 @@
                 let nextY = currentY;
                 if (nextM > 12) { nextM = 1; nextY++; }
                 else if (nextM < 1) { nextM = 12; nextY--; }
-                
-                // 범위 제한 (2025-12 ~ 2026-12)
                 if (nextY === 2025 && nextM < 12) return;
                 if (nextY > 2026) return;
-                if (nextY === 2026 && nextM > 12) return;
-
-                setCurrentM(nextM);
-                setCurrentY(nextY);
+                setCurrentM(nextM); setCurrentY(nextY);
             };
 
             const generateDays = (year, month) => {
@@ -108,7 +95,6 @@
             const currentData = config[currentKey];
             const calendarDays = generateDays(currentY, currentM);
             
-            // 다음 달 정보 계산 (상단 우측용)
             const nextInfo = (() => {
                 let m = currentM + 1; let y = currentY;
                 if (m > 12) { m = 1; y++; }
@@ -117,63 +103,68 @@
 
             return (
                 <div className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-black text-white">
-                    {/* 배경 영상 레이어 */}
+                    {/* 배경 영상 */}
                     <video key={currentData.vid} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0">
                         <source src={currentData.vid} type="video/mp4" />
                     </video>
 
-                    {/* 메인 캘린더 카드 */}
-                    <div className="relative z-10 w-full max-w-5xl h-[92vh] mx-4 p-8 flex flex-col rounded-3xl border border-white/10 shadow-2xl overflow-hidden" style={{ background: 'rgba(0, 0, 0, 0.15)' }}>
-                        <header className="header-grid pb-6 mb-6 border-b border-white/20 h-[180px]">
-                            {/* 1. 이전 달 제어 (PC) */}
-                            <div onClick={() => move(-1)} className="mobile-hide cursor-pointer group flex flex-col items-center">
+                    {/* 메인 투명 카드 */}
+                    <div className="calendar-container relative z-10 w-full max-w-5xl h-[92vh] mx-2 p-4 md:p-8 flex flex-col rounded-3xl border border-white/10 shadow-2xl overflow-hidden" style={{ background: 'rgba(0, 0, 0, 0.2)' }}>
+                        
+                        {/* [수정] 복합 헤더 섹션: 모바일 대응 로직 강화 */}
+                        <header className="header-section grid grid-cols-[1fr_auto_1fr] md:grid-cols-[140px_110px_1fr_110px_140px] items-center gap-2 md:gap-6 pb-4 md:pb-6 mb-4 border-b border-white/20 min-h-[140px] md:min-h-[180px]">
+                            
+                            {/* 1. 이전 달 미리보기 (PC전용) */}
+                            <div onClick={() => move(-1)} className="hidden md:flex cursor-pointer group flex-col items-center">
                                 <div className="text-[0.7rem] font-bold text-white mb-2">{currentM === 1 ? 12 : currentM - 1}월</div>
-                                <div className="grid grid-cols-7 gap-1 opacity-50 group-hover:opacity-100 transition-opacity">
-                                    {generateDays(currentM === 1 ? currentY - 1 : currentY, currentM === 1 ? 12 : currentM - 1).map((d, i) => <div key={i} className="text-[0.5rem] text-center">{d.other ? "" : d.date}</div>)}
+                                <div className="grid grid-cols-7 gap-1 opacity-50">
+                                    {generateDays(currentM === 1 ? currentY - 1 : currentY, currentM === 1 ? 12 : currentM - 1).map((d, i) => <div key={i} className="text-[0.5rem]">{d.other ? "" : d.date}</div>)}
                                 </div>
                             </div>
 
-                            {/* 2. 왼쪽 사진 */}
-                            <div onClick={() => setSelectedImg(toDirect(currentData.p1))} className="w-full aspect-square rounded-xl overflow-hidden border border-white/20 shadow-lg group bg-black/20 cursor-zoom-in">
-                                <img src={toDirect(currentData.p1)} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="L" />
+                            {/* 2. 사진 1 (모바일/PC 공통) */}
+                            <div onClick={() => setSelectedImg(toDirect(currentData.p1))} className="w-20 h-20 md:w-28 md:h-28 rounded-xl overflow-hidden border border-white/20 shadow-lg cursor-zoom-in">
+                                <img src={toDirect(currentData.p1)} className="w-full h-full object-cover" alt="Photo 1" />
                             </div>
 
-                            {/* 3. 중앙 타이틀: 모임이름(45 ALLIANCE) + 메인 월 */}
-                            <div className="flex flex-col items-center justify-center space-y-1 overflow-hidden text-center">
-                                <span className="text-xs font-black tracking-[0.4em] text-white/90 drop-shadow-lg mb-2">45 ALLIANCE</span>
-                                <div className="flex items-center space-x-6 w-full justify-center">
-                                    <button onClick={() => move(-1)} className="text-2xl font-thin hover:opacity-100 transition-opacity">‹</button>
-                                    <h1 className="text-6xl md:text-7xl font-black tracking-tighter leading-none drop-shadow-[0_4px_12px_rgba(0,0,0,1)]" style={{ color: currentData.themeColor }}>{currentM}월</h1>
-                                    <button onClick={() => move(1)} className="text-2xl font-thin hover:opacity-100 transition-opacity">›</button>
+                            {/* 3. 중앙 타이틀: "45 Alliance" + "N월" (한 줄 강제) */}
+                            <div className="flex flex-col items-center justify-center space-y-1 text-center overflow-hidden">
+                                <span className="text-[0.6rem] md:text-sm font-black tracking-[0.4em] text-white/90 drop-shadow-lg uppercase">45 ALLIANCE</span>
+                                <div className="flex items-center space-x-2 md:space-x-8">
+                                    <button onClick={() => move(-1)} className="text-xl md:text-4xl font-thin opacity-50 hover:opacity-100">‹</button>
+                                    <h1 className="whitespace-nowrap text-4xl md:text-7xl font-black tracking-tighter leading-none drop-shadow-[0_4px_12px_rgba(0,0,0,1)]" style={{ color: currentData.themeColor }}>
+                                        {currentM}월
+                                    </h1>
+                                    <button onClick={() => move(1)} className="text-xl md:text-4xl font-thin opacity-50 hover:opacity-100">›</button>
                                 </div>
-                                <span className="text-[0.6rem] tracking-[0.6em] font-light opacity-60 mt-2">{currentY}</span>
+                                <span className="text-[0.5rem] md:text-[0.7rem] tracking-[0.6em] font-light opacity-60 uppercase">{currentY}</span>
                             </div>
 
-                            {/* 4. 오른쪽 사진 */}
-                            <div onClick={() => setSelectedImg(toDirect(currentData.p2))} className="w-full aspect-square rounded-xl overflow-hidden border border-white/20 shadow-lg group bg-black/20 cursor-zoom-in">
-                                <img src={toDirect(currentData.p2)} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="R" />
+                            {/* 4. 사진 2 (모바일/PC 공통 - 같은 크기 보장) */}
+                            <div onClick={() => setSelectedImg(toDirect(currentData.p2))} className="w-20 h-20 md:w-28 md:h-28 rounded-xl overflow-hidden border border-white/20 shadow-lg cursor-zoom-in">
+                                <img src={toDirect(currentData.p2)} className="w-full h-full object-cover" alt="Photo 2" />
                             </div>
 
-                            {/* 5. 다음 달 미리보기 (주인님 요청 반영) */}
-                            <div onClick={() => move(1)} className="mobile-hide cursor-pointer group flex flex-col items-center">
+                            {/* 5. 다음 달 미리보기 (PC전용) */}
+                            <div onClick={() => move(1)} className="hidden md:flex cursor-pointer group flex-col items-center">
                                 <div className="text-[0.7rem] font-bold text-white mb-2">{nextInfo.m}월</div>
-                                <div className="grid grid-cols-7 gap-1 opacity-50 group-hover:opacity-100 transition-opacity">
-                                    {generateDays(nextInfo.y, nextInfo.m).map((d, i) => <div key={i} className="text-[0.5rem] text-center">{d.other ? "" : d.date}</div>)}
+                                <div className="grid grid-cols-7 gap-1 opacity-50">
+                                    {generateDays(nextInfo.y, nextInfo.m).map((d, i) => <div key={i} className="text-[0.5rem]">{d.other ? "" : d.date}</div>)}
                                 </div>
                             </div>
                         </header>
 
-                        {/* 달력 날짜 영역 */}
-                        <section className="flex-1 flex flex-col">
-                            <div className="grid grid-cols-7 mb-4 text-[0.8rem] font-bold tracking-widest text-white text-center opacity-60">
-                                <div className="text-[#FF4D4D]">SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div className="text-[#3498DB]">SAT</div>
+                        {/* 달력 날짜 섹션 */}
+                        <section className="flex-1 flex flex-col min-h-0">
+                            <div className="grid grid-cols-7 mb-2 md:mb-4 text-[0.6rem] md:text-[0.8rem] font-bold tracking-widest text-white/60 text-center uppercase">
+                                <div className="text-red-500">SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div className="text-blue-400">SAT</div>
                             </div>
-                            <div className="calendar-grid gap-1">
+                            <div className="calendar-grid gap-0.5 md:gap-1">
                                 {calendarDays.map((d, i) => {
                                     const isToday = new Date().getMonth() + 1 === currentM && new Date().getFullYear() === currentY && new Date().getDate() === d.date && !d.other;
                                     return (
-                                        <div key={i} className={`flex flex-col items-center justify-center rounded-2xl transition-all duration-300 ${d.other ? 'opacity-20 font-thin' : 'opacity-100 font-bold'} ${isToday ? 'bg-white text-black shadow-xl scale-105' : 'hover:bg-white/10'}`}>
-                                            <span className={`text-xl drop-shadow-[0_3px_6px_rgba(0,0,0,1)] ${!d.other && (i % 7 === 0) ? 'text-[#FF4D4D]' : ''} ${!d.other && (i % 7 === 6) ? 'text-[#3498DB]' : ''}`}>{d.date}</span>
+                                        <div key={i} className={`day-cell flex flex-col items-center justify-center rounded-lg md:rounded-2xl transition-all duration-300 ${d.other ? 'opacity-10 font-thin' : 'opacity-100 font-bold'} ${isToday ? 'bg-white text-black shadow-xl scale-105' : 'hover:bg-white/5'}`}>
+                                            <span className={`text-base md:text-2xl drop-shadow-md ${!d.other && (i % 7 === 0) ? 'text-red-500' : ''} ${!d.other && (i % 7 === 6) ? 'text-blue-400' : ''}`}>{d.date}</span>
                                         </div>
                                     );
                                 })}
@@ -181,17 +172,15 @@
                         </section>
                     </div>
 
-                    {/* 이미지 확대 모달 (Gallery Frame) */}
+                    {/* 이미지 확대 모달 */}
                     {selectedImg && (
                         <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 md:p-6 overflow-hidden cursor-zoom-out" onClick={() => setSelectedImg(null)} style={{ background: 'rgba(0, 0, 0, 0.96)', backdropFilter: 'blur(15px)' }}>
-                            <div className="relative flex items-center justify-center w-[98vw] h-[92vh]" onClick={(e) => e.stopPropagation()}>
+                            <div className="relative flex items-center justify-center w-[98vw] h-[95vh]" onClick={(e) => e.stopPropagation()}>
                                 <img src={FRAME_IMG} className="absolute w-full h-full object-contain pointer-events-none drop-shadow-2xl" alt="F" />
                                 <div className="relative w-[92%] h-[92%] flex items-center justify-center overflow-hidden">
-                                    <img src={selectedImg} className="w-full h-full object-contain" alt="P" style={{ filter: 'contrast(1.05) brightness(1.05)' }} />
+                                    <img src={selectedImg} className="w-full h-full object-contain shadow-2xl" alt="P" />
                                 </div>
-                                <button className="absolute top-4 right-4 w-14 h-14 bg-white/10 hover:bg-red-600 text-white rounded-full flex items-center justify-center border border-white/10 backdrop-blur-2xl z-50 group" onClick={() => setSelectedImg(null)}>
-                                    <span className="text-2xl group-hover:rotate-90 transition-transform">✕</span>
-                                </button>
+                                <button className="absolute top-4 right-4 w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center border border-white/20 backdrop-blur-xl" onClick={() => setSelectedImg(null)}>✕</button>
                             </div>
                         </div>
                     )}
