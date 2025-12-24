@@ -33,14 +33,13 @@
             .mini-cal-box { display: none !important; }
             .photo-box { width: 4.5rem !important; height: 4.5rem !important; }
             .month-text { font-size: 3.5rem !important; }
-            .nav-btn { width: 38px !important; height: 38px !important; }
         }
 
         /* [가로 모드 최적화] 5열 유지하되 높이 압축 및 스크롤 */
         @media (orientation: landscape) and (max-height: 500px) {
             .header-grid {
                 grid-template-columns: 100px 70px 1fr 70px 100px !important;
-                min-height: 100px !important; /* 버튼 공간 확보를 위해 소폭 상향 */
+                min-height: 80px !important; 
                 gap: 0.2rem;
                 padding-bottom: 0.25rem !important;
                 margin-bottom: 0.25rem !important;
@@ -49,26 +48,13 @@
             .calendar-container { overflow-y: auto !important; height: 98vh !important; padding: 0.5rem !important; }
             .day-cell { min-height: 35px !important; font-size: 0.85rem !important; }
             .photo-box { width: 3.2rem !important; height: 3.2rem !important; }
-            .month-text { font-size: 2rem !important; }
-            .nav-btn { width: 32px !important; height: 32px !important; }
+            .month-text { font-size: 2.2rem !important; }
             .alliance-label { font-size: 0.5rem !important; margin-bottom: 0 !important; }
         }
-
-        /* 내비게이션 버튼 (Affordance 강화) */
-        .nav-btn {
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            width: 44px; height: 44px;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        .nav-btn:active { transform: scale(0.85); background: rgba(255, 255, 255, 0.4); }
         
         .disabled-nav-visual { opacity: 0.3 !important; }
 
-        /* [신규] 사진 하단 명시적 이동 버튼 스타일 */
+        /* [핵심] 사진 하단 명시적 이동 버튼 스타일 */
         .explicit-nav {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -81,6 +67,7 @@
             backdrop-filter: blur(5px);
             margin-top: 8px;
             white-space: nowrap;
+            cursor: pointer;
         }
         .explicit-nav:active { background: rgba(255, 255, 255, 0.3); transform: translateY(2px); }
         @media (min-width: 768px) {
@@ -188,14 +175,12 @@
                                 </button>
                             </div>
 
-                            {/* 3. 중앙 타이틀 */}
+                            {/* 3. 중앙 타이틀 (원형 버튼 제거) */}
                             <div className="flex flex-col items-center justify-center space-y-1 text-center overflow-hidden">
                                 <span className="alliance-label text-[0.6rem] md:text-sm font-black tracking-[0.4em] text-white/90 drop-shadow-lg uppercase whitespace-nowrap mb-1">45 ALLIANCE</span>
-                                <div className="flex items-center space-x-2 md:space-x-8">
-                                    <button onClick={() => move(-1)} className={`nav-btn text-xl font-bold ${!hasPrev && 'opacity-30 cursor-default shadow-none'}`}>‹</button>
-                                    <h1 className="month-text whitespace-nowrap text-3xl md:text-7xl font-black tracking-tighter leading-none drop-shadow-[0_4px_12px_rgba(0,0,0,1)]" style={{ color: currentData.themeColor }}>{currentM}월</h1>
-                                    <button onClick={() => move(1)} className={`nav-btn text-xl font-bold ${!hasNext && 'opacity-30 cursor-default shadow-none'}`}>›</button>
-                                </div>
+                                <h1 className="month-text whitespace-nowrap text-3xl md:text-7xl font-black tracking-tighter leading-none drop-shadow-[0_4px_12px_rgba(0,0,0,1)]" style={{ color: currentData.themeColor }}>
+                                    {currentM}월
+                                </h1>
                                 <span className="text-[0.5rem] md:text-[0.7rem] tracking-[0.6em] font-light opacity-60 uppercase">{currentY}</span>
                             </div>
 
@@ -235,6 +220,7 @@
                         </section>
                     </div>
 
+                    {/* 확대 모달 */}
                     {selectedImg && (
                         <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 md:p-6 overflow-hidden cursor-zoom-out" onClick={() => setSelectedImg(null)} style={{ background: 'rgba(0, 0, 0, 0.96)', backdropFilter: 'blur(15px)' }}>
                             <div className="relative flex items-center justify-center w-[98vw] h-[92vh]" onClick={(e) => e.stopPropagation()}>
