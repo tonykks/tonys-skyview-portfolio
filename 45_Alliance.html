@@ -40,7 +40,7 @@
         @media (orientation: landscape) and (max-height: 500px) {
             .header-grid {
                 grid-template-columns: 100px 70px 1fr 70px 100px !important;
-                min-height: 80px !important;
+                min-height: 100px !important; /* 버튼 공간 확보를 위해 소폭 상향 */
                 gap: 0.2rem;
                 padding-bottom: 0.25rem !important;
                 margin-bottom: 0.25rem !important;
@@ -67,6 +67,25 @@
         .nav-btn:active { transform: scale(0.85); background: rgba(255, 255, 255, 0.4); }
         
         .disabled-nav-visual { opacity: 0.3 !important; }
+
+        /* [신규] 사진 하단 명시적 이동 버튼 스타일 */
+        .explicit-nav {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 9999px;
+            padding: 4px 12px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            margin-top: 8px;
+            white-space: nowrap;
+        }
+        .explicit-nav:active { background: rgba(255, 255, 255, 0.3); transform: translateY(2px); }
+        @media (min-width: 768px) {
+            .explicit-nav { padding: 6px 16px; font-size: 0.75rem; margin-top: 12px; }
+        }
     </style>
 </head>
 <body>
@@ -159,12 +178,17 @@
                                 </div>
                             </div>
                             
-                            <div className="flex justify-center">
+                            {/* 2. 좌측 사진 및 이전 버튼 */}
+                            <div className="flex flex-col items-center">
                                 <div onClick={() => setSelectedImg(toDirect(currentData.p1))} className="photo-box w-16 h-16 md:w-28 md:h-28 rounded-xl overflow-hidden border border-white/20 shadow-lg cursor-zoom-in shrink-0">
                                     <img src={toDirect(currentData.p1)} className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" alt="L" />
                                 </div>
+                                <button onClick={() => move(-1)} className={`explicit-nav ${!hasPrev && 'opacity-20 pointer-events-none'}`}>
+                                    ‹ {prevInfo.m}월
+                                </button>
                             </div>
 
+                            {/* 3. 중앙 타이틀 */}
                             <div className="flex flex-col items-center justify-center space-y-1 text-center overflow-hidden">
                                 <span className="alliance-label text-[0.6rem] md:text-sm font-black tracking-[0.4em] text-white/90 drop-shadow-lg uppercase whitespace-nowrap mb-1">45 ALLIANCE</span>
                                 <div className="flex items-center space-x-2 md:space-x-8">
@@ -175,10 +199,14 @@
                                 <span className="text-[0.5rem] md:text-[0.7rem] tracking-[0.6em] font-light opacity-60 uppercase">{currentY}</span>
                             </div>
 
-                            <div className="flex justify-center">
+                            {/* 4. 우측 사진 및 다음 버튼 */}
+                            <div className="flex flex-col items-center">
                                 <div onClick={() => setSelectedImg(toDirect(currentData.p2))} className="photo-box w-16 h-16 md:w-28 md:h-28 rounded-xl overflow-hidden border border-white/20 shadow-lg cursor-zoom-in shrink-0">
                                     <img src={toDirect(currentData.p2)} className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" alt="R" />
                                 </div>
+                                <button onClick={() => move(1)} className={`explicit-nav ${!hasNext && 'opacity-20 pointer-events-none'}`}>
+                                    {nextInfo.m}월 ›
+                                </button>
                             </div>
 
                             {/* 5. 다음 달 (호버 피드백 유지) */}
