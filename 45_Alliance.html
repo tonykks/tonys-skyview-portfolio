@@ -15,53 +15,47 @@
         body { font-family: 'Noto Sans KR', sans-serif; background: #000; margin: 0; padding: 0; overflow: hidden; touch-action: manipulation; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(6, 1fr); height: 100%; }
         video { transition: opacity 1s ease-in-out; }
-
-        /* [PC & 가로 모드 기본] 5열 풍성한 레이아웃 */
-        .header-grid {
-            display: grid;
-            grid-template-columns: 140px 110px 1fr 110px 140px;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        /* [세로 모드 최적화] 3열 대칭 구조 (미니 달력 숨김) */
-        @media (orientation: portrait) {
-            .header-grid {
-                grid-template-columns: 1fr 2fr 1fr !important;
-                gap: 0.5rem;
+        
+        /* [중요] 모바일 가로 모드 (Height가 좁을 때) 정밀 대응 */
+        @media (max-height: 500px) {
+            .header-section { 
+                min-height: 80px !important; 
+                height: auto !important; 
+                margin-bottom: 0.25rem !important; 
+                padding-bottom: 0.25rem !important; 
             }
-            .mini-cal-box { display: none !important; }
-            .photo-box { width: 4.5rem !important; height: 4.5rem !important; }
-            .month-text { font-size: 3.5rem !important; }
-        }
-
-        /* [가로 모드 최적화] 5열 유지하되 높이 압축 및 스크롤 */
-        @media (orientation: landscape) and (max-height: 500px) {
-            .header-grid {
-                grid-template-columns: 60px 70px 1fr 70px 60px !important;
-                min-height: 80px !important;
-                gap: 0.2rem;
-                margin-bottom: 0.2rem !important;
+            .calendar-container { 
+                height: 98vh !important; 
+                padding: 0.5rem !important; 
+                overflow-y: auto !important; /* 높이가 부족할 경우 스크롤 허용 */
             }
-            .mini-cal-box { display: flex !important; scale: 0.7; }
-            .calendar-container { overflow-y: auto !important; height: 98vh !important; padding: 0.5rem !important; }
-            .day-cell { min-height: 35px !important; font-size: 0.85rem !important; }
-            .photo-box { width: 3.2rem !important; height: 3.2rem !important; }
-            .month-text { font-size: 2rem !important; }
+            .day-cell { min-height: 35px !important; font-size: 0.8rem !important; }
+            .photo-box { width: 3.5rem !important; height: 3.5rem !important; }
+            .month-text { font-size: 2.2rem !important; }
+            .alliance-label { font-size: 0.5rem !important; margin-bottom: 0 !important; }
             .nav-btn { width: 32px !important; height: 32px !important; }
         }
 
-        /* 내비게이션 버튼 (Affordance 강화) */
+        /* 내비게이션 버튼 스타일 강화 (Affordance 개선) */
         .nav-btn {
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            width: 44px; height: 44px;
-            display: flex; align-items: center; justify-content: center;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        .nav-btn:active { transform: scale(0.85); background: rgba(255, 255, 255, 0.4); }
+        .nav-btn:active {
+            transform: scale(0.85);
+            background: rgba(255, 255, 255, 0.4);
+        }
+        @media (min-width: 768px) {
+            .nav-btn { width: 55px; height: 55px; }
+        }
     </style>
 </head>
 <body>
@@ -71,18 +65,16 @@
         const { useState, useMemo } = React;
 
         const App = () => {
-            // [상태] 2025년 12월부터 시작
             const [currentM, setCurrentM] = useState(12);
             const [currentY, setCurrentY] = useState(2025);
             const [selectedImg, setSelectedImg] = useState(null);
 
             const FRAME_IMG = "https://cdn.pixabay.com/photo/2019/04/03/17/46/poster-4100927_1280.jpg";
 
-            // [데이터 정합성] 2025.12 ~ 2026.12 전체 매핑
             const config = useMemo(() => ({
                 "2025-12": { 
                     themeColor: "#F7D794", 
-                    vid: "https://cdn.pixabay.com/video/2022/11/20/139834-773444672_large.mp4", // 최신 요청 영상
+                    vid: "https://cdn.pixabay.com/video/2022/11/20/139834-773444672_large.mp4",
                     p1: "https://drive.google.com/file/d/1QHfesNYkEwyt8KhCURamG41Odcc-lsfv/view?usp=drive_link", 
                     p2: "https://drive.google.com/file/d/1fkshsyCBhaZuDNG_18XC-MkVQFP28I0T/view?usp=drive_link" 
                 },
@@ -99,7 +91,7 @@
                 "2026-11": { themeColor: "#636E72", vid: "https://cdn.pixabay.com/video/2025/01/22/254098_large.mp4", p1: "https://drive.google.com/file/d/1wFarZw1_j6nAY3vr4VeFWnEmw-iGKSH6/view?usp=drive_link", p2: "https://drive.google.com/file/d/1fW84FSFDDPwx27Geg6C0Q48XEz8kOCHB/view?usp=drive_link" },
                 "2026-12": { 
                     themeColor: "#F7D794", 
-                    vid: "https://cdn.pixabay.com/video/2020/12/31/60784-496654956_large.mp4", // 기존 겨울 영상 재사용
+                    vid: "https://cdn.pixabay.com/video/2020/12/31/60784-496654956_large.mp4", 
                     p1: "https://drive.google.com/file/d/1QHfesNYkEwyt8KhCURamG41Odcc-lsfv/view?usp=drive_link", 
                     p2: "https://drive.google.com/file/d/1fkshsyCBhaZuDNG_18XC-MkVQFP28I0T/view?usp=drive_link" 
                 },
@@ -117,6 +109,7 @@
                 if (nextM > 12) { nextM = 1; nextY++; }
                 else if (nextM < 1) { nextM = 12; nextY--; }
                 if (nextY === 2025 && nextM < 12) return;
+                if (nextY > 2026) return;
                 if (nextY === 2026 && nextM > 12) return;
                 setCurrentM(nextM); setCurrentY(nextY);
             };
@@ -136,60 +129,77 @@
             const currentData = config[currentKey];
             const calendarDays = generateDays(currentY, currentM);
             
-            const getMonthInfo = (delta) => {
-                let m = currentM + delta; let y = currentY;
-                if (m > 12) { m = 1; y++; } else if (m < 1) { m = 12; y--; }
+            const nextInfo = (() => {
+                let m = currentM + 1; let y = currentY;
+                if (m > 12) { m = 1; y++; }
                 return { m, y };
-            };
-            const prevInfo = getMonthInfo(-1);
-            const nextInfo = getMonthInfo(1);
+            })();
 
             return (
                 <div className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-black text-white">
+                    {/* 배경 영상 */}
                     <video key={currentData.vid} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0">
                         <source src={currentData.vid} type="video/mp4" />
                     </video>
 
+                    {/* 메인 투명 카드 */}
                     <div className="calendar-container relative z-10 w-full max-w-5xl h-[92vh] mx-2 p-4 md:p-8 flex flex-col rounded-3xl border border-white/10 shadow-2xl overflow-hidden" style={{ background: 'rgba(0, 0, 0, 0.2)' }}>
-                        <header className="header-grid pb-4 md:pb-6 mb-4 border-b border-white/20 min-h-[140px] md:min-h-[180px]">
-                            {/* 1. 이전 달 */}
-                            <div onClick={() => move(-1)} className="mini-cal-box cursor-pointer group flex flex-col items-center">
-                                <div className="text-[0.6rem] md:text-[0.7rem] font-bold text-white mb-1">{prevInfo.m}월</div>
-                                <div className="grid grid-cols-7 gap-0.5 opacity-40">
-                                    {generateDays(prevInfo.y, prevInfo.m).map((d, i) => <div key={i} className="text-[0.4rem] text-center">{d.other ? "" : d.date}</div>)}
+                        
+                        {/* [수정] 헤더 섹션: 대칭성 확보를 위해 3컬럼 고정 비율 사용 */}
+                        <header className="header-section grid grid-cols-[1fr_2fr_1fr] md:grid-cols-[140px_110px_1fr_110px_140px] items-center gap-2 md:gap-6 pb-4 md:pb-6 mb-4 border-b border-white/20 min-h-[140px] md:min-h-[180px]">
+                            
+                            {/* 1. 이전 달 미리보기 (PC 전용) */}
+                            <div onClick={() => move(-1)} className="hidden md:flex cursor-pointer group flex-col items-center">
+                                <div className="text-[0.7rem] font-bold text-white mb-2">{currentM === 1 ? 12 : currentM - 1}월</div>
+                                <div className="grid grid-cols-7 gap-1 opacity-50">
+                                    {generateDays(currentM === 1 ? currentY - 1 : currentY, currentM === 1 ? 12 : currentM - 1).map((d, i) => <div key={i} className="text-[0.5rem]">{d.other ? "" : d.date}</div>)}
                                 </div>
                             </div>
-                            {/* 2. 좌측 사진 */}
-                            <div className="flex justify-center">
+
+                            {/* 2. 좌측 사진: 중앙을 기준으로 대칭 정렬 */}
+                            <div className="flex justify-center md:justify-start">
                                 <div onClick={() => setSelectedImg(toDirect(currentData.p1))} className="photo-box w-16 h-16 md:w-28 md:h-28 rounded-xl overflow-hidden border border-white/20 shadow-lg cursor-zoom-in shrink-0">
-                                    <img src={toDirect(currentData.p1)} className="w-full h-full object-cover" alt="L" />
+                                    <img src={toDirect(currentData.p1)} className="w-full h-full object-cover" alt="Photo 1" />
                                 </div>
                             </div>
-                            {/* 3. 중앙 타이틀 */}
+
+                            {/* 3. 중앙 타이틀: 대칭의 축 역할 */}
                             <div className="flex flex-col items-center justify-center space-y-1 text-center overflow-hidden">
                                 <span className="alliance-label text-[0.6rem] md:text-sm font-black tracking-[0.4em] text-white/90 drop-shadow-lg uppercase whitespace-nowrap mb-1">45 ALLIANCE</span>
                                 <div className="flex items-center space-x-2 md:space-x-8">
-                                    <button onClick={() => move(-1)} className="nav-btn text-xl font-bold">‹</button>
-                                    <h1 className="month-text whitespace-nowrap text-3xl md:text-7xl font-black tracking-tighter leading-none drop-shadow-[0_4px_12px_rgba(0,0,0,1)]" style={{ color: currentData.themeColor }}>{currentM}월</h1>
-                                    <button onClick={() => move(1)} className="nav-btn text-xl font-bold">›</button>
+                                    <button onClick={() => move(-1)} className="nav-btn text-xl md:text-2xl font-bold">
+                                        ‹
+                                    </button>
+                                    
+                                    <h1 className="month-text whitespace-nowrap text-3xl md:text-7xl font-black tracking-tighter leading-none drop-shadow-[0_4px_12px_rgba(0,0,0,1)]" style={{ color: currentData.themeColor }}>
+                                        {currentM}월
+                                    </h1>
+                                    
+                                    <button onClick={() => move(1)} className="nav-btn text-xl md:text-2xl font-bold">
+                                        ›
+                                    </button>
                                 </div>
                                 <span className="text-[0.5rem] md:text-[0.7rem] tracking-[0.6em] font-light opacity-60 uppercase">{currentY}</span>
                             </div>
-                            {/* 4. 우측 사진 */}
-                            <div className="flex justify-center">
+
+                            {/* 4. 우측 사진: 중앙을 기준으로 대칭 정렬 */}
+                            <div className="flex justify-center md:justify-end">
                                 <div onClick={() => setSelectedImg(toDirect(currentData.p2))} className="photo-box w-16 h-16 md:w-28 md:h-28 rounded-xl overflow-hidden border border-white/20 shadow-lg cursor-zoom-in shrink-0">
-                                    <img src={toDirect(currentData.p2)} className="w-full h-full object-cover" alt="R" />
+                                    <img src={toDirect(currentData.p2)} className="w-full h-full object-cover" alt="Photo 2" />
                                 </div>
                             </div>
-                            {/* 5. 다음 달 */}
-                            <div onClick={() => move(1)} className="mini-cal-box cursor-pointer group flex flex-col items-center">
-                                <div className="text-[0.6rem] md:text-[0.7rem] font-bold text-white mb-1">{nextInfo.m}월</div>
-                                <div className="grid grid-cols-7 gap-0.5 opacity-40">
-                                    {generateDays(nextInfo.y, nextInfo.m).map((d, i) => <div key={i} className="text-[0.4rem] text-center">{d.other ? "" : d.date}</div>)}
+
+                            {/* 5. 다음 달 미리보기 (PC 전용) */}
+                            <div onClick={() => move(1)} className="hidden md:flex cursor-pointer group flex-col items-center">
+                                <div className="text-[0.7rem] font-bold text-white mb-2">{nextInfo.m}월</div>
+                                <div className="grid grid-cols-7 gap-1 opacity-50">
+                                    {generateDays(nextInfo.y, nextInfo.m).map((d, i) => <div key={i} className="text-[0.5rem]">{d.other ? "" : d.date}</div>)}
                                 </div>
                             </div>
                         </header>
-                        <section className="flex-1 flex flex-col min-h-0 overflow-y-auto">
+
+                        {/* 달력 날짜 섹션 */}
+                        <section className="flex-1 flex flex-col min-h-0">
                             <div className="grid grid-cols-7 mb-2 md:mb-4 text-[0.6rem] md:text-[0.8rem] font-bold tracking-widest text-white/60 text-center uppercase">
                                 <div className="text-red-500">SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div className="text-blue-400">SAT</div>
                             </div>
@@ -205,12 +215,15 @@
                             </div>
                         </section>
                     </div>
+
                     {/* 확대 모달 */}
                     {selectedImg && (
                         <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 md:p-6 overflow-hidden cursor-zoom-out" onClick={() => setSelectedImg(null)} style={{ background: 'rgba(0, 0, 0, 0.96)', backdropFilter: 'blur(15px)' }}>
-                            <div className="relative flex items-center justify-center w-[98vw] h-[92vh]" onClick={(e) => e.stopPropagation()}>
+                            <div className="relative flex items-center justify-center w-[98vw] h-[95vh]" onClick={(e) => e.stopPropagation()}>
                                 <img src={FRAME_IMG} className="absolute w-full h-full object-contain pointer-events-none drop-shadow-2xl" alt="F" />
-                                <div className="relative w-[92%] h-[92%] flex items-center justify-center overflow-hidden"><img src={selectedImg} className="w-full h-full object-contain shadow-2xl" alt="P" /></div>
+                                <div className="relative w-[92%] h-[92%] flex items-center justify-center overflow-hidden">
+                                    <img src={selectedImg} className="w-full h-full object-contain shadow-2xl" alt="P" />
+                                </div>
                                 <button className="absolute top-4 right-4 w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center border border-white/20 backdrop-blur-xl" onClick={() => setSelectedImg(null)}>✕</button>
                             </div>
                         </div>
@@ -218,6 +231,7 @@
                 </div>
             );
         };
+
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
