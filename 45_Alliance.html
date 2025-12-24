@@ -1,3 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>45 Alliance Calendar</title>
+<!-- React & ReactDOM -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
+body { font-family: 'Noto Sans KR', sans-serif; background: #000; margin: 0; padding: 0; overflow: hidden; touch-action: manipulation; }
 .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(6, 1fr); height: 100%; }
 video { transition: opacity 1s ease-in-out; }
 
@@ -115,7 +130,7 @@ if (nextY === 2026 && nextM > 12) return;
 setCurrentM(nextM); setCurrentY(nextY);
 };
 
-@@ -129,76 +124,71 @@
+@@ -129,111 +124,106 @@
 const currentData = config[currentKey];
 const calendarDays = generateDays(currentY, currentM);
 
@@ -224,3 +239,38 @@ return (
 <section className="flex-1 flex flex-col min-h-0">
 <div className="grid grid-cols-7 mb-2 md:mb-4 text-[0.6rem] md:text-[0.8rem] font-bold tracking-widest text-white/60 text-center uppercase">
 <div className="text-red-500">SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div className="text-blue-400">SAT</div>
+</div>
+<div className="calendar-grid gap-0.5 md:gap-1">
+{calendarDays.map((d, i) => {
+const isToday = new Date().getMonth() + 1 === currentM && new Date().getFullYear() === currentY && new Date().getDate() === d.date && !d.other;
+return (
+<div key={i} className={`day-cell flex flex-col items-center justify-center rounded-lg md:rounded-2xl transition-all duration-300 ${d.other ? 'opacity-10 font-thin' : 'opacity-100 font-bold'} ${isToday ? 'bg-white text-black shadow-xl scale-105' : 'hover:bg-white/5'}`}>
+<span className={`text-base md:text-2xl drop-shadow-md ${!d.other && (i % 7 === 0) ? 'text-red-500' : ''} ${!d.other && (i % 7 === 6) ? 'text-blue-400' : ''}`}>{d.date}</span>
+</div>
+);
+})}
+</div>
+</section>
+</div>
+
+{/* 확대 모달 */}
+{selectedImg && (
+<div className="fixed inset-0 z-[100] flex items-center justify-center p-2 md:p-6 overflow-hidden cursor-zoom-out" onClick={() => setSelectedImg(null)} style={{ background: 'rgba(0, 0, 0, 0.96)', backdropFilter: 'blur(15px)' }}>
+<div className="relative flex items-center justify-center w-[98vw] h-[95vh]" onClick={(e) => e.stopPropagation()}>
+<img src={FRAME_IMG} className="absolute w-full h-full object-contain pointer-events-none drop-shadow-2xl" alt="F" />
+<div className="relative w-[92%] h-[92%] flex items-center justify-center overflow-hidden">
+<img src={selectedImg} className="w-full h-full object-contain shadow-2xl" alt="P" />
+</div>
+<button className="absolute top-4 right-4 w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center border border-white/20 backdrop-blur-xl" onClick={() => setSelectedImg(null)}>✕</button>
+</div>
+</div>
+)}
+</div>
+);
+};
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
