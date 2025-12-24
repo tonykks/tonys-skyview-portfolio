@@ -16,7 +16,7 @@
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(6, 1fr); height: 100%; }
         video { transition: opacity 1s ease-in-out; }
 
-        /* [수정] 헤더 그리드: 사이드 영역(미니달력)을 넓히고 사진 영역을 고정함 */
+        /* [PC & 가로 모드 기본] 5열 풍성한 레이아웃 */
         .header-grid {
             display: grid;
             grid-template-columns: 220px 110px 1fr 110px 220px;
@@ -24,6 +24,7 @@
             gap: 1.5rem;
         }
 
+        /* [세로 모드 최적화] 3열 대칭 구조 (미니 달력 숨김) */
         @media (orientation: portrait) {
             .header-grid {
                 grid-template-columns: 1fr 2fr 1fr !important;
@@ -35,6 +36,7 @@
             .nav-btn { width: 38px !important; height: 38px !important; }
         }
 
+        /* [가로 모드 최적화] 5열 유지하되 높이 압축 및 스크롤 */
         @media (orientation: landscape) and (max-height: 500px) {
             .header-grid {
                 grid-template-columns: 100px 70px 1fr 70px 100px !important;
@@ -52,6 +54,7 @@
             .alliance-label { font-size: 0.5rem !important; margin-bottom: 0 !important; }
         }
 
+        /* 내비게이션 버튼 (Affordance 강화) */
         .nav-btn {
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -62,6 +65,8 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         .nav-btn:active { transform: scale(0.85); background: rgba(255, 255, 255, 0.4); }
+        
+        .disabled-nav-visual { opacity: 0.3 !important; }
     </style>
 </head>
 <body>
@@ -100,13 +105,16 @@
             };
 
             const move = (delta) => {
-                let nextM = currentM + delta;
-                let nextY = currentY;
-                if (nextM > 12) { nextM = 1; nextY++; }
-                else if (nextM < 1) { nextM = 12; nextY--; }
-                if (nextY === 2025 && nextM < 12) return;
-                if (nextY === 2026 && nextM > 12) return;
-                setCurrentM(nextM); setCurrentY(nextY);
+                let nY = currentY;
+                let nM = currentM + delta;
+                if (nM > 12) { nM = 1; nY++; }
+                else if (nM < 1) { nM = 12; nY--; }
+                
+                const nextKey = `${nY}-${nM}`;
+                if (config[nextKey]) {
+                    setCurrentM(nM);
+                    setCurrentY(nY);
+                }
             };
 
             const generateDays = (year, month) => {
@@ -121,7 +129,7 @@
             };
 
             const currentKey = `${currentY}-${currentM}`;
-            const currentData = config[currentKey];
+            const currentData = config[currentKey] || config["2025-12"];
             const calendarDays = generateDays(currentY, currentM);
             
             const getMonthInfo = (delta) => {
@@ -132,6 +140,9 @@
             const prevInfo = getMonthInfo(-1);
             const nextInfo = getMonthInfo(1);
 
+            const hasPrev = !!config[`${prevInfo.y}-${prevInfo.m}`];
+            const hasNext = !!config[`${nextInfo.y}-${nextInfo.m}`];
+
             return (
                 <div className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-black text-white">
                     <video key={currentData.vid} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0">
@@ -140,41 +151,38 @@
 
                     <div className="calendar-container relative z-10 w-full max-w-5xl h-[92vh] mx-2 p-4 md:p-8 flex flex-col rounded-3xl border border-white/10 shadow-2xl overflow-hidden" style={{ background: 'rgba(0, 0, 0, 0.2)' }}>
                         <header className="header-grid pb-4 md:pb-6 mb-4 border-b border-white/20 min-h-[140px] md:min-h-[180px]">
-                            {/* 1. 이전 달 (글자 크기 2배 확대 및 인터랙션 강화) */}
-                            <div onClick={() => move(-1)} className="mini-cal-box cursor-pointer group flex flex-col items-center transition-all duration-300 hover:scale-105 active:scale-95">
+                            {/* 1. 이전 달 (호버 피드백 유지) */}
+                            <div onClick={() => move(-1)} className={`mini-cal-box cursor-pointer group flex flex-col items-center transition-all duration-300 hover:scale-105 active:scale-95 ${!hasPrev && 'disabled-nav-visual'}`}>
                                 <div className="text-[0.6rem] md:text-lg font-bold text-white mb-2 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all">{prevInfo.m}월</div>
                                 <div className="grid grid-cols-7 gap-1 opacity-40 group-hover:opacity-100 group-hover:font-bold transition-all duration-300">
                                     {generateDays(prevInfo.y, prevInfo.m).map((d, i) => <div key={i} className="text-[0.5rem] md:text-[0.8rem] text-center">{d.other ? "" : d.date}</div>)}
                                 </div>
                             </div>
                             
-                            {/* 2. 좌측 사진 */}
                             <div className="flex justify-center">
                                 <div onClick={() => setSelectedImg(toDirect(currentData.p1))} className="photo-box w-16 h-16 md:w-28 md:h-28 rounded-xl overflow-hidden border border-white/20 shadow-lg cursor-zoom-in shrink-0">
                                     <img src={toDirect(currentData.p1)} className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" alt="L" />
                                 </div>
                             </div>
 
-                            {/* 3. 중앙 타이틀 */}
                             <div className="flex flex-col items-center justify-center space-y-1 text-center overflow-hidden">
                                 <span className="alliance-label text-[0.6rem] md:text-sm font-black tracking-[0.4em] text-white/90 drop-shadow-lg uppercase whitespace-nowrap mb-1">45 ALLIANCE</span>
                                 <div className="flex items-center space-x-2 md:space-x-8">
-                                    <button onClick={() => move(-1)} className="nav-btn text-xl font-bold">‹</button>
+                                    <button onClick={() => move(-1)} className={`nav-btn text-xl font-bold ${!hasPrev && 'opacity-30 cursor-default shadow-none'}`}>‹</button>
                                     <h1 className="month-text whitespace-nowrap text-3xl md:text-7xl font-black tracking-tighter leading-none drop-shadow-[0_4px_12px_rgba(0,0,0,1)]" style={{ color: currentData.themeColor }}>{currentM}월</h1>
-                                    <button onClick={() => move(1)} className="nav-btn text-xl font-bold">›</button>
+                                    <button onClick={() => move(1)} className={`nav-btn text-xl font-bold ${!hasNext && 'opacity-30 cursor-default shadow-none'}`}>›</button>
                                 </div>
                                 <span className="text-[0.5rem] md:text-[0.7rem] tracking-[0.6em] font-light opacity-60 uppercase">{currentY}</span>
                             </div>
 
-                            {/* 4. 우측 사진 */}
                             <div className="flex justify-center">
                                 <div onClick={() => setSelectedImg(toDirect(currentData.p2))} className="photo-box w-16 h-16 md:w-28 md:h-28 rounded-xl overflow-hidden border border-white/20 shadow-lg cursor-zoom-in shrink-0">
                                     <img src={toDirect(currentData.p2)} className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" alt="R" />
                                 </div>
                             </div>
 
-                            {/* 5. 다음 달 (글자 크기 2배 확대 및 인터랙션 강화) */}
-                            <div onClick={() => move(1)} className="mini-cal-box cursor-pointer group flex flex-col items-center transition-all duration-300 hover:scale-105 active:scale-95">
+                            {/* 5. 다음 달 (호버 피드백 유지) */}
+                            <div onClick={() => move(1)} className={`mini-cal-box cursor-pointer group flex flex-col items-center transition-all duration-300 hover:scale-105 active:scale-95 ${!hasNext && 'disabled-nav-visual'}`}>
                                 <div className="text-[0.6rem] md:text-lg font-bold text-white mb-2 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all">{nextInfo.m}월</div>
                                 <div className="grid grid-cols-7 gap-1 opacity-40 group-hover:opacity-100 group-hover:font-bold transition-all duration-300">
                                     {generateDays(nextInfo.y, nextInfo.m).map((d, i) => <div key={i} className="text-[0.5rem] md:text-[0.8rem] text-center">{d.other ? "" : d.date}</div>)}
@@ -199,7 +207,6 @@
                         </section>
                     </div>
 
-                    {/* 확대 모달 */}
                     {selectedImg && (
                         <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 md:p-6 overflow-hidden cursor-zoom-out" onClick={() => setSelectedImg(null)} style={{ background: 'rgba(0, 0, 0, 0.96)', backdropFilter: 'blur(15px)' }}>
                             <div className="relative flex items-center justify-center w-[98vw] h-[92vh]" onClick={(e) => e.stopPropagation()}>
