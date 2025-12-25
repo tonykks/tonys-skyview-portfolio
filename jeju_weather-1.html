@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeju Weather</title>
+    <style>
+        /* 1. 문서 전체의 여백을 없애고 꽉 채움 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* 스크롤바 생성 방지 */
+            background-color: transparent; /* 배경 투명 */
+        }
+        /* 2. 위젯이 로딩되기 전 안내 문구 스타일 */
+        #loading-msg {
+            text-align: center;
+            padding-top: 20px;
+            color: #888;
+            font-family: sans-serif;
+            font-size: 14px;
+        }
+        /* 3. 위젯 강제 크기 할당 */
+        .weatherwidget-io {
+            display: block !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading-msg">날씨 정보를 불러오는 중입니다...</div>
+
+    <a class="weatherwidget-io" href="https://forecast7.com/en/33d50126d53/jeju-si/" data-label_1="JEJU" data-label_2="WEATHER" data-icons="Climacons Animated" data-theme="pure" data-basecolor="#f2eaf2" data-accent="rgba(0, 0, 0, 0.02)" >JEJU WEATHER</a>
+    
+    <script>
+    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+    
+    // 위젯이 로드되면 로딩 메시지를 숨기는 스크립트 추가
+    window.onload = function() {
+        setTimeout(function(){
+            var loader = document.getElementById('loading-msg');
+            if(loader) loader.style.display = 'none';
+        }, 1000); // 1초 뒤에 메시지 강제 숨김 (위젯이 덮어쓰겠지만 안전장치)
+    };
+    </script>
+
+</body>
+</html>
