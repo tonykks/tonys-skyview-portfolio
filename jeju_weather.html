@@ -5,22 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jeju Weather Widget</title>
     <style>
-        /* 노션 임베드 시 꽉 차게 보이기 위한 스타일 설정 */
         body {
             margin: 0;
             padding: 0;
-            background-color: transparent; /* 배경 투명 */
-            display: flex;
-            justify-content: center; /* 중앙 정렬 */
-            align-items: center;
+            /* 배경을 흰색으로 명시 */
+            background-color: #ffffff; 
+            /* Flex 제거: 위젯 스크립트와의 충돌 방지 */
+            display: block; 
+        }
+        /* 위젯이 강제로 넓이를 갖도록 설정 */
+        .weatherwidget-io {
+            display: block !important;
+            width: 100% !important;
+            height: auto;
         }
     </style>
 </head>
 <body>
 
+    <div id="loading-msg" style="text-align: center; padding: 20px; color: #888;">
+        날씨 정보를 불러오는 중입니다...
+    </div>
+
     <a class="weatherwidget-io" href="https://forecast7.com/en/33d50126d53/jeju-si/" data-label_1="JEJU" data-label_2="WEATHER" data-icons="Climacons Animated" data-theme="pure" data-basecolor="#f2eaf2" data-accent="rgba(0, 0, 0, 0.02)" >JEJU WEATHER</a>
+    
     <script>
     !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
     </script>
-    </body>
+
+</body>
 </html>
