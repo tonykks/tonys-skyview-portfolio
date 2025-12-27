@@ -55,7 +55,7 @@
             { 
                 id: 1, 
                 word: "wear", 
-                pos: "verb", 
+                pos: "v", 
                 meaning: "입다", 
                 english: "She wears a blue jacket.", 
                 korean: "그녀는 파란 재킷을 입는다.", 
@@ -192,12 +192,25 @@
 
         const getMorphologyInfo = (item) => {
             if (!item) return null;
-            const pos = (item.pos || item['word class'] || '').toLowerCase();
+            // 점(.) 제거 및 공백 제거로 약어 처리 ('v.', 'n.' 등 대응)
+            const pos = (item.pos || item['word class'] || '').toLowerCase().replace(/\./g, '').trim();
             const forms = item.forms || item.conjugation || ''; 
 
-            if (pos.includes('동사') || pos.includes('verb')) return { label: '동사 변화', value: forms || '변화형 정보 없음' };
-            if (pos.includes('명사') || pos.includes('noun')) return { label: '수 변화', value: forms || '복수형 정보 없음' };
-            if (pos.includes('형용사') || pos.includes('adj') || pos.includes('부사') || pos.includes('adv')) return { label: '비교 변화', value: forms || '비교급 정보 없음' };
+            // 1. 동사 (v, verb, 동사)
+            if (pos === 'v' || pos === 'vt' || pos === 'vi' || pos.includes('verb') || pos.includes('동사')) {
+                return { label: '동사 변화', value: forms || '변화형 정보 없음' };
+            }
+            
+            // 2. 명사 (n, noun, 명사)
+            if (pos === 'n' || pos.includes('noun') || pos.includes('명사')) {
+                return { label: '수 변화', value: forms || '복수형 정보 없음' };
+            }
+            
+            // 3. 형용사/부사 (a, ad, adj, adv, 형용사, 부사)
+            if (pos === 'a' || pos === 'ad' || pos === 'adj' || pos === 'adv' || pos.includes('형용사') || pos.includes('부사')) {
+                return { label: '비교 변화', value: forms || '비교급 정보 없음' };
+            }
+            
             return null; 
         };
 
