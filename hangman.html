@@ -205,24 +205,22 @@
             if (!item) return null;
             // 점(.) 제거 및 공백 제거로 약어 처리 ('v.', 'n.' 등 대응)
             const pos = (item.pos || item['word class'] || '').toLowerCase().replace(/\./g, '').trim();
+            // forms나 conjugation 필드의 내용을 그대로 가져옴 (기본값 설정 제거)
             const forms = item.forms || item.conjugation || ''; 
 
-            // 1. 동사 (v, verb, 동사)
+            // 라벨(Label) 결정을 위한 로직: 해당 품사면 구체적인 이름을, 아니면 일반적인 이름을 부여
+            let label = '활용/변화'; // 기본값 (ph 등 매칭 안 되는 경우)
+
             if (pos === 'v' || pos === 'vt' || pos === 'vi' || pos.includes('verb') || pos.includes('동사')) {
-                return { label: '동사 변화', value: forms || '변화형 정보 없음' };
+                label = '동사 변화';
+            } else if (pos === 'n' || pos.includes('noun') || pos.includes('명사')) {
+                label = '수 변화';
+            } else if (pos === 'a' || pos === 'ad' || pos === 'adj' || pos === 'adv' || pos.includes('형용사') || pos.includes('부사')) {
+                label = '비교 변화';
             }
             
-            // 2. 명사 (n, noun, 명사)
-            if (pos === 'n' || pos.includes('noun') || pos.includes('명사')) {
-                return { label: '수 변화', value: forms || '복수형 정보 없음' };
-            }
-            
-            // 3. 형용사/부사 (a, ad, adj, adv, 형용사, 부사)
-            if (pos === 'a' || pos === 'ad' || pos === 'adj' || pos === 'adv' || pos.includes('형용사') || pos.includes('부사')) {
-                return { label: '비교 변화', value: forms || '비교급 정보 없음' };
-            }
-            
-            return null; 
+            // 조건문 없이 무조건 반환
+            return { label: label, value: forms };
         };
 
         function App() {
@@ -507,20 +505,16 @@
                                             </button>
                                         </div>
 
-                                        {morphInfo ? (
-                                            <div className="mt-auto pt-2 border-t border-slate-700/50">
-                                                <div className="flex flex-col">
-                                                    <span className="text-[10px] text-slate-400 uppercase mb-0.5">{morphInfo.label}</span>
-                                                    <p className={`text-base font-bold leading-tight break-words ${morphInfo.value.includes('없음') ? 'text-slate-500 italic font-normal text-xs' : 'text-indigo-300'}`}>
-                                                        {morphInfo.value}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="mt-auto pt-2 border-t border-slate-700/50 min-h-[3rem] flex items-center justify-center">
-                                                <span className="text-[10px] text-slate-600">변화형 정보 없음</span>
-                                            </div>
-                                        )}
+                                        {/* 조건문 없이 무조건 렌더링하도록 수정됨 */}
+                                        <div className="mt-auto pt-2 border-t border-slate-700/50 min-h-[3rem] flex flex-col justify-center">
+                                            {/* 라벨 */}
+                                            <span className="text-[10px] text-slate-400 uppercase mb-0.5 block">{morphInfo ? morphInfo.label : '활용/변화'}</span>
+                                            
+                                            {/* 값 (비어있으면 공란 유지) */}
+                                            <p className="text-base font-bold text-indigo-300 leading-tight break-words min-h-[1.5rem]">
+                                                {morphInfo ? morphInfo.value : ''}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
