@@ -51,15 +51,12 @@
         // =============================================================================
         const API_URL = "https://script.google.com/macros/s/AKfycbzPzXmZVfTwNFVgNOuL7nnVbupVcbVw3IrHBvfAr9MTr6HwBFTSJcJVyjvLah6AT_nLnw/exec";
 
-        // [확장성 설정] 버튼 구성 (앞으로 의문문, 조동사 등 추가 시 여기에 객체만 추가하면 됩니다)
-        // range 정보는 내부 로직(데이터 슬라이싱)에만 사용되고 화면에는 표시되지 않습니다.
+        // [확장성 설정] 버튼 구성
         const LEVEL_CONFIG = [
             { id: 'pos1', title: '긍정문 1', range: '(1~20)', start: 0, end: 20, color: 'bg-emerald-600 active:bg-emerald-700', subColor: 'text-emerald-200' },
             { id: 'pos2', title: '긍정문 2', range: '(21~40)', start: 20, end: 40, color: 'bg-teal-600 active:bg-teal-700', subColor: 'text-teal-200' },
             { id: 'neg1', title: '부정문 1', range: '(41~60)', start: 40, end: 60, color: 'bg-indigo-600 active:bg-indigo-700', subColor: 'text-indigo-200' },
             { id: 'neg2', title: '부정문 2', range: '(61~80)', start: 60, end: 80, color: 'bg-violet-600 active:bg-violet-700', subColor: 'text-violet-200' },
-            // 추후 확장 예시:
-            // { id: 'q1', title: '의문문 1', range: '(81~100)', start: 80, end: 100, color: 'bg-rose-600 active:bg-rose-700', subColor: 'text-rose-200' },
         ];
 
         const FALLBACK_DATA = [
@@ -78,7 +75,7 @@
         const { useState, useEffect, useRef, useCallback } = React;
 
         // =============================================================================
-        // 2. AUDIO ENGINE (Robust Mobile Version)
+        // 2. AUDIO ENGINE
         // =============================================================================
         
         let audioCtx = null;
@@ -173,6 +170,20 @@
         // 3. COMPONENTS
         // =============================================================================
 
+        // [New Component] 품사 범례
+        const PosLegend = ({ className }) => (
+            <div className={`flex flex-wrap justify-center gap-x-2 gap-y-1 ${className}`}>
+                {[
+                    {k:'n', v:'명사'}, {k:'v', v:'동사'}, {k:'a', v:'형용사'}, 
+                    {k:'ad', v:'부사'}, {k:'ph', v:'숙어'}, {k:'p', v:'전치사'}
+                ].map(i => (
+                    <span key={i.k} className="text-[9px] md:text-[10px] text-slate-400 whitespace-nowrap">
+                        <strong className="text-slate-200 font-bold">{i.k}</strong>:{i.v}
+                    </span>
+                ))}
+            </div>
+        );
+
         const HangmanCanvas = ({ mistakes }) => {
             const canvasRef = useRef(null);
             useEffect(() => {
@@ -203,14 +214,10 @@
 
         const getMorphologyInfo = (item) => {
             if (!item) return null;
-            // 점(.) 제거 및 공백 제거로 약어 처리 ('v.', 'n.' 등 대응)
             const pos = (item.pos || item['word class'] || '').toLowerCase().replace(/\./g, '').trim();
-            // forms나 conjugation 필드의 내용을 그대로 가져옴 (기본값 설정 제거)
             const forms = item.forms || item.conjugation || ''; 
 
-            // 라벨(Label) 결정을 위한 로직: 해당 품사면 구체적인 이름을, 아니면 일반적인 이름을 부여
-            let label = '활용/변화'; // 기본값 (ph 등 매칭 안 되는 경우)
-
+            let label = '활용/변화'; 
             if (pos === 'v' || pos === 'vt' || pos === 'vi' || pos.includes('verb') || pos.includes('동사')) {
                 label = '동사 변화';
             } else if (pos === 'n' || pos.includes('noun') || pos.includes('명사')) {
@@ -219,7 +226,6 @@
                 label = '비교 변화';
             }
             
-            // 조건문 없이 무조건 반환
             return { label: label, value: forms };
         };
 
@@ -241,7 +247,7 @@
             const [score, setScore] = useState(0);
             const [shake, setShake] = useState(false);
             const [roundStatus, setRoundStatus] = useState('playing'); 
-            const [currentLevelInfo, setCurrentLevelInfo] = useState({ title: '', range: '' }); // 현재 플레이 중인 레벨 정보
+            const [currentLevelInfo, setCurrentLevelInfo] = useState({ title: '', range: '' });
 
             useEffect(() => {
                 const params = new URLSearchParams(window.location.search);
@@ -284,7 +290,6 @@
                     const json = await res.json();
                     let data = (json.status === 'success' && json.data.length > 0) ? json.data : FALLBACK_DATA;
                     
-                    // 설정된 범위(start ~ end)만큼 데이터를 자름
                     let slicedData = data.slice(levelConfig.start, levelConfig.end);
 
                     if (slicedData.length === 0) {
@@ -295,7 +300,7 @@
 
                     const shuffled = slicedData.sort(() => Math.random() - 0.5);
                     setGameData(shuffled);
-                    setCurrentLevelInfo({ title: levelConfig.title, range: levelConfig.range }); // 제목 저장
+                    setCurrentLevelInfo({ title: levelConfig.title, range: levelConfig.range });
                     initLevel(shuffled[0]);
                     setStep('GAME');
                 } catch (e) {
@@ -425,7 +430,6 @@
                                 </div>
                             )}
 
-                            {/* [수정] 확장형 버튼: 높이를 줄이고, 번호를 제거하여 공간 효율 최적화 */}
                             <div className="grid grid-cols-2 gap-2">
                                 {LEVEL_CONFIG.map((level) => (
                                     <button 
@@ -435,7 +439,6 @@
                                         className={`${level.color} text-white py-2.5 rounded-lg transition flex items-center justify-center touch-manipulation shadow-md border-b-4 border-black/20 active:border-b-0 active:mt-1`}
                                     >
                                         <span className="text-sm md:text-base font-bold tracking-wide">{level.title}</span>
-                                        {/* range 번호 제거됨 */}
                                     </button>
                                 ))}
                             </div>
@@ -474,11 +477,9 @@
                                     </div>
                                 </div>
                                 
-                                {/* 현재 레벨 정보 */}
-                                <div className="text-center">
-                                    <span className="px-3 py-1 bg-slate-700 rounded-full text-[11px] text-slate-300 font-medium">
-                                        {selectedSheet} <span className="text-slate-500 mx-1">|</span> {currentLevelInfo.title}
-                                    </span>
+                                {/* [Mobile Only] 제목 대신 범례 표시 (행맨 위) */}
+                                <div className="md:hidden mt-1">
+                                    <PosLegend />
                                 </div>
 
                                 {/* 행맨 & 단어 카드 */}
@@ -486,6 +487,11 @@
                                     <HangmanCanvas mistakes={mistakes} />
                                     
                                     <div className="bg-slate-800 p-3 rounded-xl border border-slate-700 shadow-md flex flex-col justify-center h-full">
+                                        {/* [PC Only] 단어 카드 내부 상단에 범례 표시 (Key Word 위) */}
+                                        <div className="hidden md:block mb-2 pb-2 border-b border-slate-700/50">
+                                            <PosLegend />
+                                        </div>
+
                                         <div className="flex justify-between items-start mb-2">
                                             <div className="flex-grow">
                                                 <span className="text-[9px] text-indigo-400 font-bold tracking-wider uppercase block">KEY WORD</span>
@@ -505,12 +511,11 @@
                                             </button>
                                         </div>
 
-                                        {/* 조건문 없이 무조건 렌더링하도록 수정됨 */}
                                         <div className="mt-auto pt-2 border-t border-slate-700/50 min-h-[3rem] flex flex-col justify-center">
                                             {/* 라벨 */}
                                             <span className="text-[10px] text-slate-400 uppercase mb-0.5 block">{morphInfo ? morphInfo.label : '활용/변화'}</span>
                                             
-                                            {/* 값 (비어있으면 공란 유지) */}
+                                            {/* 값 */}
                                             <p className="text-base font-bold text-indigo-300 leading-tight break-words min-h-[1.5rem]">
                                                 {morphInfo ? morphInfo.value : ''}
                                             </p>
