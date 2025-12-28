@@ -63,6 +63,8 @@
             { id: 'pos2', title: '긍정문 2', range: '(21~40)', start: 20, end: 40, color: 'bg-teal-600 active:bg-teal-700', subColor: 'text-teal-200' },
             { id: 'neg1', title: '부정문 1', range: '(41~60)', start: 40, end: 60, color: 'bg-indigo-600 active:bg-indigo-700', subColor: 'text-indigo-200' },
             { id: 'neg2', title: '부정문 2', range: '(61~80)', start: 60, end: 80, color: 'bg-violet-600 active:bg-violet-700', subColor: 'text-violet-200' },
+            { id: 'ques1', title: '의문문 1', range: '(81~100)', start: 80, end: 100, color: 'bg-orange-600 active:bg-orange-700', subColor: 'text-orange-200' },
+            { id: 'ques2', title: '의문문 2', range: '(101~120)', start: 100, end: 120, color: 'bg-rose-600 active:bg-rose-700', subColor: 'text-rose-200' },
         ];
 
         const FALLBACK_DATA = [
@@ -179,10 +181,22 @@
         // 3. LOGIC & HELPERS
         // =============================================================================
         
-        // [구조 분석기] S,V,O,C,M 코드를 친절한 한글로 변환
-        const parseStructure = (code) => {
+        // [구조 분석기] S,V,O,C,M 코드를 친절한 한글로 변환 (word 파라미터 추가)
+        const parseStructure = (code, word) => {
             if (!code || typeof code !== 'string') return "구조 정보 없음";
             
+            // 1. [New] 숙어(Phrase) 예외 처리 로직
+            // structure 데이터에 'Phrase', 'Idiom', '숙어' 등이 포함된 경우
+            const upperCode = code.toUpperCase();
+            if (upperCode.includes('PHRASE') || upperCode.includes('IDIOM') || upperCode.includes('숙어')) {
+                // (1) Target Word가 두 단어 이상(공백 포함)인 경우 -> "숙어: [단어]" 표시
+                if (word && word.trim().indexOf(' ') > -1) {
+                    return "숙어: " + word;
+                }
+                // (2) 한 단어인 경우 -> 그냥 "숙어"라고만 표시 (안전한 처리)
+                return "숙어";
+            }
+
             const map = {
                 'S': '주어',
                 'V': '동사',
@@ -262,11 +276,20 @@
 
         const getMorphologyInfo = (item) => {
             if (!item) return null;
-            const pos = (item.pos || item['word class'] || '').toLowerCase().replace(/\./g, '').trim();
-            const forms = item.forms || item.conjugation || ''; 
+            
+            // 1. 품사(POS) 데이터 정규화: 다양한 키값과 대소문자 처리
+            const rawPos = item.pos || item['word class'] || item['Part of Speech'] || item['POS'] || '';
+            const pos = rawPos.toLowerCase().replace(/\./g, '').trim();
+
+            // 2. 내용(Forms) 데이터 가져오기: Forms 컬럼이 없으면 Phrase 컬럼도 확인
+            const forms = item.forms || item.conjugation || item.phrase || item['Phrase'] || item['숙어'] || ''; 
 
             let label = '활용/변화'; 
-            if (pos === 'v' || pos === 'vt' || pos === 'vi' || pos.includes('verb') || pos.includes('동사')) {
+            
+            // [수정됨] 숙어(Phrase/Idiom) 체크를 최우선으로 변경 및 조건 추가
+            if (pos === 'ph' || pos.includes('phrase') || pos.includes('숙어') || pos.includes('idiom')) {
+                label = '숙어';
+            } else if (pos === 'v' || pos === 'vt' || pos === 'vi' || pos.includes('verb') || pos.includes('동사')) {
                 label = '동사 변화';
             } else if (pos === 'n' || pos.includes('noun') || pos.includes('명사')) {
                 label = '수 변화';
@@ -450,8 +473,8 @@
 
             const curr = gameData[qIndex] || {};
             const morphInfo = getMorphologyInfo(curr); 
-            // 구조 텍스트 변환
-            const structureText = parseStructure(curr.structure);
+            // 구조 텍스트 변환 (curr.word 추가 전달)
+            const structureText = parseStructure(curr.structure, curr.word);
 
             return (
                 <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-slate-900">
