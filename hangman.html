@@ -188,6 +188,11 @@
         const parseStructure = (code) => {
             if (!code || typeof code !== 'string') return "구조 정보 없음";
             
+            // [수정] 'Phrase'가 들어오면 문자 단위로 쪼개지 않고 숙어/관용구로 반환
+            if (code.match(/phrase/i)) {
+                return "숙어 / 관용구 (Phrase)";
+            }
+
             const map = {
                 'S': '주어', 'V': '동사', 'O': '목적어', 'C': '보어', 'M': '수식어',
                 'I.O': '간접목적어', 'D.O': '직접목적어'
