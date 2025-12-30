@@ -6,8 +6,6 @@
     <title>박수기정: 자연과 시간이 빚은 절벽</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Noto Sans KR', sans-serif; }
@@ -50,45 +48,91 @@
     <!-- Content Grid -->
     <main class="max-w-6xl mx-auto px-4 pb-20 grid grid-cols-1 md:grid-cols-2 gap-8">
         
-        <!-- 1. Etymology -->
+        <!-- 1. Legend -->
+        <div class="md:col-span-2 bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow ring-1 ring-blue-100">
+            <div class="p-6 md:p-8">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-full bg-violet-50 flex items-center justify-center text-violet-600">
+                        <i class="fa-solid fa-dragon text-xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800">1. 전설 (The Legend)</h2>
+                </div>
+                <div class="flex flex-col md:flex-row gap-6 items-center">
+                    <div class="flex-1 space-y-4">
+                        <p class="text-slate-600 leading-relaxed">
+                            박수기정 앞 안내판에는 이곳의 탄생과 관련된 흥미로운 전설이 전해져 옵니다.
+                        </p>
+                        <div class="bg-violet-50 p-5 rounded-lg border-l-4 border-violet-400">
+                            <h4 class="font-bold text-violet-900 mb-2">용왕의 아들과 방음벽</h4>
+                            <p class="text-sm text-slate-700 leading-relaxed">
+                                옛날 대평리에 <strong>용왕의 아들</strong>이 살았습니다. 그는 학식이 뛰어난 스승에게 글을 배우고 싶어 했으나, 밤낮으로 들려오는 거센 파도 소리 때문에 공부에 집중할 수 없었습니다.<br><br>
+                                이에 용왕의 아들은 공부를 위해 <strong>거대한 절벽(박수기정)을 세워 파도 소리를 막고</strong>, 동쪽에는 <strong>군산(Gunsan)</strong>을 만들어 준 뒤 떠났다고 합니다. 덕분에 마을은 고요함을 되찾았고, 이때부터 대평리는 '용왕이 나온 넓은 들'이라 하여 <strong>'용왕난드르'</strong>라고 불리게 되었습니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Etymology (Updated with Village Name Info) -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
             <div class="p-6 md:p-8">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
                         <i class="fa-solid fa-language text-xl"></i>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-800">1. 어원 (Etymology)</h2>
+                    <h2 class="text-2xl font-bold text-slate-800">2. 어원 (Etymology)</h2>
                 </div>
-                <div class="space-y-4">
-                    <p class="text-slate-600 leading-relaxed">
-                        박수기정은 두 가지 단어가 결합된 제주어입니다.
-                    </p>
-                    <ul class="space-y-3">
-                        <li class="flex items-start gap-3">
-                            <span class="font-bold text-blue-800 whitespace-nowrap">박수 (Baksu)</span>
-                            <span class="text-slate-600">바가지로 마실 수 있는 깨끗한 샘물(Spring Water). 절벽 아래에서 솟아나는 용천수를 의미합니다.</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="font-bold text-stone-800 whitespace-nowrap">기정 (Gijeong)</span>
-                            <span class="text-slate-600">'절벽(Cliff)'을 뜻하는 제주 방언입니다.</span>
-                        </li>
-                    </ul>
-                    <div class="mt-4 p-4 bg-slate-50 rounded-lg text-sm text-slate-500">
-                        <i class="fa-solid fa-quote-left mr-2 text-slate-300"></i>
-                        즉, <strong>"샘물이 솟아나는 절벽"</strong>이라는 뜻입니다. 실제로 절벽 아래 자갈 해안에서는 연중 맑은 물이 솟아나 대평리 주민들의 식수원으로 사용되었습니다.
+                <div class="space-y-6">
+                    <!-- Part 1: Cliff Name -->
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-400 uppercase mb-2 tracking-wider">절벽의 이름 (Cliff)</h3>
+                        <p class="text-slate-600 leading-relaxed mb-3">
+                            박수기정은 두 가지 단어가 결합된 제주어입니다.
+                        </p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3">
+                                <span class="font-bold text-blue-800 whitespace-nowrap">박수 (Baksu)</span>
+                                <span class="text-slate-600">바가지로 마실 수 있는 깨끗한 샘물. 절벽 아래 용천수를 의미합니다.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="font-bold text-stone-800 whitespace-nowrap">기정 (Gijeong)</span>
+                                <span class="text-slate-600">'절벽(Cliff)'을 뜻하는 제주 방언입니다.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="border-t border-slate-100"></div>
+
+                    <!-- Part 2: Village Name (Moved & Updated) -->
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-400 uppercase mb-2 tracking-wider">마을의 이름 (Village)</h3>
+                        <div class="bg-blue-50/50 p-4 rounded-lg">
+                            <p class="text-slate-700 leading-relaxed">
+                                <span class="font-bold text-blue-900">난드르 (Nandreu)</span>는 마을 <strong>대평리(大坪里)</strong>의 옛 제주어 지명입니다.
+                            </p>
+                            <ul class="mt-3 space-y-2 text-sm text-slate-600">
+                                <li>• <strong>난 (Nan):</strong> '나아가는', '넓은'</li>
+                                <li>• <strong>드르 (Dreu):</strong> '들판(Field)'</li>
+                            </ul>
+                            <p class="mt-3 text-sm text-slate-600">
+                                즉, <strong>"넓은 들판"</strong>이라는 뜻의 제주어 '난드르'를 한자어로 옮기면서 <strong>대평(大: 큰 대, 坪: 들 평)</strong>이 되었습니다.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 2. Geology -->
+        <!-- 3. Geology -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
             <div class="p-6 md:p-8">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-stone-600">
                         <i class="fa-solid fa-layer-group text-xl"></i>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-800">2. 지질학적 특성 (Geology)</h2>
+                    <h2 class="text-2xl font-bold text-slate-800">3. 지질학적 특성 (Geology)</h2>
                 </div>
                 <div class="space-y-4">
                     <h3 class="text-lg font-semibold text-slate-700">주상절리 (Columnar Jointing)</h3>
@@ -107,14 +151,14 @@
             </div>
         </div>
 
-        <!-- 3. Visual Points (Drone focus) -->
+        <!-- 4. Visual Points -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
             <div class="p-6 md:p-8">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
                         <i class="fa-solid fa-camera-retro text-xl"></i>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-800">3. 감상 포인트 (Visual Scenery)</h2>
+                    <h2 class="text-2xl font-bold text-slate-800">4. 감상 포인트 (Visual Scenery)</h2>
                 </div>
                 <div class="grid grid-cols-1 gap-4">
                     <div class="border-l-4 border-emerald-500 pl-4 py-1">
@@ -136,18 +180,18 @@
             </div>
         </div>
 
-        <!-- 4. History & Culture -->
+        <!-- 5. History & Culture (Updated) -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
             <div class="p-6 md:p-8">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">
                         <i class="fa-solid fa-landmark text-xl"></i>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-800">4. 역사와 문화 (History)</h2>
+                    <h2 class="text-2xl font-bold text-slate-800">5. 역사와 문화 (History)</h2>
                 </div>
                 <div class="space-y-4 text-sm text-slate-600 leading-relaxed">
-                    <p>
-                        박수기정이 위치한 <strong>대평리(Daepyeong-ri)</strong>는 예로부터 <strong>'난드르(Nandreu)'</strong>라고 불렸습니다. 이는 '넓은 들판(Broad Field)'을 의미하는 제주어입니다.
+                    <p class="text-slate-700 font-medium">
+                        대평리(난드르)는 척박한 땅이 아닌, 드넓은 평야와 맑은 물이 있어 예부터 사람이 살기 좋은 곳이었습니다.
                     </p>
                     <hr class="border-slate-100">
                     <p>
@@ -164,15 +208,15 @@
 
     </main>
 
-    <!-- Footer Summary for Video Viewers -->
+    <!-- Footer Summary -->
     <footer class="bg-slate-900 text-slate-400 py-12">
         <div class="max-w-4xl mx-auto px-6 text-center">
             <h3 class="text-white text-lg font-bold mb-4">영상 시청 가이드 요약</h3>
             <div class="flex flex-wrap justify-center gap-4 text-sm mb-8">
+                <span class="px-3 py-1 bg-slate-800 rounded-full border border-slate-700">#용왕난드르</span>
                 <span class="px-3 py-1 bg-slate-800 rounded-full border border-slate-700">#수직절벽(주상절리)</span>
                 <span class="px-3 py-1 bg-slate-800 rounded-full border border-slate-700">#용천수(박수)</span>
                 <span class="px-3 py-1 bg-slate-800 rounded-full border border-slate-700">#올레9코스</span>
-                <span class="px-3 py-1 bg-slate-800 rounded-full border border-slate-700">#몰질(말길)</span>
                 <span class="px-3 py-1 bg-slate-800 rounded-full border border-slate-700">#일몰명소</span>
             </div>
             <p class="mb-4">
