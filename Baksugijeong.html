@@ -46,7 +46,7 @@
     </section>
 
     <!-- Content Grid -->
-    <main class="max-w-6xl mx-auto px-4 pb-20 grid grid-cols-1 md:grid-cols-2 gap-8">
+    <main class="max-w-6xl mx-auto px-4 pb-20 grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
         
         <!-- 1. Legend -->
         <div class="md:col-span-2 bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow ring-1 ring-blue-100">
@@ -59,14 +59,14 @@
                 </div>
                 <div class="flex flex-col md:flex-row gap-6 items-center">
                     <div class="flex-1 space-y-4">
-                        <p class="text-slate-600 leading-relaxed">
-                            박수기정 앞 안내판에는 이곳의 탄생과 관련된 흥미로운 전설이 전해져 옵니다.
-                        </p>
-                        <div class="bg-violet-50 p-5 rounded-lg border-l-4 border-violet-400">
-                            <h4 class="font-bold text-violet-900 mb-2">용왕의 아들과 방음벽</h4>
-                            <p class="text-sm text-slate-700 leading-relaxed">
-                                옛날 대평리에 <strong>용왕의 아들</strong>이 살았습니다. 그는 학식이 뛰어난 스승에게 글을 배우고 싶어 했으나, 밤낮으로 들려오는 거센 파도 소리 때문에 공부에 집중할 수 없었습니다.<br><br>
-                                이에 용왕의 아들은 공부를 위해 <strong>거대한 절벽(박수기정)을 세워 파도 소리를 막고</strong>, 동쪽에는 <strong>군산(Gunsan)</strong>을 만들어 준 뒤 떠났다고 합니다. 덕분에 마을은 고요함을 되찾았고, 이때부터 대평리는 '용왕이 나온 넓은 들'이라 하여 <strong>'용왕난드르'</strong>라고 불리게 되었습니다.
+                        <div class="bg-violet-50 p-6 rounded-lg border-l-4 border-violet-400">
+                            <h4 class="font-bold text-violet-900 mb-4 text-lg border-b border-violet-200 pb-2">용왕난드르 전설</h4>
+                            <p class="text-slate-700 leading-relaxed font-serif">
+                                옛날 동해 용왕의 아들이 이곳 대평리에 와서 학식이 뛰어난 스승에게 <strong>3년 동안</strong> 글 공부를 했습니다.<br><br>
+                                모든 공부를 마치고 떠나려 할 때, 용왕의 아들은 스승의 은혜에 보답하고자 <strong>"스승님의 소원이 무엇입니까?"</strong>라고 물었습니다.<br><br>
+                                그러자 스승은 <strong>"서당 근처의 '창고내' 물소리가 밤낮으로 너무 시끄러워 글 읽는 데 방해가 되니, 저 소리를 막아주게."</strong>라고 대답했습니다.<br><br>
+                                이에 용왕의 아들은 스승의 소원을 들어주기 위해 <strong>거대한 절벽(박수기정)을 세워 물소리를 막아주고</strong>, 동쪽에는 <strong>군산(Gunsan)</strong>을 만들어 준 뒤 떠났다고 합니다.<br><br>
+                                덕분에 마을은 고요함을 되찾았고, 이때부터 대평리는 <strong>'용왕이 나온 넓은 들'</strong>이라 하여 <strong>'용왕난드르'</strong>라고 불리게 되었습니다.
                             </p>
                         </div>
                     </div>
@@ -74,16 +74,16 @@
             </div>
         </div>
 
-        <!-- 2. Etymology (Updated with Village Name Info) -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
-            <div class="p-6 md:p-8">
+        <!-- 2. Etymology (Text Shortened) -->
+        <div class="flex flex-col h-full bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
+            <div class="p-6 md:p-8 flex flex-col h-full">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
                         <i class="fa-solid fa-language text-xl"></i>
                     </div>
                     <h2 class="text-2xl font-bold text-slate-800">2. 어원 (Etymology)</h2>
                 </div>
-                <div class="space-y-6">
+                <div class="flex-1 flex flex-col gap-6">
                     <!-- Part 1: Cliff Name -->
                     <div>
                         <h3 class="text-sm font-bold text-slate-400 uppercase mb-2 tracking-wider">절벽의 이름 (Cliff)</h3>
@@ -105,17 +105,18 @@
                     <!-- Divider -->
                     <div class="border-t border-slate-100"></div>
 
-                    <!-- Part 2: Village Name (Moved & Updated) -->
+                    <!-- Part 2: Village Name (Modified Ending) -->
                     <div>
-                        <h3 class="text-sm font-bold text-slate-400 uppercase mb-2 tracking-wider">마을의 이름 (Village)</h3>
+                        <h3 class="text-sm font-bold text-slate-400 uppercase mb-1 tracking-wider">마을의 이름 (Village)</h3>
                         <div class="bg-blue-50/50 p-4 rounded-lg">
                             <p class="text-slate-700 leading-relaxed">
-                                <span class="font-bold text-blue-900">난드르 (Nandreu)</span>는 마을 <strong>대평리(大坪里)</strong>의 옛 제주어 지명입니다.
+                                <span class="font-bold text-blue-900">난드르(Nandreu)</span>: 마을 <strong>대평리(大坪里)</strong>의 옛 제주어 <span class="font-bold">지명입니다.</span>
                             </p>
-                            <ul class="mt-3 space-y-2 text-sm text-slate-600">
-                                <li>• <strong>난 (Nan):</strong> '나아가는', '넓은'</li>
-                                <li>• <strong>드르 (Dreu):</strong> '들판(Field)'</li>
-                            </ul>
+                            <!-- Nan and Dreu in one line -->
+                            <div class="mt-2 text-sm text-slate-600 flex flex-wrap gap-x-4 gap-y-1">
+                                <span>• <strong>난 (Nan):</strong> '나아가는', '넓은'</span>
+                                <span>• <strong>드르 (Dreu):</strong> '들판(Field)'</span>
+                            </div>
                             <p class="mt-3 text-sm text-slate-600">
                                 즉, <strong>"넓은 들판"</strong>이라는 뜻의 제주어 '난드르'를 한자어로 옮기면서 <strong>대평(大: 큰 대, 坪: 들 평)</strong>이 되었습니다.
                             </p>
@@ -125,26 +126,31 @@
             </div>
         </div>
 
-        <!-- 3. Geology -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
-            <div class="p-6 md:p-8">
+        <!-- 3. Geology (Natural Spacing) -->
+        <div class="flex flex-col h-full bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
+            <div class="p-6 md:p-8 flex flex-col h-full">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-stone-600">
                         <i class="fa-solid fa-layer-group text-xl"></i>
                     </div>
                     <h2 class="text-2xl font-bold text-slate-800">3. 지질학적 특성 (Geology)</h2>
                 </div>
-                <div class="space-y-4">
-                    <h3 class="text-lg font-semibold text-slate-700">주상절리 (Columnar Jointing)</h3>
-                    <p class="text-slate-600 leading-relaxed text-sm">
-                        영상에서 보이는 수직 기둥 형태의 절벽은 용암이 급격히 식으면서 발생한 <strong>열수축(Thermal Contraction)</strong>의 결과물입니다.
-                    </p>
+                <!-- Increased gap from gap-4 to gap-6 for natural spacing -->
+                <div class="flex-1 flex flex-col gap-6 justify-center">
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-700">주상절리 (Columnar Jointing)</h3>
+                        <p class="text-slate-600 leading-relaxed text-sm mt-2">
+                            영상에서 보이는 수직 기둥 형태의 절벽은 용암이 급격히 식으면서 발생한 <strong>열수축(Thermal Contraction)</strong>의 결과물입니다.
+                        </p>
+                    </div>
+                    <!-- Removed flex-1 to stop forced stretching, relies on gap -->
                     <ol class="list-decimal list-inside space-y-2 text-sm text-slate-600 bg-stone-50 p-4 rounded-lg">
                         <li><strong>분출:</strong> 약 40~50만 년 전, 조면안산암질 용암 분출.</li>
                         <li><strong>냉각:</strong> 용암이 식으면서 부피가 줄어듦(Volume Shrinkage).</li>
                         <li><strong>균열:</strong> 수축 중심점을 향해 인장응력(Tensile Stress)이 작용하며 육각형/오각형의 수직 균열 발생.</li>
                     </ol>
-                    <p class="text-slate-600 text-sm mt-2">
+                    <!-- Removed mt-auto -->
+                    <p class="text-slate-600 text-sm">
                         높이 약 100m에 달하는 이 절벽은 병풍처럼 펼쳐져 있으며, 드론 샷(Top-down)에서 보이는 상부의 평평한 대지는 <strong>용암 대지(Lava Plateau)</strong>의 전형적인 모습입니다.
                     </p>
                 </div>
@@ -220,7 +226,7 @@
                 <span class="px-3 py-1 bg-slate-800 rounded-full border border-slate-700">#일몰명소</span>
             </div>
             <p class="mb-4">
-                이 페이지는 유튜브 영상의 이해를 돕기 위해 제작되었습니다.<br>
+                이 페이지는 유튜브 영상의 이해를돕기 위해 제작되었습니다.<br>
                 영상을 통해 하늘에서 본 박수기정의 웅장함을 확인해보세요.
             </p>
             <div class="mt-8 border-t border-slate-800 pt-8 text-xs text-slate-500">
