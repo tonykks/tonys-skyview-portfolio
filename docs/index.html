@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Visual Studio & VS Code ↔ GitHub 연결 실습 가이드</title>
+  <style>
+    :root{
+      --bg:#0b1220; --card:#111a2e; --text:#e8eefc; --muted:#a9b6d3;
+      --accent:#6ea8ff; --ok:#3ddc97; --warn:#ffd36e; --danger:#ff6e6e;
+      --line:rgba(255,255,255,.12);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      background:linear-gradient(180deg,#070b14, #0b1220 30%, #070b14);
+      color:var(--text);
+    }
+    header{
+      padding:28px 16px 12px;
+      border-bottom:1px solid var(--line);
+      position:sticky; top:0; backdrop-filter: blur(10px);
+      background:rgba(7,11,20,.75);
+      z-index:10;
+    }
+    header h1{margin:0; font-size:20px}
+    header p{margin:8px 0 0; color:var(--muted); font-size:13px; line-height:1.5}
+    main{max-width:980px; margin:0 auto; padding:18px 16px 80px}
+    .card{
+      background:rgba(17,26,46,.92);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+      margin:14px 0;
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+    }
+    .card h2{margin:0 0 10px; font-size:18px}
+    .card h3{margin:16px 0 8px; font-size:15px}
+    .small{font-size:12px; color:var(--muted); line-height:1.6}
+    .pill{display:inline-block; padding:3px 10px; border-radius:999px; border:1px solid var(--line); color:var(--muted); font-size:12px}
+    .ok{color:var(--ok)}
+    .warn{color:var(--warn)}
+    .danger{color:var(--danger)}
+    ul,ol{margin:8px 0 0 18px; padding:0}
+    li{margin:6px 0; line-height:1.55}
+    code,kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      background:rgba(255,255,255,.08);
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:1px 6px;
+      font-size:12.5px;
+    }
+    pre{
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px;
+      overflow:auto;
+      line-height:1.5;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+    }
+    @media (min-width: 900px){
+      .grid{grid-template-columns: 1fr 1fr}
+    }
+    figure{
+      margin:0; border:1px solid var(--line); border-radius:14px;
+      overflow:hidden; background:rgba(255,255,255,.04);
+    }
+    figure img{display:block; width:100%; height:auto}
+    figcaption{padding:10px 12px; color:var(--muted); font-size:12.5px; line-height:1.5}
+    .check{
+      border-left:3px solid var(--accent);
+      padding:10px 12px; background:rgba(110,168,255,.08);
+      border-radius:12px;
+      margin-top:10px;
+    }
+    .toc a{color:var(--accent); text-decoration:none}
+    .toc a:hover{text-decoration:underline}
+    .footer{margin-top:18px; color:var(--muted); font-size:12px; line-height:1.6}
+    .hr{height:1px; background:var(--line); margin:14px 0}
+  </style>
+</head>
+
+<body>
+<header>
+  <h1>Visual Studio & VS Code ↔ GitHub 연결 실습 가이드</h1>
+  <p>
+    목표: <span class="pill">Git 설치</span> → <span class="pill">저장소(repo) 연결</span> → <span class="pill">Commit/Push</span> → <span class="pill">GitHub Pages로 웹 공개</span><br/>
+    이 문서는 “버튼만 누르기”가 아니라 <b>왜 그 단계가 필요한지</b>까지 설명합니다.
+  </p>
+</header>
+
+<main>
+  <section class="card toc">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#concept">핵심 개념 5개(Working tree → Stage → Commit → Push → Publish)</a></li>
+      <li><a href="#prep">사전 준비(계정/저장소/폴더 구조)</a></li>
+      <li><a href="#vs">Part A. Visual Studio ↔ GitHub 연결 개요</a></li>
+      <li><a href="#gitinstall">Part B. Git for Windows 설치(주인님이 실제로 진행한 화면 기준)</a></li>
+      <li><a href="#vscode">Part C. VS Code ↔ GitHub 저장소 연결 & 동기화</a></li>
+      <li><a href="#clean">Part D. “깨끗한 상태(Changes=0)” 만들기 & 자주 생기는 오류</a></li>
+      <li><a href="#pages">Part E. GitHub Pages로 이 가이드 페이지를 웹사이트로 공개</a></li>
+    </ol>
+    <div class="check">
+      <b class="ok">수업 팁</b><br/>
+      학생들은 “내 화면이 강사 화면과 같은가?”를 확인하며 따라 합니다. 그래서 이 문서는 <b>각 단계에 스크린샷(figure) + 설명</b> 형태로 구성했습니다.
+    </div>
+  </section>
+
+  <section id="concept" class="card">
+    <h2>1) 핵심 개념 5개</h2>
+    <ul>
+      <li><b>Working tree</b>: 지금 내 PC 폴더(파일을 편집하는 현장)</li>
+      <li><b>Stage</b>: “이번에 올릴 변경분을 고르는 바구니”</li>
+      <li><b>Commit</b>: 변경분에 “설명 라벨”을 붙여 하나의 기록으로 고정</li>
+      <li><b>Push</b>: Commit 기록을 GitHub 저장소로 업로드</li>
+      <li><b>Publish(GitHub Pages)</b>: 저장소 내용을 웹사이트로 공개</li>
+    </ul>
+    <div class="check">
+      <b class="warn">중요</b><br/>
+      “저장(Save)”는 내 PC에만 저장입니다. <b>GitHub에 반영되려면 Commit + Push</b>가 필요합니다.
+    </div>
+  </section>
+
+  <section id="prep" class="card">
+    <h2>2) 사전 준비</h2>
+    <h3>2-1. 폴더 구조(권장)</h3>
+    <pre>
+저장소 루트
+├─ docs/
+│  ├─ index.html        ← 이번 가이드 페이지 (GitHub Pages 대상)
+│  └─ assets/           ← 캡처 이미지들(아래 파일명대로 넣기)
+└─ (기존 프로젝트 파일들...)
+    </pre>
+
+    <h3>2-2. 캡처 이미지 파일명 규칙(중요)</h3>
+    <p class="small">
+      아래 파일명으로 <code>docs/assets/</code> 폴더에 넣으면, 이 문서에 자동으로 표시됩니다.
+      학생들의 화면 비교를 위해 파일명은 <b>고정</b>을 추천합니다.
+    </p>
+
+    <pre>
+docs/assets/
+01-git-install-page.png
+02-git-windows-download.png
+10-git-setup-components.png
+11-git-start-menu-folder.png
+12-git-initial-branch.png
+13-git-path.png
+14-git-ssh.png
+15-git-https.png
+16-git-line-endings.png
+17-git-terminal-emulator.png
+18-git-pull-behavior.png
+19-git-credential-helper.png
+20-git-extra-options.png
+21-git-finish.png
+30-vscode-welcome.png
+31-vscode-source-control-changes.png
+32-vscode-sync-confirm.png
+33-github-repo-view.png
+    </pre>
+
+    <div class="check">
+      <b class="danger">주의(개인정보)</b><br/>
+      캡처에 <b>Windows 사용자 폴더명, 이메일, GitHub 아이디</b>가 보일 수 있습니다. 수업 배포용이라면 모자이크/가림 처리 권장.
+    </div>
+  </section>
+
+  <section id="vs" class="card">
+    <h2>3) Part A. Visual Studio ↔ GitHub 연결(개요)</h2>
+    <p class="small">
+      Visual Studio(IDE)는 자체적으로 Git 기능(UI)을 내장하고 있어 GitHub 로그인/클론/푸시까지 가능합니다.
+      다만 <b>내부적으로는 Git 동작(또는 Git 구성 요소)</b>이 필요하며, 환경에 따라 Git for Windows를 깔아두면 호환성이 가장 좋습니다.
+    </p>
+
+    <h3>왜 Visual Studio 연결과 VS Code 연결이 “새로 연결한 느낌”이었나?</h3>
+    <ul>
+      <li>둘은 <b>도구가 다르기 때문에</b> UI/로그인 흐름이 별개로 느껴집니다.</li>
+      <li>하지만 “연결 대상”은 동일한 GitHub 저장소(repo)일 수 있습니다.</li>
+      <li>즉, <b>저장소는 하나</b>인데, <b>접속하는 편집기가 2개</b>인 상황입니다.</li>
+    </ul>
+
+    <div class="check">
+      <b class="ok">정리</b><br/>
+      Visual Studio에서 연결했다고 해서 VS Code가 자동으로 따라오진 않습니다.  
+      그래서 주인님이 느끼신 “두 번 연결” 감각은 정상입니다.
+    </div>
+  </section>
+
+  <section id="gitinstall" class="card">
+    <h2>4) Part B. Git for Windows 설치(주인님 실제 화면 기준)</h2>
+
+    <div class="grid">
+      <figure>
+        <img src="./assets/01-git-install-page.png" alt="Git 설치 페이지" />
+        <figcaption>
+          <b>Git 설치 페이지</b><br/>
+          Windows 탭에서 다운로드 링크로 이동합니다.
+          노트북/데스크탑이 다르다고 설치 파일이 달라지는 것이 아니라,
+          <b>x64(대부분)</b> vs <b>ARM64(일부)</b> CPU 종류에 따라 달라집니다.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="./assets/02-git-windows-download.png" alt="Git for Windows 다운로드 페이지" />
+        <figcaption>
+          <b>Git for Windows 다운로드</b><br/>
+          일반적인 Windows 노트북/데스크탑은 대부분 <b>x64 Setup</b>을 선택합니다.
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="hr"></div>
+
+    <h3>설치 마법사에서 무엇을 선택했는가(권장값=대부분 기본값 유지)</h3>
+    <div class="grid">
+      <figure>
+        <img src="./assets/10-git-setup-components.png" alt="Select Components" />
+        <figcaption>
+          <b>Select Components</b><br/>
+          보통 기본 체크 유지 후 <b>Next</b>면 충분합니다.
+          “Explorer integration / Git Bash here”는 초보자에게 도움이 큽니다.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="./assets/12-git-initial-branch.png" alt="Initial branch name" />
+        <figcaption>
+          <b>Initial branch name</b><br/>
+          요즘은 <code>main</code>이 표준입니다.  
+          “Let Git decide”도 동작은 하지만, 수업에서는 <b>main으로 통일</b>을 추천합니다.
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="grid">
+      <figure>
+        <img src="./assets/13-git-path.png" alt="PATH environment" />
+        <figcaption>
+          <b>PATH 설정</b><br/>
+          <b class="ok">Recommended</b> (command line and also from 3rd-party software) 선택 권장.  
+          그래야 VS Code/터미널 어디서든 <code>git</code> 명령이 동작합니다.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="./assets/14-git-ssh.png" alt="SSH executable" />
+        <figcaption>
+          <b>SSH</b><br/>
+          초보/일반 환경은 <b>Use bundled OpenSSH</b> 추천.
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="grid">
+      <figure>
+        <img src="./assets/15-git-https.png" alt="HTTPS transport backend" />
+        <figcaption>
+          <b>HTTPS</b><br/>
+          Windows는 <b>native Windows Secure Channel</b> 선택이 무난합니다.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="./assets/16-git-line-endings.png" alt="Line endings" />
+        <figcaption>
+          <b>Line Endings</b><br/>
+          Windows에서는 기본 추천(Checkout Windows-style, commit Unix-style)이 일반적입니다.
+          팀 협업에서 줄바꿈 충돌을 줄이는 목적입니다.
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="grid">
+      <figure>
+        <img src="./assets/17-git-terminal-emulator.png" alt="Terminal emulator" />
+        <figcaption>
+          <b>Terminal Emulator</b><br/>
+          기본값(MinTTY)로 진행해도 무방합니다.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="./assets/19-git-credential-helper.png" alt="Credential helper" />
+        <figcaption>
+          <b>Credential Helper</b><br/>
+          <b>Git Credential Manager</b>를 선택하면 GitHub 로그인 토큰을 안전하게 저장해
+          매번 비밀번호를 치는 번거로움을 줄입니다.
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="grid">
+      <figure>
+        <img src="./assets/20-git-extra-options.png" alt="Extra options" />
+        <figcaption>
+          <b>Extra Options</b><br/>
+          file system caching은 기본 체크 유지 권장(성능 도움).  
+          symbolic links는 권한/정책 이슈가 있어 수업에서는 보통 꺼둡니다.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="./assets/21-git-finish.png" alt="Finish" />
+        <figcaption>
+          <b>설치 완료</b><br/>
+          Finish. Release Notes는 체크 해제해도 됩니다.  
+          이제 VS Code에서 Git 기능이 제대로 동작할 기반이 마련된 상태입니다.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="vscode" class="card">
+    <h2>5) Part C. VS Code ↔ GitHub 저장소 연결 & 동기화</h2>
+    <p class="small">
+      VS Code는 “편집기”이고, Git은 “버전관리 엔진”, GitHub는 “원격 저장소”입니다.  
+      VS Code에서 파일을 수정해도, GitHub에 올라가는 건 아닙니다. <b>Commit + Push</b>가 있어야 반영됩니다.
+    </p>
+
+    <h3>5-1. Welcome 화면은 닫아도 되는가?</h3>
+    <div class="grid">
+      <figure>
+        <img src="./assets/30-vscode-welcome.png" alt="VS Code Welcome" />
+        <figcaption>
+          <b>Welcome 탭</b><br/>
+          이건 “안내 페이지 탭”이라서 닫아도 됩니다.  
+          VS Code 자체를 닫지 않아도 되고, 닫았다가 다시 열면 다시 뜰 수도 있습니다(정상).
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="./assets/31-vscode-source-control-changes.png" alt="Source Control changes" />
+        <figcaption>
+          <b>Source Control의 숫자(예: 4)</b><br/>
+          이 숫자는 “branch 개수”가 아니라 <b>아직 Commit되지 않은 변경 파일 개수</b>입니다.  
+          따라서 0이 아니라 4라면 “변경이 4개 쌓여 있다”는 뜻입니다.
+        </figcaption>
+      </figure>
+    </div>
+
+    <h3>5-2. .vs 폴더가 Changes로 올라오는 이유와 해결</h3>
+    <ul>
+      <li><code>.vs</code>는 Visual Studio가 만드는 “로컬 설정/캐시” 성격의 파일이라 보통 저장소에 올리지 않습니다.</li>
+      <li>그래서 <code>.gitignore</code>에 <code>.vs/</code>를 넣고, 이미 추적되던 파일은 <code>git rm --cached</code>로 추적에서 제거합니다.</li>
+    </ul>
+
+    <pre>
+# 1) 이미 추적되는 .vs를 "저장소 추적에서만" 제거 (PC에서는 남아도 됨)
+git rm -r --cached .vs
+
+# 2) 커밋
+git commit -m "chore: remove .vs from repository"
+    </pre>
+
+    <div class="check">
+      <b class="ok">주인님 화면에서 보인 “4 files changed, deletions(-)”</b><br/>
+      이건 “실제로 파일을 PC에서 삭제했다”가 아니라, <b>GitHub에 올리는 추적 목록에서 제외했다</b>는 의미가 핵심입니다.
+    </div>
+  </section>
+
+  <section id="clean" class="card">
+    <h2>6) Part D. “깨끗한 상태(Changes=0)” 만들기</h2>
+    <h3>정상 종료 조건</h3>
+    <ul>
+      <li>VS Code Source Control에 <b>Changes 목록이 비어 있음</b></li>
+      <li>상태 표시줄에 “Sync Changes”가 더 이상 쌓여 있지 않음</li>
+      <li>터미널에서 <code>git status</code> 결과가 “working tree clean”에 가까운 상태</li>
+    </ul>
+
+    <h3>Sync Changes 1↑ 이 의미</h3>
+    <ul>
+      <li><b>1↑</b>는 “내 PC에 있는 커밋 1개가 아직 GitHub(origin/main)로 안 올라갔다(푸시 필요)”는 뜻입니다.</li>
+      <li>이 상태에서 <b>Sync Changes</b> 또는 <code>git push</code>를 하면 원격 저장소와 동기화됩니다.</li>
+    </ul>
+
+    <div class="grid">
+      <figure>
+        <img src="./assets/32-vscode-sync-confirm.png" alt="Sync confirm dialog" />
+        <figcaption>
+          <b>Sync 확인창</b><br/>
+          “pull and push commits … origin/main”은 정상 안내입니다.  
+          지금 목적이 동기화라면 <b>OK</b> 누르면 됩니다.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="./assets/33-github-repo-view.png" alt="GitHub repo view" />
+        <figcaption>
+          <b>GitHub 웹에서 확인</b><br/>
+          Push가 끝나면 GitHub 웹에서 파일/커밋이 반영된 것을 확인할 수 있습니다.
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="check">
+      <b class="warn">실전 팁</b><br/>
+      수업에서 가장 많이 실수하는 지점은 “Commit만 하고 Push를 안 하는 것”입니다.  
+      그래서 “Sync Changes 숫자(↑)”를 확인 습관으로 만드세요.
+    </div>
+  </section>
+
+  <section id="pages" class="card">
+    <h2>7) Part E. GitHub Pages로 “이 가이드”를 웹사이트로 공개</h2>
+    <p class="small">
+      GitHub Pages는 저장소의 특정 폴더(<code>/docs</code>) 또는 특정 branch를 웹으로 공개해 줍니다.
+      이번 실습에서는 <b>/docs 폴더 방식</b>이 가장 단순합니다.
+    </p>
+
+    <h3>7-1. 파일을 저장소에 넣기(로컬)</h3>
+    <ol>
+      <li>저장소 루트에 <code>docs</code> 폴더 생성</li>
+      <li><code>docs/index.html</code>에 이 파일 저장</li>
+      <li><code>docs/assets/</code> 폴더 만들고, 캡처 이미지 파일을 규칙대로 넣기</li>
+    </ol>
+
+    <h3>7-2. Commit & Push</h3>
+    <pre>
+git add docs
+git commit -m "docs: add VS & VS Code GitHub connection guide"
+git push
+    </pre>
+
+    <h3>7-3. GitHub Pages 설정(웹에서)</h3>
+    <ol>
+      <li>GitHub 저장소 접속 → <b>Settings</b></li>
+      <li>왼쪽 메뉴에서 <b>Pages</b></li>
+      <li><b>Build and deployment</b>에서 Source를 선택:
+        <ul>
+          <li><b>Deploy from a branch</b></li>
+          <li>Branch: <b>main</b>, Folder: <b>/docs</b></li>
+        </ul>
+      </li>
+      <li>Save를 누르면 잠시 후 공개 URL이 표시됩니다.</li>
+    </ol>
+
+    <div class="check">
+      <b class="ok">공개 URL 예시</b><br/>
+      보통 <code>https://(GitHub아이디).github.io/(repo이름)/</code> 형태로 열립니다.
+      (repo에 docs/index.html이 있기 때문에 루트로 접속하면 index.html이 자동 로드)
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>오해 & 교정</h2>
+    <ul>
+      <li><b>오해:</b> “VS Code에서 저장하면 자동 업로드된다” → <b>교정:</b> 저장은 로컬, 업로드는 Commit+Push</li>
+      <li><b>오해:</b> “Source Control 숫자는 branch 개수” → <b>교정:</b> 변경 파일 개수(아직 커밋 전)</li>
+      <li><b>오해:</b> “Sync는 위험하니 누르면 안 된다” → <b>교정:</b> 동기화가 목적이면 정상 동작(단, 충돌은 설명 필요)</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>3-line summary</h2>
+    <p class="small">
+      1) Git은 “엔진”, VS Code/Visual Studio는 “조종석”, GitHub는 “원격 창고”입니다.<br/>
+      2) GitHub 반영은 저장이 아니라 <b>Commit + Push</b>로 이루어집니다.<br/>
+      3) <code>/docs</code>에 index.html을 두고 GitHub Pages를 켜면, 저장소가 곧 웹사이트가 됩니다.
+    </p>
+    <p class="footer">
+      이 문서는 수업용으로 자유롭게 수정/추가하세요.  
+      다음 단계로는 “충돌(conflict) 상황 재현 → 해결(merge/rebase)” 실습을 붙이면 완성도가 급상승합니다.
+    </p>
+  </section>
+</main>
+</body>
+</html>
