@@ -1,0 +1,8 @@
+# Visual Studio local settings
+.vs/
+*.suo
+*.user
+
+# OS junk
+Thumbs.db
+.DS_Store
