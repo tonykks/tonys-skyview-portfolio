@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastering Yes/No Questions & Answers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .eng-font { font-family: 'Roboto', sans-serif; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.1); }
+        .hidden-content { display: none; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Q&A Specific Styles */
+        .qa-row { display: flex; align-items: flex-start; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px dashed #e2e8f0; }
+        .qa-row:last-child { border-bottom: none; }
+        .q-part { width: 50%; padding-right: 1rem; border-right: 2px solid #f1f5f9; }
+        .a-part { width: 50%; padding-left: 1rem; }
+        .q-label { color: #64748b; font-weight: 800; font-size: 0.8rem; margin-right: 0.5rem; }
+        .a-label { color: #64748b; font-weight: 800; font-size: 0.8rem; margin-right: 0.5rem; }
+        .pronoun-switch { color: #d97706; font-weight: 900; } /* Amber for You <-> I switch */
+        .noun-switch { color: #059669; font-weight: 900; } /* Emerald for Noun <-> Pronoun */
+    </style>
+</head>
+<body class="bg-white text-slate-900">
+
+    <!-- Header -->
+    <header class="bg-indigo-900 text-white p-6 shadow-xl border-b-4 border-indigo-600">
+        <div class="max-w-[95%] xl:max-w-[1600px] mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-black tracking-tight">Yes/No Questions & Answers</h1>
+                <p class="text-indigo-100 text-lg mt-1 font-medium">영어 핵심 개념: 질문하고 대답하기 (Be동사 vs 일반동사)</p>
+            </div>
+            <div class="text-right hidden md:block">
+                <span class="bg-white text-indigo-900 px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-widest shadow-sm">Conversation Basics</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-[95%] xl:max-w-[1600px] mx-auto p-6 space-y-12">
+
+        <!-- 1. Classification Review (Simple) -->
+        <section id="classification">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-extrabold text-slate-900 border-b-4 border-indigo-600 inline-block pb-2 px-6">1. Review: Verb Types (동사의 분류)</h2>
+                <p class="mt-4 text-slate-700 text-lg font-medium">질문을 만드는 방법은 <strong>동사의 종류</strong>에 따라 완전히 다릅니다.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Be Verbs -->
+                <div class="bg-white border-2 border-indigo-200 border-l-8 border-l-indigo-600 p-8 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-2xl font-black text-indigo-800">Be Verb (Be동사)</h3>
+                        <span class="text-sm bg-indigo-100 text-indigo-900 px-3 py-1 rounded-full font-bold border border-indigo-200">Swap Type</span>
+                    </div>
+                    <p class="text-slate-700 text-lg mb-4 font-medium"><strong>주어와 동사의 자리</strong>를 바꿉니다.</p>
+                    <div class="bg-indigo-50 p-4 rounded-lg text-center font-bold text-indigo-900">
+                        Is he ...? / Are you ...?
+                    </div>
+                </div>
+
+                <!-- General Verbs -->
+                <div class="bg-white border-2 border-emerald-200 border-l-8 border-l-emerald-600 p-8 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-2xl font-black text-emerald-800">General Verb (일반동사)</h3>
+                        <span class="text-sm bg-emerald-100 text-emerald-900 px-3 py-1 rounded-full font-bold border border-emerald-200">Do/Does Type</span>
+                    </div>
+                    <p class="text-slate-700 text-lg mb-4 font-medium">맨 앞에 <strong>Do / Does / Did</strong>를 붙입니다.</p>
+                    <div class="bg-emerald-50 p-4 rounded-lg text-center font-bold text-emerald-900">
+                        Do you ...? / Does she ...?
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Be Verb Q&A -->
+        <section id="be-qa">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-extrabold text-slate-900 border-b-4 border-indigo-600 inline-block pb-2 px-6">2. Be Verb Q&A (Be동사 묻고 답하기)</h2>
+                <p class="mt-4 text-slate-700 text-lg font-medium">핵심: 질문할 때 쓴 Be동사를 대답할 때도 그대로(또는 짝꿍으로) 씁니다.</p>
+            </div>
+
+            <!-- Clickable Card -->
+            <div class="bg-white border-2 border-indigo-300 border-l-8 border-l-indigo-600 p-8 rounded-xl shadow-xl card-hover cursor-pointer group mb-8" onclick="toggleSection('be-qa-detail')">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-2xl font-black text-indigo-900 mb-2">Be Verb Pattern</h3>
+                        <p class="text-slate-600 text-lg">주어와 동사 자리 바꾸기 (Swap) + <span class="text-amber-600 font-bold">인칭 바꾸기 (Switch)</span></p>
+                    </div>
+                    <span class="text-indigo-600 font-bold text-lg group-hover:translate-x-2 transition">See Examples &rarr;</span>
+                </div>
+            </div>
+
+            <!-- Detail Section -->
+            <section id="be-qa-detail" class="hidden-content fade-in bg-indigo-50/50 p-8 rounded-3xl shadow-xl border-2 border-indigo-100">
+                
+                <!-- Crucial Rule: The Switch -->
+                <div class="bg-white p-6 rounded-2xl border-2 border-amber-200 shadow-md mb-8 flex flex-col md:flex-row items-center justify-center gap-6">
+                    <div class="text-center">
+                        <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-bold text-sm mb-2 inline-block">Rule: The Speaker Switch</span>
+                        <p class="text-lg font-bold text-slate-800">질문자(나) <span class="text-indigo-600 text-xl align-middle">&harr;</span> 답변자(너)</p>
+                    </div>
+                    <div class="flex items-center gap-4 text-xl font-black">
+                        <div class="bg-indigo-100 p-3 rounded-lg text-indigo-800">Are <span class="text-amber-600">you</span>...?</div>
+                        <div class="text-slate-400">&rarr;</div>
+                        <div class="bg-indigo-100 p-3 rounded-lg text-indigo-800">Yes, <span class="text-amber-600">I</span> am.</div>
+                    </div>
+                    <div class="text-sm text-slate-500 font-medium">(질문이 '너'이면 대답은 '나'로 해야 합니다!)</div>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                    <!-- Column 1: I & You (The Switch) -->
+                    <div class="bg-white p-8 rounded-2xl border-2 border-indigo-200 shadow-lg">
+                        <h4 class="text-xl font-black text-indigo-800 mb-6 border-b-2 border-indigo-100 pb-2">1. I & You (서로 묻고 답하기)</h4>
+                        
+                        <!-- Item -->
+                        <div class="qa-row">
+                            <div class="q-part">
+                                <span class="q-label">Q:</span>
+                                <span class="eng-font text-lg font-bold">Are <span class="pronoun-switch">you</span> a student?</span>
+                                <p class="kor text-sm mt-1 text-slate-500">(너는 학생이니?)</p>
+                            </div>
+                            <div class="a-part">
+                                <span class="a-label">A:</span>
+                                <div class="mb-2"><span class="text-green-600 font-bold">Yes, <span class="pronoun-switch">I</span> am.</span> <span class="text-xs text-slate-400">(응, 그래.)</span></div>
+                                <div><span class="text-red-500 font-bold">No, <span class="pronoun-switch">I</span> am not.</span> <span class="text-xs text-slate-400">(아니, 안 그래.)</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="qa-row">
+                            <div class="q-part">
+                                <span class="q-label">Q:</span>
+                                <span class="eng-font text-lg font-bold">Am <span class="pronoun-switch">I</span> late?</span>
+                                <p class="kor text-sm mt-1 text-slate-500">(내가 늦었니? - 확인차 질문)</p>
+                            </div>
+                            <div class="a-part">
+                                <span class="a-label">A:</span>
+                                <div class="mb-2"><span class="text-green-600 font-bold">Yes, <span class="pronoun-switch">you</span> are.</span></div>
+                                <div><span class="text-red-500 font-bold">No, <span class="pronoun-switch">you</span> aren't.</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="qa-row">
+                            <div class="q-part">
+                                <span class="q-label">Q:</span>
+                                <span class="eng-font text-lg font-bold">Were <span class="pronoun-switch">you</span> busy yesterday?</span>
+                                <p class="kor text-sm mt-1 text-slate-500">(너 어제 바빴니? - 과거)</p>
+                            </div>
+                            <div class="a-part">
+                                <span class="a-label">A:</span>
+                                <div class="mb-2"><span class="text-green-600 font-bold">Yes, <span class="pronoun-switch">I</span> was.</span></div>
+                                <div><span class="text-red-500 font-bold">No, <span class="pronoun-switch">I</span> wasn't.</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: 3rd Person (Change Noun to Pronoun) -->
+                    <div class="bg-white p-8 rounded-2xl border-2 border-indigo-200 shadow-lg">
+                        <h4 class="text-xl font-black text-indigo-800 mb-6 border-b-2 border-indigo-100 pb-2">2. He / She / It / They (제3자 묻기)</h4>
+                        <p class="text-sm text-slate-500 mb-4 bg-indigo-50 p-2 rounded">★ 대답할 때는 명사를 반드시 <span class="noun-switch">대명사(He, She, It, They)</span>로 바꿔야 합니다.</p>
+
+                        <!-- Item -->
+                        <div class="qa-row">
+                            <div class="q-part">
+                                <span class="q-label">Q:</span>
+                                <span class="eng-font text-lg font-bold">Is <span class="noun-switch">Tom</span> nice?</span>
+                                <p class="kor text-sm mt-1 text-slate-500">(Tom은 착하니?)</p>
+                            </div>
+                            <div class="a-part">
+                                <span class="a-label">A:</span>
+                                <div class="mb-2"><span class="text-green-600 font-bold">Yes, <span class="noun-switch">he</span> is.</span></div>
+                                <div><span class="text-red-500 font-bold">No, <span class="noun-switch">he</span> isn't.</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="qa-row">
+                            <div class="q-part">
+                                <span class="q-label">Q:</span>
+                                <span class="eng-font text-lg font-bold">Is <span class="noun-switch">the car</span> fast?</span>
+                                <p class="kor text-sm mt-1 text-slate-500">(그 차는 빠르니? - 사물)</p>
+                            </div>
+                            <div class="a-part">
+                                <span class="a-label">A:</span>
+                                <div class="mb-2"><span class="text-green-600 font-bold">Yes, <span class="noun-switch">it</span> is.</span></div>
+                                <div><span class="text-red-500 font-bold">No, <span class="noun-switch">it</span> isn't.</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="qa-row">
+                            <div class="q-part">
+                                <span class="q-label">Q:</span>
+                                <span class="eng-font text-lg font-bold">Are <span class="noun-switch">your friends</span> here?</span>
+                                <p class="kor text-sm mt-1 text-slate-500">(네 친구들은 여기 있니? - 복수)</p>
+                            </div>
+                            <div class="a-part">
+                                <span class="a-label">A:</span>
+                                <div class="mb-2"><span class="text-green-600 font-bold">Yes, <span class="noun-switch">they</span> are.</span></div>
+                                <div><span class="text-red-500 font-bold">No, <span class="noun-switch">they</span> aren't.</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- 3. General Verb Q&A -->
+        <section id="general-qa">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-extrabold text-slate-900 border-b-4 border-emerald-600 inline-block pb-2 px-6">3. General Verb Q&A (일반동사 묻고 답하기)</h2>
+                <p class="mt-4 text-slate-700 text-lg font-medium">핵심: 질문할 때 도와준 <span class="text-amber-600 font-black">Do / Does / Did</span>로 대답합니다.</p>
+            </div>
+
+            <!-- Clickable Card -->
+            <div class="bg-white border-2 border-emerald-300 border-l-8 border-l-emerald-600 p-8 rounded-xl shadow-xl card-hover cursor-pointer group mb-8" onclick="toggleSection('general-qa-detail')">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-2xl font-black text-emerald-900 mb-2">General Verb Pattern</h3>
+                        <p class="text-slate-600 text-lg">Do/Does/Did로 물어보면 <span class="text-emerald-600 font-bold">Do/Does/Did</span>로 대답하기</p>
+                    </div>
+                    <span class="text-emerald-600 font-bold text-lg group-hover:translate-x-2 transition">See Examples &rarr;</span>
+                </div>
+            </div>
+
+            <!-- Detail Section -->
+            <section id="general-qa-detail" class="hidden-content fade-in bg-emerald-50/50 p-8 rounded-3xl shadow-xl border-2 border-emerald-100">
+                
+                <!-- Crucial Rule: Do match -->
+                <div class="bg-white p-6 rounded-2xl border-2 border-amber-200 shadow-md mb-8 flex flex-col md:flex-row items-center justify-center gap-6">
+                    <div class="text-center">
+                        <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-bold text-sm mb-2 inline-block">Rule: Mirror Effect</span>
+                        <p class="text-lg font-bold text-slate-800">물어본 조동사 그대로 대답하기</p>
+                    </div>
+                    <div class="flex items-center gap-4 text-xl font-black">
+                        <div class="bg-emerald-100 p-3 rounded-lg text-emerald-800"><span class="text-amber-600">Do</span> you...?</div>
+                        <div class="text-slate-400">&rarr;</div>
+                        <div class="bg-emerald-100 p-3 rounded-lg text-emerald-800">Yes, I <span class="text-amber-600">do</span>.</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                    <!-- Column 1: I & You (Do/Did) -->
+                    <div class="bg-white p-8 rounded-2xl border-2 border-emerald-200 shadow-lg">
+                        <h4 class="text-xl font-black text-emerald-800 mb-6 border-b-2 border-emerald-100 pb-2">1. I & You (서로 묻고 답하기)</h4>
+                        
+                        <!-- Item -->
+                        <div class="qa-row">
+                            <div class="q-part">
+                                <span class="q-label">Q:</span>
+                                <span class="eng-font text-lg font-bold"><span class="text-amber-600">Do</span> you like pizza?</span>
+                                <p class="kor text-sm mt-1 text-slate-500">(너 피자 좋아하니?)</p>
+                            </div>
+                            <div class="a-part">
+                                <span class="a-label">A:</span>
+                                <div class="mb-2"><span class="text-green-600 font-bold">Yes, <span class="pronoun-switch">I</span> <span class="text-amber-600">do</span>.</span></div>
+                                <div><span class="text-red-500 font-bold">No, <span class="pronoun-switch">I</span> <span class="text-amber-600">don't</span>.</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="qa-row">
+                            <div class="q-part">
+                                <span class="q-label">Q:</span>
+                                <span class="eng-font text-lg font-bold"><span class="text-amber-600">Do</span> I look tired?</span>
+                                <p class="kor text-sm mt-1 text-slate-500">(나 피곤해 보이니?)</p>
+                            </div>
+                            <div class="a-part">
+                                <span class="a-label">A:</span>
+                                <div class="mb-2"><span class="text-green-600 font-bold">Yes, <span class="pronoun-switch">you</span> <span class="text-amber-600">do</span>.</span></div>
+                                <div><span class="text-red-500 font-bold">No, <span class="pronoun-switch">you</span> <span class="text-amber-600">don't</span>.</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="qa-row">
+                            <div class="q-part">
+                                <span class="q-label">Q:</span>
+                                <span class="eng-font text-lg font-bold"><span class="text-amber-600">Did</span> you finish homework?</span>
+                                <p class="kor text-sm mt-1 text-slate-500">(너 숙제 끝냈니? - 과거)</p>
+                            </div>
+                            <div class="a-part">
+                                <span class="a-label">A:</span>
+                                <div class="mb-2"><span class="text-green-600 font-bold">Yes, <span class="pronoun-switch">I</span> <span class="text-amber-600">did</span>.</span></div>
+                                <div><span class="text-red-500 font-bold">No, <span class="pronoun-switch">I</span> <span class="text-amber-600">didn't</span>.</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: 3rd Person (Does/Did) -->
+                    <div class="bg-white p-8 rounded-2xl border-2 border-emerald-200 shadow-lg">
+                        <h4 class="text-xl font-black text-emerald-800 mb-6 border-b-2 border-emerald-100 pb-2">2. He / She / It / They (제3자 묻기)</h4>
+                        <p class="text-sm text-slate-500 mb-4 bg-emerald-50 p-2 rounded">★ 3인칭 단수는 <span class="text-amber-600 font-black">Does</span>로 묻고 답합니다.</p>
+
+                        <!-- Item -->
+                        <div class="qa-row">
+                            <div class="q-part">
+                                <span class="q-label">Q:</span>
+                                <span class="eng-font text-lg font-bold"><span class="text-amber-600">Does</span> <span class="noun-switch">Jane</span> speak English?</span>
+                                <p class="kor text-sm mt-1 text-slate-500">(Jane은 영어를 말하니?)</p>
+                            </div>
+                            <div class="a-part">
+                                <span class="a-label">A:</span>
+                                <div class="mb-2"><span class="text-green-600 font-bold">Yes, <span class="noun-switch">she</span> <span class="text-amber-600">does</span>.</span></div>
+                                <div><span class="text-red-500 font-bold">No, <span class="noun-switch">she</span> <span class="text-amber-600">doesn't</span>.</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="qa-row">
+                            <div class="q-part">
+                                <span class="q-label">Q:</span>
+                                <span class="eng-font text-lg font-bold"><span class="text-amber-600">Does</span> <span class="noun-switch">the bus</span> stop here?</span>
+                                <p class="kor text-sm mt-1 text-slate-500">(그 버스는 여기에 서니?)</p>
+                            </div>
+                            <div class="a-part">
+                                <span class="a-label">A:</span>
+                                <div class="mb-2"><span class="text-green-600 font-bold">Yes, <span class="noun-switch">it</span> <span class="text-amber-600">does</span>.</span></div>
+                                <div><span class="text-red-500 font-bold">No, <span class="noun-switch">it</span> <span class="text-amber-600">doesn't</span>.</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="qa-row">
+                            <div class="q-part">
+                                <span class="q-label">Q:</span>
+                                <span class="eng-font text-lg font-bold"><span class="text-amber-600">Did</span> <span class="noun-switch">cats</span> eat fish?</span>
+                                <p class="kor text-sm mt-1 text-slate-500">(고양이들이 생선을 먹었니? - 과거)</p>
+                            </div>
+                            <div class="a-part">
+                                <span class="a-label">A:</span>
+                                <div class="mb-2"><span class="text-green-600 font-bold">Yes, <span class="noun-switch">they</span> <span class="text-amber-600">did</span>.</span></div>
+                                <div><span class="text-red-500 font-bold">No, <span class="noun-switch">they</span> <span class="text-amber-600">didn't</span>.</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-slate-500 text-sm pb-8">
+            <p>&copy; 2026 Essential English Grammar (Q&A Mastery). Designed for All Learners.</p>
+        </footer>
+
+    </main>
+
+    <script>
+        // Section Toggle Logic
+        function toggleSection(id) {
+            const element = document.getElementById(id);
+            if (element.style.display === 'block') {
+                element.style.display = 'none';
+            } else {
+                element.style.display = 'block';
+                // Smooth scroll to the section
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
+        }
+    </script>
+</body>
+</html>
