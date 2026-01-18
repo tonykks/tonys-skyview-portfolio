@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastering Wh-Questions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .eng-font { font-family: 'Roboto', sans-serif; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.1); }
+        .hidden-content { display: none; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* Step Process Styles */
+        .target-bracket { color: #ef4444; font-weight: 900; } /* Red for ( ) */
+        .wh-change { color: #d97706; font-weight: 900; } /* Amber for Change step */
+        .wh-move { color: #7c3aed; font-weight: 900; text-decoration: underline; } /* Purple for Move step */
+        .verb-highlight { color: #059669; font-weight: 900; } /* Emerald for Verbs */
+        
+        /* Wh-Word Badge */
+        .wh-badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 9999px; color: white; font-weight: 900; font-size: 0.8rem; margin-right: 0.5rem; }
+        .wh-who { background-color: #f59e0b; } /* Amber */
+        .wh-what { background-color: #3b82f6; } /* Blue */
+        .wh-where { background-color: #10b981; } /* Emerald */
+        .wh-when { background-color: #8b5cf6; } /* Violet */
+        .wh-why { background-color: #ec4899; } /* Pink */
+        .wh-how { background-color: #64748b; } /* Slate */
+
+        /* Answer Loop Style */
+        .answer-box { background-color: #f0fdf4; border: 2px dashed #22c55e; color: #15803d; padding: 0.5rem; border-radius: 0.5rem; margin-top: 0.75rem; font-size: 0.95rem; }
+        .cycle-icon { display: inline-block; margin-right: 0.3rem; font-weight: 900; }
+    </style>
+</head>
+<body class="bg-white text-slate-900">
+
+    <!-- Header -->
+    <header class="bg-violet-900 text-white p-6 shadow-xl border-b-4 border-violet-600">
+        <div class="max-w-[95%] xl:max-w-[1600px] mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-black tracking-tight">Wh-Questions Logic</h1>
+                <p class="text-violet-100 text-lg mt-1 font-medium">영어 핵심 개념: 의문사가 있는 의문문 만들기 (5단계 논리 완성)</p>
+            </div>
+            <div class="text-right hidden md:block">
+                <span class="bg-white text-violet-900 px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-widest shadow-sm">Advanced Structure</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-[95%] xl:max-w-[1600px] mx-auto p-6 space-y-12">
+
+        <!-- 1. The Logic of Wh-Questions -->
+        <section id="logic-intro">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-extrabold text-slate-900 border-b-4 border-violet-600 inline-block pb-2 px-6">1. The Logic: 5 Steps + Answer (순환 공식)</h2>
+                <p class="mt-4 text-slate-700 text-lg font-medium"><strong>변환(Change)</strong>과 <strong>이동(Move)</strong> 과정을 분리하여 더 명확하게 이해합니다.</p>
+            </div>
+
+            <!-- 5 Step Visualization -->
+            <div class="bg-white border-2 border-violet-200 p-8 rounded-2xl shadow-lg mb-8 overflow-x-auto">
+                <div class="flex flex-nowrap md:grid md:grid-cols-6 gap-4 text-center items-stretch min-w-[800px]">
+                    <!-- Step 1 -->
+                    <div class="flex-1 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <div class="text-violet-600 font-black text-lg mb-1">Step 1</div>
+                        <p class="font-bold text-slate-700 text-sm">평서문</p>
+                        <p class="text-xs text-slate-500 mt-1">기본 문장</p>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="flex-1 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <div class="text-violet-600 font-black text-lg mb-1">Step 2</div>
+                        <p class="font-bold text-slate-700 text-sm">Yes/No 의문문</p>
+                        <p class="text-xs text-slate-500 mt-1">동사 앞으로</p>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="flex-1 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <div class="text-violet-600 font-black text-lg mb-1">Step 3</div>
+                        <p class="font-bold text-slate-700 text-sm">타겟 ( )</p>
+                        <p class="text-xs text-slate-500 mt-1">정보 가리기</p>
+                    </div>
+                    <!-- Step 4 (Added) -->
+                    <div class="flex-1 p-3 bg-amber-50 rounded-xl border border-amber-200">
+                        <div class="text-amber-600 font-black text-lg mb-1">Step 4</div>
+                        <p class="font-bold text-slate-700 text-sm">의문사 변환</p>
+                        <p class="text-xs text-slate-500 mt-1"><span class="wh-change">Change!</span></p>
+                    </div>
+                    <!-- Step 5 (Moved) -->
+                    <div class="flex-1 p-3 bg-violet-100 rounded-xl border-2 border-violet-400 shadow-md">
+                        <div class="text-violet-800 font-black text-lg mb-1">Step 5</div>
+                        <p class="font-bold text-slate-800 text-sm">앞으로 이동</p>
+                        <p class="text-xs text-slate-600 mt-1"><span class="wh-move">Move!</span></p>
+                    </div>
+                    <!-- Answer Loop -->
+                    <div class="flex-1 p-3 bg-green-50 rounded-xl border-2 border-green-400 shadow-md border-dashed">
+                        <div class="text-green-700 font-black text-lg mb-1">Answer</div>
+                        <p class="font-bold text-green-800 text-sm">순환 완성</p>
+                        <p class="text-xs text-green-700 mt-1">평서문 복귀</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wh-Word Selection Guide -->
+            <div class="bg-slate-800 text-white p-6 rounded-2xl shadow-lg">
+                <h3 class="text-xl font-bold mb-4 text-center">Wh-Word Selector (의문사 선택 가이드)</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-center">
+                    <div class="p-3 bg-slate-700 rounded-lg"><span class="wh-badge wh-who block mx-auto mb-2 w-16">WHO</span><p class="text-sm">사람 (누구)</p></div>
+                    <div class="p-3 bg-slate-700 rounded-lg"><span class="wh-badge wh-what block mx-auto mb-2 w-16">WHAT</span><p class="text-sm">사물 (무엇)</p></div>
+                    <div class="p-3 bg-slate-700 rounded-lg"><span class="wh-badge wh-where block mx-auto mb-2 w-16">WHERE</span><p class="text-sm">장소 (어디)</p></div>
+                    <div class="p-3 bg-slate-700 rounded-lg"><span class="wh-badge wh-when block mx-auto mb-2 w-16">WHEN</span><p class="text-sm">시간 (언제)</p></div>
+                    <div class="p-3 bg-slate-700 rounded-lg"><span class="wh-badge wh-why block mx-auto mb-2 w-16">WHY</span><p class="text-sm">이유 (왜)</p></div>
+                    <div class="p-3 bg-slate-700 rounded-lg"><span class="wh-badge wh-how block mx-auto mb-2 w-16">HOW</span><p class="text-sm">상태/방법 (어떻게)</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Examples: Be Verbs (6 Items) -->
+        <section id="be-wh">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-extrabold text-slate-900 border-b-4 border-indigo-600 inline-block pb-2 px-6">2. Be Verb Examples (Be동사)</h2>
+                <p class="mt-4 text-slate-700 text-lg font-medium">규칙: <strong>주어와 Be동사 Swap</strong> + 의문사 변환 & 이동</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                
+                <!-- 1. WHO -->
+                <div class="bg-white border-2 border-indigo-200 rounded-2xl shadow-lg p-6 hover:border-indigo-400 transition">
+                    <div class="flex items-center mb-4 border-b pb-2 border-indigo-100">
+                        <span class="wh-badge wh-who">WHO</span> <span class="font-bold text-slate-700">사람</span>
+                    </div>
+                    <div class="space-y-2 eng-font text-lg">
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">1</span> That is <span class="font-bold">Tom</span>.</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">2</span> <span class="verb-highlight">Is</span> that <span class="font-bold">Tom</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">3</span> <span class="verb-highlight">Is</span> that <span class="target-bracket">(Tom)</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">4</span> <span class="verb-highlight">Is</span> that <span class="wh-change">Who</span>?</p>
+                        <div class="bg-indigo-50 p-2 rounded"><span class="text-xs font-black text-indigo-600 w-4 inline-block">5</span> <span class="wh-move">Who</span> <span class="verb-highlight">is</span> that?</div>
+                        <div class="answer-box"><span class="cycle-icon">↺</span>That is <strong>Tom</strong>.</div>
+                    </div>
+                </div>
+
+                <!-- 2. WHAT -->
+                <div class="bg-white border-2 border-indigo-200 rounded-2xl shadow-lg p-6 hover:border-indigo-400 transition">
+                    <div class="flex items-center mb-4 border-b pb-2 border-indigo-100">
+                        <span class="wh-badge wh-what">WHAT</span> <span class="font-bold text-slate-700">사물</span>
+                    </div>
+                    <div class="space-y-2 eng-font text-lg">
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">1</span> This is <span class="font-bold">a camera</span>.</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">2</span> <span class="verb-highlight">Is</span> this <span class="font-bold">a camera</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">3</span> <span class="verb-highlight">Is</span> this <span class="target-bracket">(a camera)</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">4</span> <span class="verb-highlight">Is</span> this <span class="wh-change">What</span>?</p>
+                        <div class="bg-indigo-50 p-2 rounded"><span class="text-xs font-black text-indigo-600 w-4 inline-block">5</span> <span class="wh-move">What</span> <span class="verb-highlight">is</span> this?</div>
+                        <div class="answer-box"><span class="cycle-icon">↺</span>This is <strong>a camera</strong>.</div>
+                    </div>
+                </div>
+
+                <!-- 3. WHERE -->
+                <div class="bg-white border-2 border-indigo-200 rounded-2xl shadow-lg p-6 hover:border-indigo-400 transition">
+                    <div class="flex items-center mb-4 border-b pb-2 border-indigo-100">
+                        <span class="wh-badge wh-where">WHERE</span> <span class="font-bold text-slate-700">장소</span>
+                    </div>
+                    <div class="space-y-2 eng-font text-lg">
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">1</span> They are <span class="font-bold">in the park</span>.</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">2</span> <span class="verb-highlight">Are</span> they <span class="font-bold">in the park</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">3</span> <span class="verb-highlight">Are</span> they <span class="target-bracket">(in the park)</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">4</span> <span class="verb-highlight">Are</span> they <span class="wh-change">Where</span>?</p>
+                        <div class="bg-indigo-50 p-2 rounded"><span class="text-xs font-black text-indigo-600 w-4 inline-block">5</span> <span class="wh-move">Where</span> <span class="verb-highlight">are</span> they?</div>
+                        <div class="answer-box"><span class="cycle-icon">↺</span>They are <strong>in the park</strong>.</div>
+                    </div>
+                </div>
+
+                <!-- 4. WHEN -->
+                <div class="bg-white border-2 border-indigo-200 rounded-2xl shadow-lg p-6 hover:border-indigo-400 transition">
+                    <div class="flex items-center mb-4 border-b pb-2 border-indigo-100">
+                        <span class="wh-badge wh-when">WHEN</span> <span class="font-bold text-slate-700">시간</span>
+                    </div>
+                    <div class="space-y-2 eng-font text-lg">
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">1</span> The party is <span class="font-bold">at 7</span>.</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">2</span> <span class="verb-highlight">Is</span> the party <span class="font-bold">at 7</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">3</span> <span class="verb-highlight">Is</span> the party <span class="target-bracket">(at 7)</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">4</span> <span class="verb-highlight">Is</span> the party <span class="wh-change">When</span>?</p>
+                        <div class="bg-indigo-50 p-2 rounded"><span class="text-xs font-black text-indigo-600 w-4 inline-block">5</span> <span class="wh-move">When</span> <span class="verb-highlight">is</span> the party?</div>
+                        <div class="answer-box"><span class="cycle-icon">↺</span>The party is <strong>at 7</strong>.</div>
+                    </div>
+                </div>
+
+                <!-- 5. WHY -->
+                <div class="bg-white border-2 border-indigo-200 rounded-2xl shadow-lg p-6 hover:border-indigo-400 transition">
+                    <div class="flex items-center mb-4 border-b pb-2 border-indigo-100">
+                        <span class="wh-badge wh-why">WHY</span> <span class="font-bold text-slate-700">이유</span>
+                    </div>
+                    <div class="space-y-2 eng-font text-lg">
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">1</span> She is sad <span class="font-bold">because it rains</span>.</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">2</span> <span class="verb-highlight">Is</span> she sad <span class="font-bold">because it rains</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">3</span> <span class="verb-highlight">Is</span> she sad <span class="target-bracket">(because it rains)</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">4</span> <span class="verb-highlight">Is</span> she sad <span class="wh-change">Why</span>?</p>
+                        <div class="bg-indigo-50 p-2 rounded"><span class="text-xs font-black text-indigo-600 w-4 inline-block">5</span> <span class="wh-move">Why</span> <span class="verb-highlight">is</span> she sad?</div>
+                        <div class="answer-box"><span class="cycle-icon">↺</span>She is sad <strong>because it rains</strong>.</div>
+                    </div>
+                </div>
+
+                <!-- 6. HOW -->
+                <div class="bg-white border-2 border-indigo-200 rounded-2xl shadow-lg p-6 hover:border-indigo-400 transition">
+                    <div class="flex items-center mb-4 border-b pb-2 border-indigo-100">
+                        <span class="wh-badge wh-how">HOW</span> <span class="font-bold text-slate-700">상태</span>
+                    </div>
+                    <div class="space-y-2 eng-font text-lg">
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">1</span> You are <span class="font-bold">fine</span>.</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">2</span> <span class="verb-highlight">Are</span> you <span class="font-bold">fine</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">3</span> <span class="verb-highlight">Are</span> you <span class="target-bracket">(fine)</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">4</span> <span class="verb-highlight">Are</span> you <span class="wh-change">How</span>?</p>
+                        <div class="bg-indigo-50 p-2 rounded"><span class="text-xs font-black text-indigo-600 w-4 inline-block">5</span> <span class="wh-move">How</span> <span class="verb-highlight">are</span> you?</div>
+                        <div class="answer-box"><span class="cycle-icon">↺</span>I am <strong>fine</strong>. (You &harr; I)</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 3. Examples: General Verbs (6 Items) -->
+        <section id="general-wh">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-extrabold text-slate-900 border-b-4 border-emerald-600 inline-block pb-2 px-6">3. General Verb Examples (일반동사)</h2>
+                <p class="mt-4 text-slate-700 text-lg font-medium">규칙: <strong>Do/Does/Did + 주어 + 동사원형</strong> + 의문사 변환 & 이동</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                
+                <!-- 1. WHO -->
+                <div class="bg-white border-2 border-emerald-200 rounded-2xl shadow-lg p-6 hover:border-emerald-400 transition">
+                    <div class="flex items-center mb-4 border-b pb-2 border-emerald-100">
+                        <span class="wh-badge wh-who">WHO</span> <span class="font-bold text-slate-700">누구를 (목적어)</span>
+                    </div>
+                    <div class="space-y-2 eng-font text-lg">
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">1</span> You like <span class="font-bold">Jane</span>.</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">2</span> <span class="verb-highlight">Do</span> you like <span class="font-bold">Jane</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">3</span> <span class="verb-highlight">Do</span> you like <span class="target-bracket">(Jane)</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">4</span> <span class="verb-highlight">Do</span> you like <span class="wh-change">Who</span>?</p>
+                        <div class="bg-emerald-50 p-2 rounded"><span class="text-xs font-black text-emerald-600 w-4 inline-block">5</span> <span class="wh-move">Who</span> <span class="verb-highlight">do</span> you like?</div>
+                        <div class="answer-box"><span class="cycle-icon">↺</span>I like <strong>Jane</strong>.</div>
+                    </div>
+                </div>
+
+                <!-- 2. WHAT -->
+                <div class="bg-white border-2 border-emerald-200 rounded-2xl shadow-lg p-6 hover:border-emerald-400 transition">
+                    <div class="flex items-center mb-4 border-b pb-2 border-emerald-100">
+                        <span class="wh-badge wh-what">WHAT</span> <span class="font-bold text-slate-700">무엇을</span>
+                    </div>
+                    <div class="space-y-2 eng-font text-lg">
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">1</span> You want <span class="font-bold">water</span>.</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">2</span> <span class="verb-highlight">Do</span> you want <span class="font-bold">water</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">3</span> <span class="verb-highlight">Do</span> you want <span class="target-bracket">(water)</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">4</span> <span class="verb-highlight">Do</span> you want <span class="wh-change">What</span>?</p>
+                        <div class="bg-emerald-50 p-2 rounded"><span class="text-xs font-black text-emerald-600 w-4 inline-block">5</span> <span class="wh-move">What</span> <span class="verb-highlight">do</span> you want?</div>
+                        <div class="answer-box"><span class="cycle-icon">↺</span>I want <strong>water</strong>.</div>
+                    </div>
+                </div>
+
+                <!-- 3. WHERE -->
+                <div class="bg-white border-2 border-emerald-200 rounded-2xl shadow-lg p-6 hover:border-emerald-400 transition">
+                    <div class="flex items-center mb-4 border-b pb-2 border-emerald-100">
+                        <span class="wh-badge wh-where">WHERE</span> <span class="font-bold text-slate-700">어디에</span>
+                    </div>
+                    <div class="space-y-2 eng-font text-lg">
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">1</span> You live <span class="font-bold">in Seoul</span>.</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">2</span> <span class="verb-highlight">Do</span> you live <span class="font-bold">in Seoul</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">3</span> <span class="verb-highlight">Do</span> you live <span class="target-bracket">(in Seoul)</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">4</span> <span class="verb-highlight">Do</span> you live <span class="wh-change">Where</span>?</p>
+                        <div class="bg-emerald-50 p-2 rounded"><span class="text-xs font-black text-emerald-600 w-4 inline-block">5</span> <span class="wh-move">Where</span> <span class="verb-highlight">do</span> you live?</div>
+                        <div class="answer-box"><span class="cycle-icon">↺</span>I live <strong>in Seoul</strong>.</div>
+                    </div>
+                </div>
+
+                <!-- 4. WHEN -->
+                <div class="bg-white border-2 border-emerald-200 rounded-2xl shadow-lg p-6 hover:border-emerald-400 transition">
+                    <div class="flex items-center mb-4 border-b pb-2 border-emerald-100">
+                        <span class="wh-badge wh-when">WHEN</span> <span class="font-bold text-slate-700">언제</span>
+                    </div>
+                    <div class="space-y-2 eng-font text-lg">
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">1</span> She starts <span class="font-bold">at 9</span>.</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">2</span> <span class="verb-highlight">Does</span> she start <span class="font-bold">at 9</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">3</span> <span class="verb-highlight">Does</span> she start <span class="target-bracket">(at 9)</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">4</span> <span class="verb-highlight">Does</span> she start <span class="wh-change">When</span>?</p>
+                        <div class="bg-emerald-50 p-2 rounded"><span class="text-xs font-black text-emerald-600 w-4 inline-block">5</span> <span class="wh-move">When</span> <span class="verb-highlight">does</span> she start?</div>
+                        <div class="answer-box"><span class="cycle-icon">↺</span>She starts <strong>at 9</strong>.</div>
+                    </div>
+                </div>
+
+                <!-- 5. WHY -->
+                <div class="bg-white border-2 border-emerald-200 rounded-2xl shadow-lg p-6 hover:border-emerald-400 transition">
+                    <div class="flex items-center mb-4 border-b pb-2 border-emerald-100">
+                        <span class="wh-badge wh-why">WHY</span> <span class="font-bold text-slate-700">왜</span>
+                    </div>
+                    <div class="space-y-2 eng-font text-lg">
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">1</span> He cries <span class="font-bold">because he is sad</span>.</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">2</span> <span class="verb-highlight">Does</span> he cry <span class="font-bold">because he is sad</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">3</span> <span class="verb-highlight">Does</span> he cry <span class="target-bracket">(because he is sad)</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">4</span> <span class="verb-highlight">Does</span> he cry <span class="wh-change">Why</span>?</p>
+                        <div class="bg-emerald-50 p-2 rounded"><span class="text-xs font-black text-emerald-600 w-4 inline-block">5</span> <span class="wh-move">Why</span> <span class="verb-highlight">does</span> he cry?</div>
+                        <div class="answer-box"><span class="cycle-icon">↺</span>He cries <strong>because he is sad</strong>.</div>
+                    </div>
+                </div>
+
+                <!-- 6. HOW -->
+                <div class="bg-white border-2 border-emerald-200 rounded-2xl shadow-lg p-6 hover:border-emerald-400 transition">
+                    <div class="flex items-center mb-4 border-b pb-2 border-emerald-100">
+                        <span class="wh-badge wh-how">HOW</span> <span class="font-bold text-slate-700">방법 (수단)</span>
+                    </div>
+                    <div class="space-y-2 eng-font text-lg">
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">1</span> You go <span class="font-bold">by bus</span>.</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">2</span> <span class="verb-highlight">Do</span> you go <span class="font-bold">by bus</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">3</span> <span class="verb-highlight">Do</span> you go <span class="target-bracket">(by bus)</span>?</p>
+                        <p><span class="text-xs font-bold text-slate-400 w-4 inline-block">4</span> <span class="verb-highlight">Do</span> you go <span class="wh-change">How</span>?</p>
+                        <div class="bg-emerald-50 p-2 rounded"><span class="text-xs font-black text-emerald-600 w-4 inline-block">5</span> <span class="wh-move">How</span> <span class="verb-highlight">do</span> you go?</div>
+                        <div class="answer-box"><span class="cycle-icon">↺</span>I go <strong>by bus</strong>.</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-slate-500 text-sm pb-8">
+            <p>&copy; 2026 Essential English Grammar (Wh-Questions Mastery). Designed for All Learners.</p>
+        </footer>
+
+    </main>
+
+</body>
+</html>
