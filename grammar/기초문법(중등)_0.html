@@ -1,0 +1,1058 @@
+<html lang="ko"><head><script>(function(firebaseConfig, initialAuthToken, appId) {
+        window.__firebase_config = firebaseConfig;
+        window.__initial_auth_token = initialAuthToken;
+        window.__app_id = appId;
+            })("\n{\n  \"apiKey\": \"AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY\",\n  \"authDomain\": \"bard-frontend.firebaseapp.com\",\n  \"projectId\": \"bard-frontend\",\n  \"storageBucket\": \"bard-frontend.firebasestorage.app\",\n  \"messagingSenderId\": \"175205271074\",\n  \"appId\": \"1:175205271074:web:2b7bd4d34d33bf38e6ec7b\"\n}\n","eyJhbGciOiJSUzI1NiIsImtpZCI6IjI2NmM5YTIxZDM4NGQzZmU0OGMyZjNhYjNiZmE1NjQ0Yzk0ZmY3Y2UiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJmaXJlYmFzZS1hZG1pbnNkay1mYnN2Y0BiYXJkLWZyb250ZW5kLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiYXVkIjoiaHR0cHM6Ly9pZGVudGl0eXRvb2xraXQuZ29vZ2xlYXBpcy5jb20vZ29vZ2xlLmlkZW50aXR5LmlkZW50aXR5dG9vbGtpdC52MS5JZGVudGl0eVRvb2xraXQiLCJ1aWQiOiIwOTk0MjI5MDIzOTA2MTQ2NTg1OSIsImlzcyI6ImZpcmViYXNlLWFkbWluc2RrLWZic3ZjQGJhcmQtZnJvbnRlbmQuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJjbGFpbXMiOnsiYXBwSWQiOiI0Y2EzOTUwNjI2ZWQtcHJvbm91bl92ZXJiX3RhYmxlLmh0bWwtNTAxIn0sImV4cCI6MTc2ODcxNjQ0MCwiaWF0IjoxNzY4NzEyODQwLCJhbGciOiJSUzI1NiJ9.McUqsDpxgXiqzGzKEg8b6zDF4laP6gE1sr6PGZViU11t007jkb65vavFps4ve4G-iHFwKpLqg03zX-EdqeSab8zHy0ku36f02w6O5Kh2RHMz_iwrR3OnCF1e26WK9k-eFR_PJN30bMTWjfGJu1XhtMZEWHItNsL-azYgxZtwKM6VAeZa_tmW7HpYwcBpo0DHmkyrFlX83DScHVU6MXSRbDP7pBPjwj65pw-skyl1f9yZIMTxfZuAXZf5mTGNBkc7VrrADXepUq-dP4aTfFPxYVMJDdGtd85zR73ddLiyBFlSB6KotkIPiPTHHqcd2jXwAFyVXp5C-lUMm9QBd42wcg","4ca3950626ed-pronoun_verb_table.html-501")</script><script>'use strict';var h=typeof Object.defineProperties=="function"?Object.defineProperty:function(a,b,d){if(a==Array.prototype||a==Object.prototype)return a;a[b]=d.value;return a};function l(a){a=["object"==typeof globalThis&&globalThis,a,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof global&&global];for(var b=0;b<a.length;++b){var d=a[b];if(d&&d.Math==Math)return d}throw Error("Cannot find global object");}var n=l(this);
+function p(a,b){if(b)a:{var d=n;a=a.split(".");for(var c=0;c<a.length-1;c++){var e=a[c];if(!(e in d))break a;d=d[e]}a=a[a.length-1];c=d[a];b=b(c);b!=c&&b!=null&&h(d,a,{configurable:!0,writable:!0,value:b})}}function r(a){function b(c){return a.next(c)}function d(c){return a.throw(c)}return new Promise(function(c,e){function f(g){g.done?c(g.value):Promise.resolve(g.value).then(b,d).then(f,e)}f(a.next())})}function t(a){return r(a())}
+p("Object.values",function(a){return a?a:function(b){var d=[],c;for(c in b)Object.prototype.hasOwnProperty.call(b,c)&&d.push(b[c]);return d}});p("Array.prototype.includes",function(a){return a?a:function(b,d){var c=this;c instanceof String&&(c=String(c));var e=c.length;d=d||0;for(d<0&&(d=Math.max(d+e,0));d<e;d++){var f=c[d];if(f===b||Object.is(f,b))return!0}return!1}});/*
+
+ MIT License
+
+ Copyright (c) 2017-2023 W.Y.
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
+*/
+function u(a,b){const d=a.style;b.backgroundColor&&(d.backgroundColor=b.backgroundColor);b.width&&(d.width=`${b.width}px`);b.height&&(d.height=`${b.height}px`);const c=b.style;c!=null&&Object.keys(c).forEach(e=>{d[e]=c[e]})};var v=(()=>{let a=0;return()=>{a+=1;return`u${`0000${(Math.random()*1679616<<0).toString(36)}`.slice(-4)}${a}`}})();function w(a){const b=[];for(let d=0,c=a.length;d<c;d++)b.push(a[d]);return b}let x=null;function y(a={}){return x?x:a.l?x=a.l:x=w(window.getComputedStyle(document.documentElement))}function z(a,b){return(a=(a.ownerDocument.defaultView||window).getComputedStyle(a).getPropertyValue(b))?parseFloat(a.replace("px","")):0}
+function A(a,b={}){var d;if(!(d=b.width)){d=z(a,"border-left-width");var c=z(a,"border-right-width");d=a.clientWidth+d+c}(b=b.height)||(b=z(a,"border-top-width"),c=z(a,"border-bottom-width"),b=a.clientHeight+b+c);return{width:d,height:b}}function B(a){return new Promise((b,d)=>{const c=new Image;c.onload=()=>{c.decode().then(()=>{requestAnimationFrame(()=>b(c))})};c.onerror=d;c.crossOrigin="anonymous";c.decoding="async";c.src=a})}
+function C(a){return t(function*(){return Promise.resolve().then(()=>(new XMLSerializer).serializeToString(a)).then(encodeURIComponent).then(b=>`data:image/svg+xml;charset=utf-8,${b}`)})}
+function D(a,b,d){return t(function*(){const c=document.createElementNS("http://www.w3.org/2000/svg","svg"),e=document.createElementNS("http://www.w3.org/2000/svg","foreignObject");c.setAttribute("width",`${b}`);c.setAttribute("height",`${d}`);c.setAttribute("viewBox",`0 0 ${b} ${d}`);e.setAttribute("width","100%");e.setAttribute("height","100%");e.setAttribute("x","0");e.setAttribute("y","0");e.setAttribute("externalResourcesRequired","true");c.appendChild(e);e.appendChild(a);return C(c)})}
+var E=(a,b)=>{if(a instanceof b)return!0;a=Object.getPrototypeOf(a);return a===null?!1:a.constructor.name===b.name||E(a,b)};function F(a,b){return y(b).map(d=>{const c=a.getPropertyValue(d),e=a.getPropertyPriority(d);return`${d}: ${c}${e?" !important":""};`}).join(" ")}
+function G(a,b,d,c){a=window.getComputedStyle(a,d);var e=a.getPropertyValue("content");if(e!==""&&e!=="none"){var f=v();try{b.className=`${b.className} ${f}`}catch(k){return}e=document.createElement("style");var g=e.appendChild;d=`.${f}:${d}`;a.cssText?(c=a.getPropertyValue("content"),c=`${a.cssText} content: '${c.replace(/'|"/g,"")}';`):c=F(a,c);g.call(e,document.createTextNode(`${d}{${c}}`));b.appendChild(e)}};function H(a){return a.search(/^(data:)/)!==-1}function I(a,b,d){return t(function*(){const c=yield fetch(a,b);if(c.status===404)throw Error(`Resource "${c.url}" not found`);const e=yield c.blob();return new Promise((f,g)=>{const k=new FileReader;k.onerror=g;k.onloadend=()=>{try{f(d({o:c,result:k.result}))}catch(m){g(m)}};k.readAsDataURL(e)})})}const J={};function K(a,b,d){let c=a.replace(/\?.*/,"");d&&(c=a);/ttf|otf|eot|woff2?/i.test(c)&&(c=c.replace(/.*\//,""));return b?`[${b}]${c}`:c}
+function L(a,b,d){return t(function*(){const c=K(a,b,d.C);if(J[c]!=null)return J[c];d.u&&(a+=(/\?/.test(a)?"&":"?")+(new Date).getTime());let e;try{const f=yield I(a,d.i,({o:g,result:k})=>{b||(b=g.headers.get("Content-Type")||"");return k.split(/,/)[1]});e=`data:${b};base64,${f}`}catch(f){e=d.B||""}return J[c]=e})};const M={P:"application/font-woff",R:"application/font-woff",N:"application/font-truetype",v:"application/vnd.ms-fontobject",H:"image/png",F:"image/jpeg",D:"image/jpeg",A:"image/gif",M:"image/tiff",L:"image/svg+xml",O:"image/webp"};function N(a){return(a=/\.([^./]*?)$/g.exec(a))?a[1]:""};function O(a){return t(function*(){const b=a.toDataURL();return b==="data:,"?a.cloneNode(!1):B(b)})}function aa(a,b){return t(function*(){if(a.currentSrc){var d=document.createElement("canvas");const c=d.getContext("2d");d.width=a.clientWidth;d.height=a.clientHeight;c==null||c.drawImage(a,0,0,d.width,d.height);d=d.toDataURL();return B(d)}d=a.poster;d=yield L(d,M[N(d).toLowerCase()]||"",b);return B(d)})}
+function ba(a,b){return t(function*(){try{let d;if(a==null?0:(d=a.contentDocument)==null?0:d.body)return yield P(a.contentDocument.body,b,!0)}catch(d){}return a.cloneNode(!1)})}function ca(a,b){return t(function*(){return E(a,HTMLCanvasElement)?O(a):E(a,HTMLVideoElement)?aa(a,b):E(a,HTMLIFrameElement)?ba(a,b):a.cloneNode(a.tagName!=null&&a.tagName.toUpperCase()==="SVG")})}
+function da(a,b,d){return t(function*(){if(b.tagName!=null&&b.tagName.toUpperCase()==="SVG")return b;let c=[];if(a.tagName!=null&&a.tagName.toUpperCase()==="SLOT"&&a.assignedNodes)c=w(a.assignedNodes());else{let e;if(E(a,HTMLIFrameElement)&&((e=a.contentDocument)==null?0:e.body))c=w(a.contentDocument.body.childNodes);else{let f;c=w(((f=a.shadowRoot)!=null?f:a).childNodes)}}if(c.length===0||E(a,HTMLVideoElement))return b;yield c.reduce((e,f)=>e.then(()=>P(f,d)).then(g=>{g&&b.appendChild(g)}),Promise.resolve());
+return b})}function ea(a,b,d){const c=b.style;if(c){var e=window.getComputedStyle(a);e.cssText?(c.cssText=e.cssText,c.transformOrigin=e.transformOrigin):y(d).forEach(f=>{let g=e.getPropertyValue(f);f==="font-size"&&g.endsWith("px")&&(g=`${Math.floor(parseFloat(g.substring(0,g.length-2)))-.1}px`);E(a,HTMLIFrameElement)&&f==="display"&&g==="inline"&&(g="block");f==="d"&&b.getAttribute("d")&&(g=`path(${b.getAttribute("d")})`);c.setProperty(f,g,e.getPropertyPriority(f))})}}
+function fa(a,b){E(a,HTMLSelectElement)&&(b=Array.from(b.children).find(d=>a.value===d.getAttribute("value")))&&b.setAttribute("selected","")}
+function ha(a,b){return t(function*(){var d=a.querySelectorAll?a.querySelectorAll("use"):[];if(d.length===0)return a;var c={};for(var e=0;e<d.length;e++){var f=d[e].getAttribute("xlink:href");if(f){const g=document.querySelector(f);a.querySelector(f)||!g||c[f]||(c[f]=yield P(g,b,!0))}}d=Object.values(c);if(d.length){c=document.createElementNS("http://www.w3.org/1999/xhtml","svg");c.setAttribute("xmlns","http://www.w3.org/1999/xhtml");c.style.position="absolute";c.style.width="0";c.style.height="0";
+c.style.overflow="hidden";c.style.display="none";e=document.createElementNS("http://www.w3.org/1999/xhtml","defs");c.appendChild(e);for(f=0;f<d.length;f++)e.appendChild(d[f]);a.appendChild(c)}return a})}
+function P(a,b,d){return t(function*(){return d||!b.filter||b.filter(a)?Promise.resolve(a).then(c=>ca(c,b)).then(c=>da(a,c,b)).then(c=>{E(c,Element)&&(ea(a,c,b),G(a,c,":before",b),G(a,c,":after",b),E(a,HTMLTextAreaElement)&&(c.textContent=a.value),E(a,HTMLInputElement)&&c.setAttribute("value",a.value),fa(a,c));return c}).then(c=>ha(c,b)):null})};const Q=/url\((['"]?)([^'"]+?)\1\)/g,ia=/url\([^)]+\)\s*format\((["']?)([^"']+)\1\)/g,ja=/src:\s*(?:url\([^)]+\)\s*format\([^)]+\)[,;]\s*)+/g;function ka(a){const b=[];a.replace(Q,(d,c,e)=>{b.push(e);return d});return b.filter(d=>!H(d))}
+function la(a,b,d,c){return t(function*(){try{const e=d?(new URL(b,d||void 0)).toString():b;let f;f=yield L(e,M[N(b).toLowerCase()]||"",c);return a.replace(new RegExp(`(url\\(['"]?)(${b.replace(/([.*+?^${}()|\[\]\/\\])/g,"\\$1")})(['"]?\\))`,"g"),`$1${f}$3`)}catch(e){}return a})}function ma(a,{I:b}){return b?a.replace(ja,d=>{for(;;){const [c,,e]=ia.exec(d)||[],f=c,g=e;if(!g)return"";if(g===b)return`src: ${f};`}}):a}
+function R(a,b,d){return t(function*(){if(a.search(Q)===-1)return a;const c=ma(a,d);return ka(c).reduce((e,f)=>e.then(g=>la(g,f,b,d)),Promise.resolve(c))})};function S(a,b,d){return t(function*(){var c;const e=(c=b.style)==null?void 0:c.getPropertyValue(a);return e?(c=yield R(e,null,d),b.style.setProperty(a,c,b.style.getPropertyPriority(a)),!0):!1})}function na(a,b){return t(function*(){(yield S("background",a,b))||(yield S("background-image",a,b));(yield S("mask",a,b))||(yield S("-webkit-mask",a,b))||(yield S("mask-image",a,b))||(yield S("-webkit-mask-image",a,b))})}
+function oa(a,b){return t(function*(){const d=E(a,HTMLImageElement);if(d&&!H(a.src)||E(a,SVGImageElement)&&!H(a.href.baseVal)){var c=d?a.src:a.href.baseVal,e=yield L(c,M[N(c).toLowerCase()]||"",b);yield new Promise((f,g)=>{a.onload=f;a.onerror=b.m?(...k)=>{try{f(b.m(...k))}catch(m){g(m)}}:g;a.decode&&(a.decode=f);a.loading==="lazy"&&(a.loading="eager");d?(a.srcset="",a.src=e):a.href.baseVal=e})}})}
+function pa(a,b){return t(function*(){const d=w(a.childNodes).map(c=>T(c,b));yield Promise.all(d).then(()=>a)})}function T(a,b){return t(function*(){E(a,Element)&&(yield na(a,b),yield oa(a,b),yield pa(a,b))})};const U={};function V(a){return t(function*(){var b=U[a];if(b!=null)return b;b=yield(yield fetch(a)).text();b={url:a,cssText:b};return U[a]=b})}function W(a,b){return t(function*(){let d=a.cssText;const c=/url\(["']?([^"')]+)["']?\)/g,e=(d.match(/url\([^)]+\)/g)||[]).map(f=>t(function*(){let g=f.replace(c,"$1");g.startsWith("https://")||(g=(new URL(g,a.url)).href);return I(g,b.i,({result:k})=>{d=d.replace(f,`url(${k})`);return[f,k]})}));return Promise.all(e).then(()=>d)})}
+function X(a){if(a==null)return[];const b=[];a=a.replace(/(\/\*[\s\S]*?\*\/)/gi,"");for(var d=RegExp("((@.*?keyframes [\\s\\S]*?){([\\s\\S]*?}\\s*?)})","gi");;){var c=d.exec(a);if(c===null)break;b.push(c[0])}a=a.replace(d,"");d=/@import[\s\S]*?url\([^)]*\)[\s\S]*?;/gi;for(c=RegExp("((\\s*?(?:\\/\\*[\\s\\S]*?\\*\\/)?\\s*?@media[\\s\\S]*?){([\\s\\S]*?)}\\s*?})|(([\\s\\S]*?){([\\s\\S]*?)})","gi");;){let e=d.exec(a);if(e===null)if(e=c.exec(a),e===null)break;else d.lastIndex=c.lastIndex;else c.lastIndex=
+d.lastIndex;b.push(e[0])}return b}
+function qa(a,b){return t(function*(){const d=[],c=[];a.forEach(e=>{if("cssRules"in e)try{w(e.cssRules||[]).forEach((f,g)=>{if(f.type===CSSRule.IMPORT_RULE){let k=g+1;f=V(f.href).then(m=>W(m,b)).then(m=>X(m).forEach(q=>{try{e.insertRule(q,q.startsWith("@import")?k+=1:e.cssRules.length)}catch(Da){}})).catch(()=>{});c.push(f)}})}catch(f){const g=a.find(k=>k.href==null)||document.styleSheets[0];e.href!=null&&c.push(V(e.href).then(k=>W(k,b)).then(k=>X(k).forEach(m=>{g.insertRule(m,g.cssRules.length)})).catch(()=>
+{}))}});return Promise.all(c).then(()=>{a.forEach(e=>{if("cssRules"in e)try{w(e.cssRules||[]).forEach(f=>{d.push(f)})}catch(f){}});return d})})}function ra(a){return a.filter(b=>b.type===CSSRule.FONT_FACE_RULE).filter(b=>b.style.getPropertyValue("src").search(Q)!==-1)}function sa(a,b){return t(function*(){if(a.ownerDocument==null)throw Error("Provided element is not within a Document");var d=w(a.ownerDocument.styleSheets);d=yield qa(d,b);return ra(d)})}
+function ta(a){function b(c){(c.style.fontFamily||getComputedStyle(c).fontFamily).split(",").forEach(e=>{d.add(e.trim().replace(/["']/g,""))});Array.from(c.children).forEach(e=>{e instanceof HTMLElement&&b(e)})}const d=new Set;b(a);return d}function ua(a,b){return t(function*(){const d=yield sa(a,b),c=ta(a);return(yield Promise.all(d.filter(e=>c.has(e.style.fontFamily.trim().replace(/["']/g,""))).map(e=>R(e.cssText,e.parentStyleSheet?e.parentStyleSheet.href:null,b)))).join("\n")})}
+function va(a,b){return t(function*(){const d=b.j!=null?b.j:b.K?null:yield ua(a,b);if(d){const c=document.createElement("style");c.appendChild(document.createTextNode(d));a.firstChild?a.insertBefore(c,a.firstChild):a.appendChild(c)}})};function wa(a,b={}){return t(function*(){const {width:d,height:c}=A(a,b),e=yield P(a,b,!0);yield va(e,b);yield T(e,b);u(e,b);return yield D(e,d,c)})}
+function xa(a,b={}){return t(function*(){const {width:d,height:c}=A(a,b);var e=yield wa(a,b);e=yield B(e);const f=document.createElement("canvas"),g=f.getContext("2d"),k=b.G||window.devicePixelRatio||1,m=b.h||d,q=b.g||c;f.width=m*k;f.height=q*k;!b.J&&(f.width>16384||f.height>16384)&&(f.width>16384&&f.height>16384?f.width>f.height?(f.height*=16384/f.width,f.width=16384):(f.width*=16384/f.height,f.height=16384):f.width>16384?(f.height*=16384/f.width,f.width=16384):(f.width*=16384/f.height,f.height=
+16384));f.style.width=`${m}`;f.style.height=`${q}`;b.backgroundColor&&(g.fillStyle=b.backgroundColor,g.fillRect(0,0,f.width,f.height));g.drawImage(e,0,0,f.width,f.height);return f})}function ya(a,b={}){return t(function*(){return(yield xa(a,b)).toDataURL()})};const za=["gemini.google.com","corp.google.com","proxy.googlers.com"];function Y(){return document.body.querySelectorAll('[class*="animate"]').length>0}function Z(a){return t(function*(){try{return yield ya(a,{h:a.offsetWidth,g:a.offsetHeight})}catch(d){var b=a.offsetHeight;const c=document.createElement("canvas");c.width=a.offsetWidth;c.height=b;return c.toDataURL("image/png")}})}
+function Aa(){return t(function*(){const a=document.body.offsetWidth,b=document.body.offsetHeight,d=document.body.cloneNode(!0);d.querySelectorAll('[class*="animate"]').forEach(c=>{c.classList.remove(...Array.from(c.classList).filter(e=>e.startsWith("animate")))});d.style.width=`${a}px`;d.style.height=`${b}px`;return d})}
+function Ba(a){return t(function*(){let b=document.body;if(Y()){var d=yield Aa();b=d;document.body.appendChild(d)}d=yield Z(b);Y()&&document.body.removeChild(b);window.parent.postMessage({type:"SEND_SCREENSHOT",image:d,topOffset:document.documentElement.scrollTop},a.origin)})}function Ca(a){return t(function*(){const b={type:"SEND_SCREENSHOT_FOR_DATA_VISUALIZATION",image:yield Z(document.body),topOffset:0};window.parent.postMessage(b,a.origin)})}
+window.addEventListener("message",a=>t(function*(){if(za.some(d=>a.origin.includes(d))){var b=a.data;b&&(b.type==="MAKE_SCREENSHOT"&&(yield Ba(a)),b.type==="MAKE_SCREENSHOT_FOR_DATA_VISUALIZATION"&&(yield Ca(a)))}}));
+</script><script>(function() {
+  // Ensure this script is executed only once
+  if (window.firebaseAuthBridgeScriptLoaded) {
+    return;
+  }
+  window.firebaseAuthBridgeScriptLoaded = true;
+
+  let nextTokenPromiseId = 0;
+
+  // Stores { resolve, reject } for ongoing token requests
+  const pendingTokenPromises = {};
+
+  // Listen for messages from the Host Application
+  window.addEventListener('message', function(event) {
+
+    const messageData = event.data;
+
+  if (messageData && messageData.type === 'RESOLVE_NEW_FIREBASE_TOKEN') {
+      const { success, token, error, promiseId } = messageData ?? {};
+      if (pendingTokenPromises[promiseId]) {
+        if (success) {
+          pendingTokenPromises[promiseId].resolve(token);
+        } else {
+          pendingTokenPromises[promiseId].reject(new Error(error || 'Token refresh failed from host.'));
+        }
+        delete pendingTokenPromises[promiseId];
+      }
+    }
+  });
+
+  // Expose a function for the Generated App to request a new Firebase token
+  window.requestNewFirebaseToken = function() {
+    const currentPromiseId = nextTokenPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingTokenPromises[currentPromiseId] = { resolve, reject };
+    });
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({
+        type: 'REQUEST_NEW_FIREBASE_TOKEN',
+        promiseId: currentPromiseId
+      }, '*');
+    } else {
+      pendingTokenPromises[currentPromiseId].reject(new Error('No parent window to request token from.'));
+      delete pendingTokenPromises[currentPromiseId];
+    }
+    return promise;
+  };
+})();</script><script>
+let realOriginalGetUserMedia = null;
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  realOriginalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+}
+
+(function() {
+  if (navigator.mediaDevices && navigator.mediaDevices.__proto__) {
+    try {
+      Object.defineProperty(navigator.mediaDevices.__proto__, 'getUserMedia', {
+        get: function() {
+          return undefined; // Or throw an error
+        },
+        configurable: false
+      });
+    } catch (error) {
+      console.error("Error defining prototype getter:", error);
+    }
+  }
+})();
+
+(function() {
+  const pendingMediaResolvers = {};
+  let nextMediaPromiseId = 0;
+
+  function requestMediaPermissions(constraints) {
+    const mediaPromiseId = nextMediaPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingMediaResolvers[mediaPromiseId] = (granted) => {
+        delete pendingMediaResolvers[mediaPromiseId];
+        resolve(granted);
+      };
+    });
+
+    window.parent.postMessage({
+      type: 'requestMediaPermission',
+      constraints: constraints,
+      promiseId: mediaPromiseId,
+    }, '*');
+
+    return promise;
+  }
+
+  let originalGetUserMedia = realOriginalGetUserMedia;
+
+  function interceptGetUserMedia() {
+    if (navigator.mediaDevices) {
+      Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
+        value: function(constraints) {
+          return requestMediaPermissions(constraints).then((granted) => {
+            if (granted) {
+              if (originalGetUserMedia) {
+                return originalGetUserMedia(constraints);
+              } else {
+                throw new Error("Original getUserMedia not available.");
+              }
+            } else {
+              throw new DOMException('Permission denied', 'NotAllowedError');
+            }
+          });
+        },
+        writable: false,
+        configurable: false
+      });
+    }
+  }
+
+  interceptGetUserMedia();
+
+  const observer = new MutationObserver(function(mutationsList, observer) {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'reconfigured' && mutation.name === 'getUserMedia' && mutation.object === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'attributes' && mutation.attributeName === 'getUserMedia' && mutation.target === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'childList' && mutation.addedNodes) {
+        mutation.addedNodes.forEach(node => {
+          if (node === navigator.mediaDevices) {
+            interceptGetUserMedia();
+          }
+        });
+      }
+    }
+  });
+
+  function interceptSpeechRecognition() {
+    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+      return;
+    }
+
+    const OriginalSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const SpeechRecognitionWrapper = function(...args) {
+      const recognizer = new OriginalSpeechRecognition(...args);
+      const originalStart = recognizer.start.bind(recognizer);
+
+      recognizer.start = function() {
+        requestMediaPermissions({ audio: true }).then(granted => {
+          if (granted) {
+            originalStart();
+          } else {
+            const errorEvent = new SpeechRecognitionErrorEvent('error');
+            errorEvent.error = 'not-allowed'; // This is the standard error for permission denial.
+            recognizer.dispatchEvent(errorEvent);
+          }
+        });
+      };
+
+      return recognizer;
+    };
+
+    SpeechRecognitionWrapper.prototype = OriginalSpeechRecognition.prototype;
+    SpeechRecognitionWrapper.prototype.constructor = SpeechRecognitionWrapper;
+
+    if (window.SpeechRecognition) {
+      window.SpeechRecognition = SpeechRecognitionWrapper;
+    }
+    if (window.webkitSpeechRecognition) {
+      window.webkitSpeechRecognition = SpeechRecognitionWrapper;
+    }
+  }
+
+  interceptSpeechRecognition();
+
+  window.addEventListener('message', function(event) {
+    if (event.data) {
+      if (event.data.type === 'resolveMediaPermission') {
+        const { promiseId, granted } = event.data;
+        if (pendingMediaResolvers[promiseId]) {
+          pendingMediaResolvers[promiseId](granted);
+        }
+      }
+    }
+  });
+
+})();</script><script>((function(modelInformation) {
+  const originalFetch = window.fetch;
+  // TODO: b/421908508 - Move these out of the script and match all generative AI model calls.
+  let googleLlmBaseApiUrls = [
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':streamGenerateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageEditModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageTransformModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.ttsModelName + ':generateContent',
+  ];
+  modelInformation.deprecatedTextModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+    );
+  });
+  modelInformation.deprecatedImageModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predict',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predictLongRunning',
+    );
+  });
+
+  const pendingFetchResolvers = {};
+  let nextPromiseId = 0;
+
+  function handleStringInput(input, optionsArgument) {
+    const actualUrl = input;
+    const fetchCallArgs = [actualUrl, optionsArgument];
+    const effectiveOptions = optionsArgument || {};
+    const bodyForApiKeyCheck = effectiveOptions.body;
+    const bodyForPostMessage = effectiveOptions.body;
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  function handleRequestInput(input, optionsArgument) {
+    const actualUrl = input.url;
+    const fetchCallArgs = [input, optionsArgument];
+    const effectiveOptions = { method: input.method, headers: new Headers(input.headers) };
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (optionsArgument) {
+      if (optionsArgument.method) effectiveOptions.method = optionsArgument.method;
+      if (optionsArgument.headers) effectiveOptions.headers = new Headers(optionsArgument.headers);
+      if ('body' in optionsArgument) {
+        bodyForApiKeyCheck = optionsArgument.body;
+        bodyForPostMessage = optionsArgument.body;
+      } else {
+        bodyForApiKeyCheck = undefined;
+        bodyForPostMessage = input.body;
+      }
+    } else {
+      bodyForApiKeyCheck = undefined;
+      bodyForPostMessage = input.body;
+    }
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  window.fetch = function(input, optionsArgument) {
+    let actualUrl;
+    let fetchCallArgs;
+    let effectiveOptions = {};
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (typeof input === 'string') {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleStringInput(input, optionsArgument));
+    } else if (input instanceof Request) {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleRequestInput(input, optionsArgument));
+    } else {
+      return originalFetch.apply(window, [input, optionsArgument]);
+    }
+
+    effectiveOptions.method = effectiveOptions.method || 'GET';
+    if (!effectiveOptions.headers) {
+      effectiveOptions.headers = new Headers();
+    }
+
+
+    if (typeof actualUrl === 'string' && googleLlmBaseApiUrls.some((url) => actualUrl.startsWith(url))) {
+      let apiKeyIsNull = true;
+
+      const regex = new RegExp("models/([^:]+)");
+      const modelNameMatch = actualUrl.match(regex);
+      const modelName = modelNameMatch ? modelNameMatch[1] : 'unspecified';
+
+
+      try {
+        const urlObject = new URL(actualUrl);  // Use URL object for robust parsing
+        const apiKeyParam = urlObject.searchParams.get('key');
+        if (apiKeyParam) {
+          apiKeyIsNull = false;
+        }
+      } catch (e) {
+        // Continue checks even if URL parsing fails
+      }
+
+      if (apiKeyIsNull && effectiveOptions.headers) {
+        const h = new Headers(effectiveOptions.headers);
+        const apiKeyHeaderValue = h.get('X-API-Key') || h.get('x-api-key');
+        if (apiKeyHeaderValue) {
+          apiKeyIsNull = false;
+          return originalFetch.apply(window, fetchCallArgs);
+        }
+      }
+
+      if (apiKeyIsNull && effectiveOptions.method && ['POST', 'PUT', 'PATCH'].includes(effectiveOptions.method.toUpperCase()) && typeof bodyForApiKeyCheck === 'string') {
+        try {
+          const bodyData = JSON.parse(bodyForApiKeyCheck);
+          if (bodyData && bodyData.apiKey) {
+            apiKeyIsNull = false;
+            return originalFetch.apply(window, fetchCallArgs);
+          }
+        } catch (e) {
+          // Ignore JSON parsing errors
+        }
+      }
+
+      if(apiKeyIsNull) {
+        const promiseId = nextPromiseId++;
+        const promise = new Promise((resolve) => {
+          pendingFetchResolvers[promiseId] = (resolvedResponse) => {
+            delete pendingFetchResolvers[promiseId];
+            resolve(resolvedResponse);
+          };
+        });
+
+        let serializedBodyForPostMessage;
+        if (typeof bodyForPostMessage === 'string' || bodyForPostMessage == null) {
+            serializedBodyForPostMessage = bodyForPostMessage;
+        } else if (bodyForPostMessage instanceof ReadableStream) {
+            serializedBodyForPostMessage = null;
+        } else {
+            try {
+                serializedBodyForPostMessage = JSON.stringify(bodyForPostMessage);
+            } catch (e) {
+                serializedBodyForPostMessage = null;
+            }
+        }
+
+        const messageOptions = {
+            method: effectiveOptions.method,
+            headers: Object.fromEntries(new Headers(effectiveOptions.headers).entries()),
+            body: serializedBodyForPostMessage
+        };
+
+        window.parent.postMessage({
+          type: 'requestFetch',
+          url: actualUrl,
+          modelName: modelName,
+          options: messageOptions,
+          promiseId: promiseId,
+        }, '*');
+
+        return promise;
+      }
+      return originalFetch.apply(window, fetchCallArgs);
+    }
+    return originalFetch.apply(window, fetchCallArgs);
+  };
+
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'resolveFetch') {
+      const { promiseId, response } = event.data;
+      if (pendingFetchResolvers[promiseId]) {
+        try {
+          const reconstructedResponse = new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: new Headers(response.headers),
+          });
+          pendingFetchResolvers[promiseId](reconstructedResponse);
+        } catch (error) {
+          pendingFetchResolvers[promiseId](new Response(null, { status: 500, statusText: "Interceptor Response Reconstruction Error" }));
+        }
+      }
+    }
+  });
+
+}))({"textModelName":"gemini-2.5-flash-preview-09-2025","imageModelName":"imagen-4.0-generate-001","imageEditModelName":"gemini-2.5-flash-image-preview","imageTransformModelName":"gemini-3-pro-image-preview-11-2025","videoModelName":"veo-2.0-generate-001","ttsModelName":"gemini-2.5-flash-preview-tts","deprecatedTextModelNames":["gemini-2.0-flash","gemini-2.5-flash-preview-04-17","gemini-2.5-flash-preview-05-20"],"deprecatedImageModelNames":["imagen-3.0-generate-001","imagen-3.0-generate-002"]})</script><script>(function() {
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+
+    /**
+   * Normalizes an error event or a promise rejection reason into a structured error object.
+   * @param {*} errorEventOrReason The error object or reason.
+   * @return {object} Structured error data { message, name, stack }.
+   */
+  function getErrorObject(errorEventOrReason) {
+    if (errorEventOrReason instanceof Error) {
+      return {
+        message: errorEventOrReason.message,
+        name: errorEventOrReason.name,
+        stack: errorEventOrReason.stack,
+      };
+    }
+    // Fallback for non-Error objects.
+    try {
+      return {
+        message: JSON.stringify(errorEventOrReason),
+        name: 'UnknownErrorType',
+        stack: null,
+      };
+    } catch (e) {
+      return {
+        message: String(errorEventOrReason),
+        name: 'UnknownErrorTypeNonStringifiable',
+        stack: null,
+      };
+    }
+  }
+
+  /**
+   * Converts an array of arguments (from log/error) into a single string.
+   * Handles Error objects specially to include their message and stack.
+   * @param {Array<*>} args - Arguments passed to console methods.
+   * @return {string} A string representation of the arguments.
+   */
+  function stringifyArgs(args) {
+    return args
+      .map((arg) => {
+        if (arg instanceof Error) {
+          const {message, stack} = arg;
+          return `Error: ${message}${stack ? ('\nStack: ' + stack) : ''}`;
+        }
+        if (typeof arg === 'object' && arg !== null) {
+          try {
+            return JSON.stringify(arg);
+          } catch (error) {
+            return '[Circular Object]';
+          }
+        } else {
+          return String(arg);
+        }
+      })
+      .join(' ');
+  }
+
+  console.log = function(...args) {
+    const logString = stringifyArgs(args);
+    window.parent.postMessage({ type: 'log', message: logString }, '*');
+    originalConsoleLog.apply(console, args);
+  };
+
+  console.error = function(...args) {
+    let errorData;
+    if (args.length > 0 && args[0] instanceof Error) {
+      const err = args[0];
+      // If the first arg is an Error, capture its details.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        ...getErrorObject(err),
+        rawArgsString: stringifyArgs(args.slice(1)),
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      // If not an Error object, treat all args as a general error message.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        message: stringifyArgs(args),
+        name: 'ConsoleLoggedError',
+        stack: null,
+        timestamp: new Date().toISOString(),
+      };
+    }
+    window.parent.postMessage(errorData, '*');
+    originalConsoleError.apply(console, args);
+  };
+
+  // Listen for global unhandled synchronous errors.
+  window.addEventListener('error', function(event) {
+    const errorDetails = event.error ? getErrorObject(event.error) : {
+      message: event.message,
+      name: 'GlobalError',
+      stack: null,
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+    };
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'global',
+      ...errorDetails,
+      message: errorDetails.message || event.message,
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+  // Listen for unhandled promise rejections (asynchronous errors).
+  window.addEventListener('unhandledrejection', function(event) {
+    const errorDetails = getErrorObject(event.reason);
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'unhandledrejection',
+      ...errorDetails,
+      message: errorDetails.message || 'Unhandled Promise Rejection',
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+})();</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주어-동사 완벽 가이드: 인칭대명사와 Be·Do·Have·일반동사 활용</title>
+    
+<script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 기본 폰트 설정 */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7; 
+            position: relative;
+        }
+
+        /* 공통 너비 설정을 위한 클래스: 이미지와 해설 컨테이너의 가로 폭을 일치시킵니다. */
+        .main-content-width {
+            max-width: 800px; 
+            margin: 0 auto;
+        }
+
+        /* 제목 스타일: 절대 위치 제거 및 블록 요소로 중앙 배치 */
+        .page-title {
+            margin: 1.5rem auto 1rem auto; /* 중앙 정렬 및 위아래 간격 확보 */
+            z-index: 10;
+            color: #1e40af; 
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+            border: 2px solid #3b82f6;
+            text-align: center;
+            width: fit-content; /* 내용물 너비만 차지 */
+        }
+
+        /* 이미지 컨테이너 스타일 */
+        .image-container {
+            width: 100%; /* max-width: 800px이 적용됨 */
+            min-height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background-color: #ffffff;
+            margin-bottom: 2rem; /* 설명 컨테이너와의 간격 */
+        }
+        .main-image {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            /* 이미지 자체에 섀도우와 경계선을 추가하여 컨테이너와 분리감 부여 */
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); 
+            border: 1px solid #e5e7eb;
+        }
+        
+        /* 해설 컨테이너 스타일 */
+        .explanation-container {
+            padding: 2rem 1rem 4rem 1rem;
+            background-color: #ffffff;
+            border-top: 5px solid #3b82f6;
+        }
+        /* 마크다운 스타일링 (이하 동일) */
+        .explanation-container h1, 
+        .explanation-container h2, 
+        .explanation-container h3 {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 0.3rem;
+            margin-top: 1.5rem;
+            font-weight: 700;
+        }
+        .explanation-container h1 { font-size: 2rem; color: #1e40af; }
+        .explanation-container h2 { font-size: 1.5rem; color: #4b5563; }
+        .explanation-container h3 { font-size: 1.25rem; color: #059669; border-bottom: none; }
+
+        .explanation-container table {
+            width: 100%;
+            margin-bottom: 1rem;
+            border-collapse: collapse;
+        }
+        .explanation-container th, 
+        .explanation-container td {
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .explanation-container th {
+            background-color: #eff6ff;
+            font-weight: 600;
+            color: #1e40af;
+        }
+        .explanation-container p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        .explanation-container ul {
+            list-style-type: disc;
+            margin-left: 1.5rem;
+            padding-left: 0.5rem;
+        }
+
+        /* 예문 강조 색상 */
+        .highlight {
+            font-weight: bold;
+            color: #2563eb; /* Tailwind blue-600 */
+        }
+        
+        /* 새로운 표 스타일 */
+        .verb-table th:nth-child(1), .verb-table td:nth-child(1) { width: 10%; } /* 인칭 */
+        .verb-table th:nth-child(2), .verb-table td:nth-child(2) { width: 15%; } /* 주어 */
+        .verb-table th:nth-child(3), .verb-table td:nth-child(3) { width: 10%; } /* 현재형 */
+        .verb-table th:nth-child(4), .verb-table td:nth-child(4) { width: 10%; } /* 과거형 */
+        .verb-table th:nth-child(5), .verb-table td:nth-child(5) { width: 55%; text-align: left; } /* 예문 */
+        .verb-table td { font-size: 0.9rem; }
+        .verb-table .sub-header { background-color: #f3f4f6; font-weight: bold; color: #374151; }
+        .verb-table .subject-col { background-color: #fef2f2; font-weight: bold; color: #b91c1c; }
+
+
+        /* 모바일 환경 반응형 */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.25rem;
+                padding: 0.3rem 0.6rem;
+                margin-top: 1rem;
+            }
+            .explanation-container {
+                padding: 1rem 0.5rem 3rem 0.5rem;
+            }
+            .explanation-container h1 { font-size: 1.5rem; }
+            .explanation-container h2 { font-size: 1.3rem; }
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.ml-6{margin-left:1.5rem}.mt-0{margin-top:0px}.mt-2{margin-top:0.5rem}.mt-6{margin-top:1.5rem}.mt-8{margin-top:2rem}.min-h-screen{min-height:100vh}.w-1\/6{width:16.666667%}.w-2\/6{width:33.333333%}.w-3\/6{width:50%}.list-disc{list-style-type:disc}.overflow-x-auto{overflow-x:auto}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border-2{border-width:2px}.border-red-500{--tw-border-opacity:1;border-color:rgb(239 68 68 / var(--tw-border-opacity, 1))}.bg-blue-100{--tw-bg-opacity:1;background-color:rgb(219 234 254 / var(--tw-bg-opacity, 1))}.bg-gray-100{--tw-bg-opacity:1;background-color:rgb(243 244 246 / var(--tw-bg-opacity, 1))}.bg-red-100{--tw-bg-opacity:1;background-color:rgb(254 226 226 / var(--tw-bg-opacity, 1))}.pt-0{padding-top:0px}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.italic{font-style:italic}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38 / var(--tw-text-opacity, 1))}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.hover\:shadow-2xl:hover{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}</style></head>
+<body class="bg-gray-100 min-h-screen">
+    
+    <h1 class="page-title text-2xl font-extrabold text-center">주어-동사 완벽 가이드: 인칭대명사와 Be·Do·Have·일반동사 활용</h1>
+
+    <div class="image-container main-content-width shadow-xl rounded-lg">
+        <img src="https://github.com/tonykks/tonys-skyview-portfolio/blob/main/images/%EC%9D%B8%EC%B9%AD%EB%8C%80%EB%AA%85%EC%82%AC.png?raw=true" alt="인칭대명사의 격 변화 및 Be, Do, Have, 일반동사의 현재형·과거형 변화 표" class="main-image rounded-xl transition duration-300 hover:shadow-2xl" onerror="this.onerror=null; this.src='https://placehold.co/800x600/EE3A44/FFFFFF?text=이미지+로드+실패%5Cn(URL+확인+필요)'">
+    </div>
+
+    <div class="explanation-container main-content-width shadow-xl rounded-lg mt-0">
+        <h1 class="text-3xl font-extrabold text-center mb-6 pt-0">주어-동사 일치 기초 문법 해설</h1>
+
+        <p class="text-lg mb-4">이 문법 장표는 초·중등 학생들이 가장 헷갈리는 영어의 핵심인 <span class="highlight">인칭대명사의 격 변화 (Case Change)</span> 와 <span class="highlight">주어-동사의 일치 (Subject-Verb Agreement)</span> 규칙을 하나의 예문으로 쉽게 이해하도록 돕기 위해 작성되었습니다.</p>
+
+        <h2 class="text-2xl mt-8">💡 핵심 예문 논리 확장 전략</h2>
+        <p>우리는 아래의 <span class="highlight">단순한 한국어 문장</span>을 영어로 확장하고 변형하는 과정을 통해 모든 문법 요소를 학습할 것입니다.</p>
+        
+        <div class="overflow-x-auto">
+            <table class="text-sm">
+                <thead>
+                    <tr>
+                        <th class="w-1/6">단계</th>
+                        <th class="w-3/6">한국어 문장</th>
+                        <th class="w-2/6">설명</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="highlight">기본</span></td>
+                        <td>나는 너의 강아지를 가지고 있다.</td>
+                        <td>I, Your, Puppy(단수), Have를 다룸.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">확장</span></td>
+                        <td>우리는 그들의 장난감들을 가지고 있다.</td>
+                        <td>We, Their, Toys(복수)를 추가하며 복수 개념 확장.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">변형</span></td>
+                        <td>그녀는 그녀 자신에게 강아지가 나의 것이 아니라는 것을 말한다.</td>
+                        <td>She, Herself, Mine, Is/Does와 같은 3인칭 단수 동사를 설명.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="text-2xl mt-8">I. 인칭대명사의 격 변화 (Case Change)</h2>
+
+        <h3 class="text-xl">1. 구분: 단수 (Singular)와 복수 (Plural)</h3>
+        <div class="overflow-x-auto">
+            <table class="text-sm">
+                <thead>
+                    <tr>
+                        <th class="w-1/6">개념</th>
+                        <th class="w-2/6">정의</th>
+                        <th class="w-3/6">예문 분석</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="highlight">단수 (Singular)</span></td>
+                        <td>하나 (1개 또는 1명)를 나타낼 때 사용합니다.</td>
+                        <td>"나는 너의 <span class="highlight">강아지</span>를 가지고 있다." <strong>→</strong> `강아지`는 <span class="highlight">단수</span>.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">복수 (Plural)</span></td>
+                        <td>둘 이상 (2개 이상 또는 2명 이상)을 나타낼 때 사용합니다.</td>
+                        <td>"우리는 그들의 <span class="highlight">장난감들</span>을 가지고 있다." <strong>→</strong> `장난감들`은 <span class="highlight">복수</span> (s가 붙음).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-sm italic mt-2">
+            * <span class="highlight">규칙:</span> 인칭대명사는 주어가 될 때 <span class="highlight">단수</span> (I, You, He, She, It) 와 <span class="highlight">복수</span> (We, You, They) 로 나뉩니다.
+        </p>
+
+        <h3 class="text-xl">2. 인칭 (Person)</h3>
+        <p>말하는 사람을 기준으로 주체를 구분합니다.</p>
+        <div class="overflow-x-auto">
+            <table class="text-sm">
+                <thead>
+                    <tr>
+                        <th>인칭</th>
+                        <th>정의</th>
+                        <th>주격 인칭대명사</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="highlight">1인칭</span></td>
+                        <td>말을 하는 <span class="highlight">나 자신</span> 또는 <span class="highlight">나를 포함한 우리</span>.</td>
+                        <td><span class="highlight">I</span> (나), <span class="highlight">We</span> (우리)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">2인칭</span></td>
+                        <td>나의 말을 <span class="highlight">듣고 있는 너</span> 또는 <span class="highlight">너희들</span>.</td>
+                        <td><span class="highlight">You</span> (너, 너희들)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">3인칭</span></td>
+                        <td>나와 너를 제외한 <span class="highlight">세상의 모든 것</span>.</td>
+                        <td><span class="highlight">He, She, It</span> (그/그녀/그것), <span class="highlight">They</span> (그들/그것들)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <ul class="list-disc ml-6 mt-2 text-sm italic">
+            <li><span class="highlight">예문 적용:</span> <span class="highlight">I</span> (나는) <strong>→</strong> 1인칭 단수, <span class="highlight">She</span> (그녀는) <strong>→</strong> 3인칭 단수, <span class="highlight">We</span> (우리는) <strong>→</strong> 1인칭 복수</li>
+        </ul>
+
+        <h3 class="text-xl">3. 주격 (Subjective Case)</h3>
+        <p><span class="highlight">주어</span>의 자리, 즉 <span class="highlight">동작을 하는 주체</span>가 사용하는 형태입니다. 한국어의 '~은/는/이/가'에 해당합니다.</p>
+        <ul class="list-disc ml-6">
+            <li><span class="highlight">예문:</span> <span class="highlight">I</span> have your puppy. (나는 너의 강아지를 가지고 있다.)</li>
+            <li><span class="highlight">예문:</span> <span class="highlight">She</span> knows the rule. (그녀는 그 규칙을 알고 있다.)</li>
+        </ul>
+
+        <h3 class="text-xl">4. 소유격 (Possessive Adjective/Determiner)</h3>
+        <p>뒤에 오는 <span class="highlight">명사</span>를 꾸며주어 <span class="highlight">'누구의 것'</span>인지 한정하는 역할입니다. 격 변화표에서 '소유형용사'로도 불리며, <span class="highlight">뒤에 반드시 명사가 와야 합니다.</span></p>
+        <ul class="list-disc ml-6">
+            <li><span class="highlight">규칙:</span> 소유격 <strong>→</strong> <span class="highlight">My, Your, His, Her, Its, Our, Their</span></li>
+            <li><span class="highlight">예문:</span> I have <span class="highlight">your puppy</span>. (나는 <span class="highlight">너의 강아지</span>를 가지고 있다.)</li>
+            <li><span class="highlight">예문:</span> <span class="highlight">Their toys</span> are expensive. (<span class="highlight">그들의 장난감들</span>은 비싸다.)</li>
+        </ul>
+
+        <h3 class="text-xl">5. 목적격 (Objective Case)</h3>
+        <p><span class="highlight">동사</span>나 <span class="highlight">전치사</span>의 대상이 되는 자리입니다. 한국어의 '~을/를, ~에게'에 해당합니다.</p>
+        <ul class="list-disc ml-6">
+            <li><span class="highlight">규칙:</span> 목적격 <strong>→</strong> <span class="highlight">Me, You, Him, Her, It, Us, Them</span></li>
+            <li><span class="highlight">예문:</span> She gave the puppy to <span class="highlight">me</span>. (그녀는 그 강아지를 <span class="highlight">나에게</span> 주었다.) <strong>→</strong> 전치사 `to`의 목적어.</li>
+            <li><span class="highlight">예문:</span> I like <span class="highlight">him</span>. (나는 <span class="highlight">그를</span> 좋아한다.) <strong>→</strong> 동사 `like`의 목적어.</li>
+        </ul>
+
+        <h3 class="text-xl">6. 소유대명사 (Possessive Pronoun)</h3>
+        <p><span class="highlight">소유격 + 명사</span>를 한 단어로 줄여서 사용하는 것입니다. 명사의 중복을 피하기 위해 사용합니다.</p>
+        <ul class="list-disc ml-6">
+            <li><span class="highlight">공식:</span> 소유대명사 = 소유격 + 명사 (<span class="highlight">`Mine`</span> = My + 명사, <span class="highlight">`Yours`</span> = Your + 명사)</li>
+            <li><span class="highlight">예문:</span> That puppy is <span class="highlight">mine</span>. (O) <strong>→</strong> (저 강아지는 <span class="highlight">나의 것</span>이다.)</li>
+            <li><span class="highlight">예문:</span> Is this toy <span class="highlight">yours</span>? (이 장난감이 <span class="highlight">너의 것</span>이니?)</li>
+        </ul>
+
+        <h3 class="text-xl">7. 재귀대명사 (Reflexive Pronoun)</h3>
+        <p>주어의 행동이 <span class="highlight">주어 자신에게 되돌아올 때</span> 또는 <span class="highlight">주어를 강조할 때</span> 사용합니다.</p>
+        <ul class="list-disc ml-6">
+            <li><span class="highlight">규칙:</span> 격 변화표의 마지막 줄인 <span class="highlight">~self</span> (단수), <span class="highlight">~selves</span> (복수) 형태입니다.</li>
+            <li><span class="highlight">예문:</span> She talks to <span class="highlight">herself</span>. (그녀는 <span class="highlight">그녀 자신에게</span> 이야기한다.) <strong>→</strong> 동사의 목적어가 주어와 같음.</li>
+            <li><span class="highlight">강조 예문:</span> She baked the cake <span class="highlight">herself</span>. (그녀는 <span class="highlight">직접</span> 케이크를 구웠다.)</li>
+        </ul>
+        
+        <h2 class="text-2xl mt-8">II. 주어와 동사의 일치 (Subject-Verb Agreement)</h2>
+
+        <h3 class="text-xl">1. Be동사 (현재형: am, is, are)</h3>
+        <p><span class="highlight">주어의 인칭과 수에 따라 형태가 바뀝니다.</span></p>
+        <div class="overflow-x-auto mb-8">
+            <table class="text-sm verb-table">
+                <thead>
+                    <tr class="bg-blue-100">
+                        <th>인칭</th>
+                        <th>주어</th>
+                        <th>현재형</th>
+                        <th>과거형</th>
+                        <th>예문 (현재/과거)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="sub-header"><td colspan="5" class="text-center">단수 (Singular)</td></tr>
+                    <tr>
+                        <td>1인칭</td>
+                        <td class="subject-col">I</td>
+                        <td><span class="highlight">am</span></td>
+                        <td><span class="highlight">was</span></td>
+                        <td>I <span class="highlight">am</span> ready. (나는 준비됐어.)<br>I <span class="highlight">was</span> sick. (나는 아팠어.)</td>
+                    </tr>
+                    <tr>
+                        <td>2인칭</td>
+                        <td class="subject-col">You</td>
+                        <td><span class="highlight">are</span></td>
+                        <td><span class="highlight">were</span></td>
+                        <td>You <span class="highlight">are</span> kind. (너는 친절하구나.)<br>You <span class="highlight">were</span> here. (너는 여기 있었어.)</td>
+                    </tr>
+                    <tr>
+                        <td>3인칭</td>
+                        <td class="subject-col">He/She/It</td>
+                        <td><span class="highlight">is</span></td>
+                        <td><span class="highlight">was</span></td>
+                        <td>She <span class="highlight">is</span> happy. (그녀는 행복해.)<br>It <span class="highlight">was</span> cold. (날씨가 추웠어.)</td>
+                    </tr>
+                    <tr class="sub-header"><td colspan="5" class="text-center">복수 (Plural)</td></tr>
+                    <tr>
+                        <td>1인칭</td>
+                        <td class="subject-col">We</td>
+                        <td><span class="highlight">are</span></td>
+                        <td><span class="highlight">were</span></td>
+                        <td>We <span class="highlight">are</span> friends. (우리는 친구야.)<br>We <span class="highlight">were</span> late. (우리는 늦었어.)</td>
+                    </tr>
+                    <tr>
+                        <td>2인칭</td>
+                        <td class="subject-col">You</td>
+                        <td><span class="highlight">are</span></td>
+                        <td><span class="highlight">were</span></td>
+                        <td>You <span class="highlight">are</span> students. (너희는 학생이야.)<br>You <span class="highlight">were</span> quiet. (너희는 조용했어.)</td>
+                    </tr>
+                    <tr>
+                        <td>3인칭</td>
+                        <td class="subject-col">They</td>
+                        <td><span class="highlight">are</span></td>
+                        <td><span class="highlight">were</span></td>
+                        <td>They <span class="highlight">are</span> here. (그들은 여기 있어.)<br>They <span class="highlight">were</span> tired. (그들은 피곤했어.)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <h3 class="text-xl">2. Do동사 (현재형: do, does / 과거형: did)</h3>
+        <p><span class="highlight">3인칭 단수 현재</span>일 때만 <span class="highlight">does</span>를 사용합니다. 과거형은 인칭에 상관없이 <span class="highlight">did</span>입니다.</p>
+        <div class="overflow-x-auto mb-8">
+            <table class="text-sm verb-table">
+                <thead>
+                    <tr class="bg-blue-100">
+                        <th>인칭</th>
+                        <th>주어</th>
+                        <th>현재형</th>
+                        <th>과거형</th>
+                        <th>예문 (현재/과거)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="sub-header"><td colspan="5" class="text-center">단수 (Singular)</td></tr>
+                    <tr>
+                        <td>1인칭</td>
+                        <td class="subject-col">I</td>
+                        <td><span class="highlight">do</span></td>
+                        <td><span class="highlight">did</span></td>
+                        <td>I <span class="highlight">do</span> my homework. (나는 숙제를 해.)<br>I <span class="highlight">did</span> it yesterday. (나는 어제 그것을 했어.)</td>
+                    </tr>
+                    <tr>
+                        <td>2인칭</td>
+                        <td class="subject-col">You</td>
+                        <td><span class="highlight">do</span></td>
+                        <td><span class="highlight">did</span></td>
+                        <td>You <span class="highlight">do</span> your best. (너는 최선을 다해.)<br>You <span class="highlight">did</span> great. (너는 잘했어.)</td>
+                    </tr>
+                    <tr>
+                        <td>3인칭</td>
+                        <td class="subject-col">He/She/It</td>
+                        <td><span class="highlight">does</span></td>
+                        <td><span class="highlight">did</span></td>
+                        <td>He <span class="highlight">does</span> his job. (그는 그의 일을 해.)<br>She <span class="highlight">did</span> the dishes. (그녀는 설거지를 했어.)</td>
+                    </tr>
+                    <tr class="sub-header"><td colspan="5" class="text-center">복수 (Plural)</td></tr>
+                    <tr>
+                        <td>1인칭</td>
+                        <td class="subject-col">We</td>
+                        <td><span class="highlight">do</span></td>
+                        <td><span class="highlight">did</span></td>
+                        <td>We <span class="highlight">do</span> well. (우리는 잘 지내.)<br>We <span class="highlight">did</span> a good job. (우리는 잘 해냈어.)</td>
+                    </tr>
+                    <tr>
+                        <td>2인칭</td>
+                        <td class="subject-col">You</td>
+                        <td><span class="highlight">do</span></td>
+                        <td><span class="highlight">did</span></td>
+                        <td>You <span class="highlight">do</span> this now. (너희는 지금 이것을 해.)<br>You <span class="highlight">did</span> it quickly. (너희는 그것을 빨리 했어.)</td>
+                    </tr>
+                    <tr>
+                        <td>3인칭</td>
+                        <td class="subject-col">They</td>
+                        <td><span class="highlight">do</span></td>
+                        <td><span class="highlight">did</span></td>
+                        <td>They <span class="highlight">do</span> nothing. (그들은 아무것도 안 해.)<br>They <span class="highlight">did</span> not come. (그들은 오지 않았어.)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="text-xl">3. Have동사 (현재형: have, has / 과거형: had)</h3>
+        <p><span class="highlight">3인칭 단수 현재</span>일 때만 <span class="highlight">has</span>를 사용하고, 나머지는 <span class="highlight">have</span>를 사용합니다. 과거형은 인칭에 상관없이 <span class="highlight">had</span>입니다.</p>
+        <div class="overflow-x-auto mb-8">
+            <table class="text-sm verb-table">
+                <thead>
+                    <tr class="bg-blue-100">
+                        <th>인칭</th>
+                        <th>주어</th>
+                        <th>현재형</th>
+                        <th>과거형</th>
+                        <th>예문 (현재/과거)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="sub-header"><td colspan="5" class="text-center">단수 (Singular)</td></tr>
+                    <tr>
+                        <td>1인칭</td>
+                        <td class="subject-col">I</td>
+                        <td><span class="highlight">have</span></td>
+                        <td><span class="highlight">had</span></td>
+                        <td>I <span class="highlight">have</span> a dog. (나는 강아지가 있어.)<br>I <span class="highlight">had</span> fun. (나는 즐거운 시간을 보냈어.)</td>
+                    </tr>
+                    <tr>
+                        <td>2인칭</td>
+                        <td class="subject-col">You</td>
+                        <td><span class="highlight">have</span></td>
+                        <td><span class="highlight">had</span></td>
+                        <td>You <span class="highlight">have</span> time. (너는 시간이 있어.)<br>You <span class="highlight">had</span> a cold. (너는 감기에 걸렸었어.)</td>
+                    </tr>
+                    <tr>
+                        <td>3인칭</td>
+                        <td class="subject-col">He/She/It</td>
+                        <td><span class="highlight">has</span></td>
+                        <td><span class="highlight">had</span></td>
+                        <td>She <span class="highlight">has</span> a book. (그녀는 책을 가지고 있어.)<br>He <span class="highlight">had</span> the car. (그는 그 차를 가지고 있었어.)</td>
+                    </tr>
+                    <tr class="sub-header"><td colspan="5" class="text-center">복수 (Plural)</td></tr>
+                    <tr>
+                        <td>1인칭</td>
+                        <td class="subject-col">We</td>
+                        <td><span class="highlight">have</span></td>
+                        <td><span class="highlight">had</span></td>
+                        <td>We <span class="highlight">have</span> a test. (우리는 시험이 있어.)<br>We <span class="highlight">had</span> dinner. (우리는 저녁을 먹었어.)</td>
+                    </tr>
+                    <tr>
+                        <td>2인칭</td>
+                        <td class="subject-col">You</td>
+                        <td><span class="highlight">have</span></td>
+                        <td><span class="highlight">had</span></td>
+                        <td>You <span class="highlight">have</span> courage. (너희는 용기가 있어.)<br>You <span class="highlight">had</span> a party. (너희는 파티를 했었어.)</td>
+                    </tr>
+                    <tr>
+                        <td>3인칭</td>
+                        <td class="subject-col">They</td>
+                        <td><span class="highlight">have</span></td>
+                        <td><span class="highlight">had</span></td>
+                        <td>They <span class="highlight">have</span> plans. (그들은 계획이 있어.)<br>They <span class="highlight">had</span> a good time. (그들은 좋은 시간을 보냈어.)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="text-2xl mt-8">🔑 최종 점검: 3인칭 단수 현재형 규칙</h2>
+        <p class="font-bold text-red-600">가장 중요한 규칙은 주어가 3인칭 단수(<span class="highlight">He, She, It</span> 등)일 때, 현재형 <span class="highlight">일반동사</span> 끝에 <span class="highlight">-s</span>나 <span class="highlight">-es</span>를 붙인다는 것입니다.</p>
+        <div class="overflow-x-auto">
+            <table class="text-sm border-2 border-red-500">
+                <thead>
+                    <tr class="bg-red-100">
+                        <th>주어</th>
+                        <th>Be동사</th>
+                        <th>Do동사</th>
+                        <th>Have동사</th>
+                        <th>일반동사 (like)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="highlight">3인칭 단수</span> (He, She, It)</td>
+                        <td><span class="highlight">is</span></td>
+                        <td><span class="highlight">does</span></td>
+                        <td><span class="highlight">has</span></td>
+                        <td><span class="highlight">likes</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="text-xl mt-6">일반동사 'like' 예문</h3>
+        <ul class="list-disc ml-6">
+            <li>I <span class="highlight">like</span> you. (나는 너를 좋아해.)</li>
+            <li>You <span class="highlight">like</span> me. (너는 나를 좋아해.)</li>
+            <li>He <span class="highlight">likes</span> her. (그는 그녀를 좋아해.)</li>
+            <li>She <span class="highlight">likes</span> him. (그녀는 그를 좋아해.)</li>
+            <li>We <span class="highlight">like</span> them. (우리는 그들을 좋아해.)</li>
+            <li>They <span class="highlight">like</span> us. (그들은 우리를 좋아해.)</li>
+        </ul>
+
+    </div>
+
+</body></html>
