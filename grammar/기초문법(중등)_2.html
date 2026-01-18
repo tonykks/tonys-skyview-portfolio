@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastering Progressive Tense</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .eng-font { font-family: 'Roboto', sans-serif; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.1); }
+        .hidden-content { display: none; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .example-list li { margin-bottom: 0.5rem; font-size: 1.05rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;}
+        .example-list li:last-child { border-bottom: none; }
+        .example-list .eng { font-family: 'Roboto', sans-serif; font-weight: 600; color: #0f172a; }
+        .example-list .kor { color: #475569; font-size: 0.95rem; margin-left: 0.5rem; font-weight: 500; }
+        .wrong-sentence { text-decoration: line-through; color: #94a3b8; }
+    </style>
+</head>
+<body class="bg-white text-slate-900">
+
+    <!-- Header -->
+    <header class="bg-indigo-900 text-white p-6 shadow-xl border-b-4 border-indigo-600">
+        <div class="max-w-[95%] xl:max-w-[1600px] mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-black tracking-tight">Mastering Progressive Tense</h1>
+                <p class="text-indigo-100 text-lg mt-1 font-medium">영어 핵심 개념: 진행형 (현재진행 / 과거진행)</p>
+            </div>
+            <div class="text-right hidden md:block">
+                <span class="bg-white text-indigo-900 px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-widest shadow-sm">Advanced Grammar</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-[95%] xl:max-w-[1600px] mx-auto p-6 space-y-12">
+
+        <!-- 1. Classification Review -->
+        <section id="classification">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-extrabold text-slate-900 border-b-4 border-indigo-600 inline-block pb-2 px-6">1. Review: Verb Types (동사의 분류)</h2>
+                <p class="mt-4 text-slate-700 text-lg font-medium">진행형을 만들려면 <strong>동사의 종류</strong>를 먼저 구별해야 합니다.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Be Verbs -->
+                <div class="bg-white border-2 border-indigo-200 border-l-8 border-l-indigo-600 p-8 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-2xl font-black text-indigo-800">Be Verb (Be동사)</h3>
+                        <span class="text-sm bg-indigo-100 text-indigo-900 px-3 py-1 rounded-full font-bold border border-indigo-200">Helper</span>
+                    </div>
+                    <p class="text-slate-700 text-lg mb-4 font-medium">진행형을 만들 때 <strong>도우미 역할</strong>을 합니다.</p>
+                    <ul class="list-disc list-inside text-base text-slate-600 space-y-2 font-medium bg-indigo-50 p-4 rounded-lg">
+                        <li>현재: <strong>am, are, is</strong> (~이다/있다)</li>
+                        <li>과거: <strong>was, were</strong> (~이었다/있었다)</li>
+                    </ul>
+                </div>
+
+                <!-- General Verbs -->
+                <div class="bg-white border-2 border-emerald-200 border-l-8 border-l-emerald-600 p-8 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-2xl font-black text-emerald-800">General Verb (일반동사)</h3>
+                        <span class="text-sm bg-emerald-100 text-emerald-900 px-3 py-1 rounded-full font-bold border border-emerald-200">Main Actor</span>
+                    </div>
+                    <p class="text-slate-700 text-lg mb-4 font-medium">진행형의 <strong>핵심 의미</strong>를 가집니다. 단, 종류가 중요합니다!</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-emerald-50 p-3 rounded border border-emerald-200 text-center">
+                            <span class="block text-emerald-800 font-bold mb-1">Action (동작)</span>
+                            <span class="text-2xl font-black text-emerald-600">O</span>
+                            <p class="text-xs text-slate-500 mt-1">진행형 가능</p>
+                        </div>
+                        <div class="bg-red-50 p-3 rounded border border-red-200 text-center">
+                            <span class="block text-red-800 font-bold mb-1">Stative (상태)</span>
+                            <span class="text-2xl font-black text-red-600">X</span>
+                            <p class="text-xs text-slate-500 mt-1">진행형 불가</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Progressive Tenses -->
+        <section id="progressive">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-extrabold text-slate-900 border-b-4 border-emerald-500 inline-block pb-2 px-6">2. Making Progressive Sentences (진행형 만들기)</h2>
+                <p class="mt-4 text-slate-700 text-lg font-medium">
+                    공식: <span class="bg-indigo-100 text-indigo-900 px-2 py-1 rounded font-bold mx-1">Subject + Be + V-ing</span>
+                    <br><span class="text-sm text-slate-500">(주어 + Be동사 + 동사원형에 ing)</span>
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Present Progressive -->
+                <div class="bg-white border-2 border-blue-200 border-l-8 border-l-blue-500 p-8 rounded-xl shadow-lg card-hover cursor-pointer group" onclick="toggleSection('present-prog-detail')">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-2xl font-black text-blue-800 group-hover:text-blue-600 transition">Present Progressive</h3>
+                        <span class="text-sm bg-blue-100 text-blue-900 px-3 py-1 rounded-full font-bold border border-blue-200">Current</span>
+                    </div>
+                    <p class="text-slate-700 text-lg mb-4 font-medium">현재진행형: <strong>"지금 ~하고 있는 중이다"</strong></p>
+                    <div class="bg-blue-50 p-4 rounded border border-blue-100 mb-4 text-center">
+                        <p class="font-mono text-blue-900 font-bold text-xl">am / are / is + V-ing</p>
+                    </div>
+                    <div class="mt-6 text-right">
+                        <span class="text-blue-700 text-base font-bold group-hover:translate-x-1 inline-block transition">See Examples (예문 보기) &rarr;</span>
+                    </div>
+                </div>
+
+                <!-- Past Progressive -->
+                <div class="bg-white border-2 border-purple-200 border-l-8 border-l-purple-500 p-8 rounded-xl shadow-lg card-hover cursor-pointer group" onclick="toggleSection('past-prog-detail')">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-2xl font-black text-purple-800 group-hover:text-purple-600 transition">Past Progressive</h3>
+                        <span class="text-sm bg-purple-100 text-purple-900 px-3 py-1 rounded-full font-bold border border-purple-200">Past</span>
+                    </div>
+                    <p class="text-slate-700 text-lg mb-4 font-medium">과거진행형: <strong>"그때 ~하고 있는 중이었다"</strong></p>
+                    <div class="bg-purple-50 p-4 rounded border border-purple-100 mb-4 text-center">
+                        <p class="font-mono text-purple-900 font-bold text-xl">was / were + V-ing</p>
+                    </div>
+                    <div class="mt-6 text-right">
+                        <span class="text-purple-700 text-base font-bold group-hover:translate-x-1 inline-block transition">See Examples (예문 보기) &rarr;</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detail: Present Progressive -->
+        <section id="present-prog-detail" class="hidden-content fade-in bg-blue-50/50 p-8 rounded-3xl shadow-xl border-2 border-blue-100">
+            <div class="flex items-center space-x-4 mb-8 border-b-2 border-blue-200 pb-4">
+                <div class="bg-blue-600 text-white w-10 h-10 flex items-center justify-center rounded-full font-black text-xl">1</div>
+                <h3 class="text-3xl font-black text-blue-900">Present Progressive Rules</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <!-- Action Verbs (Possible) -->
+                <div class="bg-white p-8 rounded-2xl border-2 border-blue-200 shadow-lg">
+                    <h4 class="text-xl font-black text-emerald-600 mb-4 flex items-center">
+                        <span class="bg-emerald-100 px-2 py-1 rounded mr-2">O</span> Action Verbs (동작동사)
+                    </h4>
+                    <p class="text-sm text-slate-500 mb-4">동작이 눈에 보이는 경우, 진행형이 아주 자연스럽습니다.</p>
+                    <ul class="example-list text-left space-y-3">
+                        <li><span class="eng">I <span class="text-blue-600 font-bold">am</span> play<span class="text-blue-600 font-bold">ing</span> soccer.</span> <br><span class="kor">나는 축구를 하고 있는 중이다. (운동장에서 뛰는 모습)</span></li>
+                        <li><span class="eng">She <span class="text-blue-600 font-bold">is</span> eat<span class="text-blue-600 font-bold">ing</span> pizza.</span> <br><span class="kor">그녀는 피자를 먹고 있는 중이다. (입에 넣는 중)</span></li>
+                        <li><span class="eng">They <span class="text-blue-600 font-bold">are</span> study<span class="text-blue-600 font-bold">ing</span> English.</span> <br><span class="kor">그들은 영어를 공부하고 있는 중이다.</span></li>
+                        <li><span class="eng">It <span class="text-blue-600 font-bold">is</span> sleep<span class="text-blue-600 font-bold">ing</span> now.</span> <br><span class="kor">그것은(아기는) 지금 자고 있는 중이다.</span></li>
+                    </ul>
+                </div>
+
+                <!-- Stative Verbs (Impossible) -->
+                <div class="bg-white p-8 rounded-2xl border-2 border-red-200 shadow-lg relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-red-100 text-red-600 font-bold px-3 py-1 rounded-bl-lg text-xs">Caution!</div>
+                    <h4 class="text-xl font-black text-red-600 mb-4 flex items-center">
+                        <span class="bg-red-100 px-2 py-1 rounded mr-2">X</span> Stative Verbs (상태동사)
+                    </h4>
+                    <p class="text-sm text-slate-500 mb-4">마음속 상태나 소유는 '동작'이 아니므로 진행형을 쓰면 어색합니다.</p>
+                    <ul class="example-list text-left space-y-4">
+                        <li>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="eng wrong-sentence">I am knowing him.</span>
+                                <span class="text-xs font-bold text-red-500 border border-red-200 px-1 rounded">WRONG</span>
+                            </div>
+                            <span class="kor text-red-400">나는 그를 아는 중이다? (X) &rarr; 알면 알고 모르면 모르는 것.</span>
+                            <div class="mt-1 text-sm font-bold text-emerald-600">Correct: I know him. (나는 그를 안다.)</div>
+                        </li>
+                        <li>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="eng wrong-sentence">She is liking apples.</span>
+                                <span class="text-xs font-bold text-red-500 border border-red-200 px-1 rounded">WRONG</span>
+                            </div>
+                            <span class="kor text-red-400">그녀는 사과를 좋아하는 중이다? (X)</span>
+                            <div class="mt-1 text-sm font-bold text-emerald-600">Correct: She likes apples. (좋아한다.)</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detail: Past Progressive -->
+        <section id="past-prog-detail" class="hidden-content fade-in bg-purple-50/50 p-8 rounded-3xl shadow-xl border-2 border-purple-100">
+            <div class="flex items-center space-x-4 mb-8 border-b-2 border-purple-200 pb-4">
+                <div class="bg-purple-600 text-white w-10 h-10 flex items-center justify-center rounded-full font-black text-xl">2</div>
+                <h3 class="text-3xl font-black text-purple-900">Past Progressive Rules</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="bg-white p-8 rounded-2xl border-2 border-purple-200 shadow-lg">
+                    <h4 class="text-xl font-black text-purple-800 mb-4">Action Verbs in Past</h4>
+                    <p class="text-sm text-slate-500 mb-4">과거의 <strong>특정 순간</strong>에 하고 있었던 행동을 묘사합니다.</p>
+                    <ul class="example-list text-left space-y-3">
+                        <li><span class="eng">I <span class="text-purple-600 font-bold">was</span> run<span class="text-purple-600 font-bold">ning</span> fast.</span> <br><span class="kor">나는 빨리 달리고 있던 중이었다.</span></li>
+                        <li><span class="eng">You <span class="text-purple-600 font-bold">were</span> eat<span class="text-purple-600 font-bold">ing</span> lunch.</span> <br><span class="kor">너는 점심을 먹고 있던 중이었다.</span></li>
+                        <li><span class="eng">We <span class="text-purple-600 font-bold">were</span> play<span class="text-purple-600 font-bold">ing</span> a game.</span> <br><span class="kor">우리는 게임을 하고 있던 중이었다.</span></li>
+                        <li><span class="eng">He <span class="text-purple-600 font-bold">was</span> study<span class="text-purple-600 font-bold">ing</span> math.</span> <br><span class="kor">그는 수학을 공부하고 있던 중이었다.</span></li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white p-8 rounded-2xl border-2 border-purple-100 shadow-lg flex flex-col justify-center items-center text-center">
+                    <div class="bg-purple-100 p-6 rounded-full mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h4 class="text-xl font-black text-purple-900 mb-2">Context Tip</h4>
+                    <p class="text-slate-600">과거진행형은 보통 <strong>"내가 집에 들어갔을 때(When I came home), 그들은 자고 있었다(they were sleeping)"</strong> 처럼 다른 사건과 함께 자주 쓰입니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Expansion: Negative & Question -->
+        <section id="expansion">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-extrabold text-slate-900 border-b-4 border-slate-400 inline-block pb-2 px-6">3. Easy Expansion: Negative & Question</h2>
+                <div class="bg-yellow-50 border-2 border-yellow-200 p-4 rounded-xl mt-6 inline-block max-w-3xl">
+                    <p class="text-lg font-bold text-yellow-900">
+                        <span class="text-2xl mr-2">💡</span>
+                        진행형 문장에는 <span class="text-indigo-600 font-black">Be동사(am/are/is/was/were)</span>가 이미 들어있습니다!
+                    </p>
+                    <p class="text-slate-700 mt-2">
+                        따라서, 일반동사의 복잡한 규칙(Do/Does)을 생각할 필요 없이,<br>
+                        <strong>Be동사의 규칙(Not 붙이기 / 자리 바꾸기)</strong>만 그대로 쓰면 됩니다. 아주 쉽죠?
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Negative -->
+                <div class="bg-slate-800 text-white p-8 rounded-xl shadow-lg border-2 border-slate-600">
+                    <div class="flex items-center mb-6">
+                        <span class="bg-red-500 text-white font-bold px-3 py-1 rounded mr-3 text-sm">Negative (부정)</span>
+                        <h3 class="text-xl font-bold">Be + <span class="text-red-400">NOT</span> + V-ing</h3>
+                    </div>
+                    <ul class="space-y-4 text-lg">
+                        <li class="border-b border-slate-600 pb-3">
+                            <p class="eng">I <span class="text-indigo-400 font-bold">am</span> <span class="text-red-400 font-black">not</span> sleeping.</p>
+                            <p class="text-sm text-slate-400 mt-1">(나는 자고 있는 중이 아니다.)</p>
+                        </li>
+                        <li class="border-b border-slate-600 pb-3">
+                            <p class="eng">She <span class="text-indigo-400 font-bold">was</span> <span class="text-red-400 font-black">not</span> eating.</p>
+                            <p class="text-sm text-slate-400 mt-1">(그녀는 먹고 있는 중이 아니었다.)</p>
+                        </li>
+                        <li>
+                            <p class="eng">They <span class="text-indigo-400 font-bold">are</span> <span class="text-red-400 font-black">not</span> playing.</p>
+                            <p class="text-sm text-slate-400 mt-1">(그들은 놀고 있는 중이 아니다.)</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Question -->
+                <div class="bg-slate-800 text-white p-8 rounded-xl shadow-lg border-2 border-slate-600">
+                    <div class="flex items-center mb-6">
+                        <span class="bg-yellow-500 text-white font-bold px-3 py-1 rounded mr-3 text-sm">Question (의문)</span>
+                        <h3 class="text-xl font-bold"><span class="text-indigo-400">Be</span> + S + V-ing?</h3>
+                    </div>
+                    <ul class="space-y-4 text-lg">
+                        <li class="border-b border-slate-600 pb-3">
+                            <p class="eng"><span class="text-indigo-400 font-black">Are</span> you sleeping?</p>
+                            <p class="text-sm text-slate-400 mt-1">(너 자고 있는 중이니?)</p>
+                        </li>
+                        <li class="border-b border-slate-600 pb-3">
+                            <p class="eng"><span class="text-indigo-400 font-black">Was</span> she eating?</p>
+                            <p class="text-sm text-slate-400 mt-1">(그녀는 먹고 있는 중이었니?)</p>
+                        </li>
+                        <li>
+                            <p class="eng"><span class="text-indigo-400 font-black">Are</span> they playing?</p>
+                            <p class="text-sm text-slate-400 mt-1">(그들은 놀고 있는 중이니?)</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-slate-500 text-sm pb-8">
+            <p>&copy; 2026 Essential English Grammar (Progressive Tense Mastery). Designed for All Learners.</p>
+        </footer>
+
+    </main>
+
+    <script>
+        // Section Toggle Logic
+        function toggleSection(id) {
+            // Hide all detail sections in the specific group (if needed, or just toggle individually)
+            // For this design, simpler toggle is better as sections are distinct
+            
+            const element = document.getElementById(id);
+            const isVisible = element.style.display === 'block';
+
+            // Optional: Close others? Let's keep it simple and just toggle the clicked one
+            // To mimic accordion behavior (close others), uncomment below:
+            /*
+            document.querySelectorAll('.hidden-content').forEach(el => {
+                el.style.display = 'none';
+            });
+            */
+
+            if (isVisible) {
+                element.style.display = 'none';
+            } else {
+                element.style.display = 'block';
+                // Smooth scroll to the section
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
+        }
+    </script>
+</body>
+</html>
