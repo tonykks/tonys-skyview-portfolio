@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>초등 영어 기초: Be동사 마스터</title>
+    
+    <!-- 1. Tailwind CSS (스타일 엔진) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. React & ReactDOM (리액트 엔진) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- 3. Babel (번역기: JSX -> JS) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- 폰트 설정: 귀여운 느낌의 폰트(Jua) 추가 -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .font-jua { font-family: 'Jua', sans-serif; }
+    </style>
+</head>
+<body class="bg-yellow-50 text-slate-800">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // --- 아이콘 컴포넌트 (SVG) ---
+        const User = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
+        const Users = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
+        const Star = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
+        const Point = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>;
+        const Box = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>;
+
+        const ElementaryGrammar = () => {
+            const [activeTab, setActiveTab] = useState('pronoun');
+
+            const tabs = [
+                { id: 'pronoun', label: '1. 인칭대명사와 Be동사', icon: <User /> },
+                { id: 'demo', label: '2. 지시대명사와 There', icon: <Box /> },
+                { id: 'third', label: '3. 3인칭 단수 (중요!)', icon: <Star /> },
+            ];
+
+            return (
+                <div className="min-h-screen pb-20 max-w-4xl mx-auto bg-white shadow-xl my-0 md:my-8 md:rounded-xl overflow-hidden">
+                    {/* Header */}
+                    <header className="bg-amber-400 p-6 text-center">
+                        <h1 className="text-3xl md:text-4xl font-jua text-white drop-shadow-md mb-2">Be동사 짝꿍 찾기</h1>
+                        <p className="text-amber-800 font-bold bg-white/30 inline-block px-4 py-1 rounded-full text-sm">
+                            주어에 딱 맞는 Be동사를 찾아보아요!
+                        </p>
+                    </header>
+
+                    {/* Navigation */}
+                    <nav className="flex bg-amber-100 border-b-4 border-amber-200">
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`flex-1 py-4 flex flex-col md:flex-row items-center justify-center gap-2 transition-all font-jua text-lg ${
+                                    activeTab === tab.id 
+                                    ? 'bg-white text-amber-600 shadow-inner translate-y-[2px]' 
+                                    : 'text-amber-800/60 hover:bg-amber-50'
+                                }`}
+                            >
+                                <div className={activeTab === tab.id ? 'animate-bounce' : ''}>{tab.icon}</div>
+                                {tab.label}
+                            </button>
+                        ))}
+                    </nav>
+
+                    {/* Content */}
+                    <main className="p-6 md:p-10">
+                        
+                        {/* TAB 1: Pronouns */}
+                        {activeTab === 'pronoun' && (
+                            <div className="animate-fade-in space-y-8">
+                                <SectionHeader title="나, 너, 그리고 우리!" subtitle="인칭대명사에 따른 Be동사 표" />
+                                
+                                <div className="overflow-hidden rounded-xl border-2 border-amber-200 shadow-lg">
+                                    <table className="w-full text-center">
+                                        <thead className="bg-amber-100 text-amber-900 font-jua text-lg">
+                                            <tr>
+                                                <th className="py-3 w-1/4">주어 (Subject)</th>
+                                                <th className="py-3 w-1/4">뜻</th>
+                                                <th className="py-3 w-1/4 bg-blue-100 text-blue-800">현재형 (지금)</th>
+                                                <th className="py-3 w-1/4 bg-slate-100 text-slate-600">과거형 (옛날)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-amber-100 font-bold text-lg">
+                                            <tr className="bg-white hover:bg-yellow-50">
+                                                <td className="py-4 text-pink-500">I</td>
+                                                <td className="text-slate-500 text-sm">나는</td>
+                                                <td className="text-blue-600">am</td>
+                                                <td className="text-slate-500">was</td>
+                                            </tr>
+                                            <tr className="bg-white hover:bg-yellow-50">
+                                                <td className="py-4 text-green-600">You</td>
+                                                <td className="text-slate-500 text-sm">너는 / 너희들은</td>
+                                                <td className="text-blue-600">are</td>
+                                                <td className="text-slate-500">were</td>
+                                            </tr>
+                                            <tr className="bg-amber-50/50 hover:bg-yellow-50 border-t-2 border-amber-200">
+                                                <td className="py-4 text-purple-600">He / She / It</td>
+                                                <td className="text-slate-500 text-sm">그는 / 그녀는 / 그것은<br/>(3인칭 단수)</td>
+                                                <td className="text-red-500 font-extrabold text-xl">is</td>
+                                                <td className="text-slate-500">was</td>
+                                            </tr>
+                                            <tr className="bg-white hover:bg-yellow-50 border-t-2 border-amber-200">
+                                                <td className="py-4 text-orange-600">We / They</td>
+                                                <td className="text-slate-500 text-sm">우리는 / 그들은<br/>(복수)</td>
+                                                <td className="text-blue-600">are</td>
+                                                <td className="text-slate-500">were</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <ExampleBox 
+                                        emoji="👦" 
+                                        eng={<span>I <span className="text-blue-600 font-bold">am</span> a student.</span>}
+                                        kor="나는 학생이다." 
+                                    />
+                                    <ExampleBox 
+                                        emoji="👵" 
+                                        eng={<span>She <span className="text-red-500 font-bold">is</span> my grandma.</span>}
+                                        kor="그녀는 나의 할머니시다." 
+                                    />
+                                    <ExampleBox 
+                                        emoji="👫" 
+                                        eng={<span>We <span className="text-blue-600 font-bold">are</span> friends.</span>}
+                                        kor="우리는 친구다." 
+                                    />
+                                    <ExampleBox 
+                                        emoji="🕒" 
+                                        eng={<span>I <span className="text-slate-500 font-bold">was</span> sick yesterday.</span>}
+                                        kor="나는 어제 아팠다. (과거)" 
+                                        bg="bg-slate-100 border-slate-300"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* TAB 2: Demonstratives & There */}
+                        {activeTab === 'demo' && (
+                            <div className="animate-fade-in space-y-8">
+                                <SectionHeader title="이것, 저것, 그리고 거기!" subtitle="지시대명사와 There 구문" />
+                                
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    {/* 지시대명사 */}
+                                    <div className="bg-green-50 rounded-xl p-5 border-2 border-green-200">
+                                        <h3 className="font-jua text-xl text-green-800 mb-4 flex items-center gap-2">
+                                            <span className="bg-white p-1 rounded">👉</span> 이것과 저것 (This & That)
+                                        </h3>
+                                        <ul className="space-y-3">
+                                            <li className="bg-white p-3 rounded-lg shadow-sm border border-green-100">
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <span className="font-bold text-green-700">This / That (하나일 때)</span>
+                                                    <span className="text-red-500 font-bold text-xl">is</span>
+                                                </div>
+                                                <p className="text-sm text-slate-600">This <span className="text-red-500 font-bold">is</span> my book. (이것은 내 책이다.)</p>
+                                            </li>
+                                            <li className="bg-white p-3 rounded-lg shadow-sm border border-green-100">
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <span className="font-bold text-green-700">These / Those (여러 개)</span>
+                                                    <span className="text-blue-600 font-bold text-xl">are</span>
+                                                </div>
+                                                <p className="text-sm text-slate-600">Those <span className="text-blue-600 font-bold">are</span> birds. (저것들은 새들이다.)</p>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    {/* There is / There are */}
+                                    <div className="bg-sky-50 rounded-xl p-5 border-2 border-sky-200">
+                                        <h3 className="font-jua text-xl text-sky-800 mb-4 flex items-center gap-2">
+                                            <span className="bg-white p-1 rounded">🏘️</span> ~이 있다 (There is/are)
+                                        </h3>
+                                        <div className="space-y-3">
+                                            <div className="bg-white p-3 rounded-lg shadow-sm border border-sky-100">
+                                                <span className="text-xs font-bold text-slate-400 block mb-1">한 개가 있을 때</span>
+                                                <p className="text-lg">There <span className="text-red-500 font-bold">is</span> <span className="underline decoration-wavy decoration-red-300">a cat</span>.</p>
+                                                <p className="text-sm text-slate-500">고양이 한 마리가 있다.</p>
+                                            </div>
+                                            <div className="bg-white p-3 rounded-lg shadow-sm border border-sky-100">
+                                                <span className="text-xs font-bold text-slate-400 block mb-1">여러 개가 있을 때</span>
+                                                <p className="text-lg">There <span className="text-blue-600 font-bold">are</span> <span className="underline decoration-wavy decoration-blue-300">two dogs</span>.</p>
+                                                <p className="text-sm text-slate-500">강아지 두 마리가 있다.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* TAB 3: 3rd Person Singular */}
+                        {activeTab === 'third' && (
+                            <div className="animate-fade-in space-y-8">
+                                <SectionHeader title="3인칭 단수, 넌 누구니?" subtitle="He, She, It 그리고 그 친구들" />
+                                
+                                <div className="bg-red-50 border-l-8 border-red-400 p-6 rounded-r-xl shadow-sm">
+                                    <h3 className="font-jua text-2xl text-red-600 mb-2">📢 "3인칭 단수"가 뭐예요?</h3>
+                                    <p className="text-lg font-bold text-slate-700 leading-relaxed">
+                                        ① <span className="text-blue-600">나(I)</span>도 아니고,<br/>
+                                        ② <span className="text-green-600">너(You)</span>도 아닌데,<br/>
+                                        ③ 딱 <span className="bg-red-200 px-1">하나(Single)</span>만 있는 것!
+                                    </p>
+                                    <div className="mt-4 bg-white p-4 rounded-lg border border-red-100 text-center">
+                                        <span className="text-slate-500 text-sm">이 친구들이 주어로 오면 Be동사는 무조건?</span>
+                                        <div className="text-5xl font-black text-red-500 mt-2 animate-pulse">is</div>
+                                    </div>
+                                </div>
+
+                                <div className="grid md:grid-cols-3 gap-4">
+                                    {/* Group 1: 대명사 */}
+                                    <ThirdPersonCard 
+                                        title="기본 대명사" 
+                                        items={["He (그)", "She (그녀)", "It (그것)"]}
+                                        example="He is tall."
+                                    />
+                                    {/* Group 2: 이름/사람 */}
+                                    <ThirdPersonCard 
+                                        title="이름 / 사람" 
+                                        items={["Tom", "Jane", "My mom", "Your teacher"]}
+                                        example="Tom is happy."
+                                    />
+                                    {/* Group 3: 사물/동물 */}
+                                    <ThirdPersonCard 
+                                        title="사물 / 동물" 
+                                        items={["The book", "A dog", "This car", "Seoul"]}
+                                        example="The book is fun."
+                                    />
+                                </div>
+
+                                <div className="bg-yellow-50 p-6 rounded-xl border-2 border-yellow-200">
+                                    <h4 className="font-jua text-xl text-yellow-800 mb-4 flex items-center gap-2">
+                                        <Point /> 소유격이 붙어도 헷갈리지 마세요!
+                                    </h4>
+                                    <p className="text-slate-700 mb-4 text-sm">
+                                        앞에 <strong>My(나의), Your(너의)</strong>가 붙어도, <br/>
+                                        진짜 주인공(명사)이 <strong>하나</strong>면 3인칭 단수입니다!
+                                    </p>
+                                    
+                                    <div className="space-y-3">
+                                        <ComparisonRow 
+                                            wrong="My friend" 
+                                            desc="내 친구 (한 명) → 3인칭 단수" 
+                                            verb="is"
+                                            sentence="My friend is nice."
+                                        />
+                                        <ComparisonRow 
+                                            wrong="Your eyes" 
+                                            desc="너의 눈 (두 개) → 복수 (They)" 
+                                            verb="are"
+                                            sentence="Your eyes are beautiful."
+                                            isPlural={true}
+                                        />
+                                        <ComparisonRow 
+                                            wrong="His father" 
+                                            desc="그의 아빠 (한 명) → 3인칭 단수" 
+                                            verb="is"
+                                            sentence="His father is a doctor."
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="bg-amber-50 p-6 text-center text-amber-800/50 text-xs border-t border-amber-100">
+                        <p>Be동사 마스터 교실 &copy; 2024</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        // --- 서브 컴포넌트 ---
+
+        const SectionHeader = ({ title, subtitle }) => (
+            <div className="text-center mb-6">
+                <h2 className="text-2xl font-jua text-slate-800 mb-1">{title}</h2>
+                <div className="h-1 w-20 bg-amber-300 mx-auto rounded-full mb-2"></div>
+                <p className="text-slate-500 text-sm font-medium">{subtitle}</p>
+            </div>
+        );
+
+        const ExampleBox = ({ emoji, eng, kor, bg = "bg-yellow-50 border-yellow-200" }) => (
+            <div className={`p-4 rounded-xl border-2 ${bg} flex items-start gap-3 shadow-sm hover:shadow-md transition-shadow`}>
+                <div className="text-3xl bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-sm shrink-0">
+                    {emoji}
+                </div>
+                <div>
+                    <div className="text-lg text-slate-800 mb-1">{eng}</div>
+                    <div className="text-sm text-slate-500 font-medium">{kor}</div>
+                </div>
+            </div>
+        );
+
+        const ThirdPersonCard = ({ title, items, example }) => (
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+                <h4 className="font-bold text-slate-700 border-b pb-2 mb-3 text-center">{title}</h4>
+                <ul className="flex-1 space-y-2 mb-4">
+                    {items.map((item, idx) => (
+                        <li key={idx} className="bg-slate-50 px-3 py-1.5 rounded text-sm text-slate-600 font-medium text-center">
+                            {item}
+                        </li>
+                    ))}
+                </ul>
+                <div className="bg-red-50 text-red-800 px-3 py-2 rounded text-center text-sm font-bold">
+                    ➜ {example}
+                </div>
+            </div>
+        );
+
+        const ComparisonRow = ({ wrong, desc, verb, sentence, isPlural }) => (
+            <div className="flex flex-col md:flex-row items-center bg-white p-3 rounded-lg border border-slate-200 gap-3">
+                <div className="flex-1 font-bold text-slate-800 text-center md:text-left pl-2">
+                    {wrong}
+                </div>
+                <div className="hidden md:block text-slate-300">→</div>
+                <div className="flex-1 text-xs text-slate-500 bg-slate-50 p-1.5 rounded text-center">
+                    {desc}
+                </div>
+                <div className={`w-12 h-12 flex items-center justify-center rounded-full font-black text-xl shrink-0 ${isPlural ? 'bg-blue-100 text-blue-600' : 'bg-red-100 text-red-500'}`}>
+                    {verb}
+                </div>
+                <div className="flex-[2] text-sm text-slate-700 font-medium pl-2 border-l border-slate-100">
+                    {sentence}
+                </div>
+            </div>
+        );
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<ElementaryGrammar />);
+    </script>
+</body>
+</html>
