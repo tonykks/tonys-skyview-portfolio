@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Grammar Formulas</title>
+    
+    <!-- Tailwind CSS (스타일링 도구 - 인터넷 연결 필요) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons (아이콘 도구) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- 폰트 설정 -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8fafc; /* Slate-50 */
+        }
+        .font-mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+        /* 페이드인 애니메이션 효과 */
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* 스크롤바 숨기기 (깔끔한 UI) */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 앱이 렌더링될 컨테이너 -->
+    <div id="app"></div>
+
+    <script>
+        /**
+         * [Data Layer]
+         * 문법 데이터베이스입니다. 내용 수정이 필요하면 이 객체 내부를 변경하십시오.
+         */
+        const grammarData = {
+            "partsOfSpeech": {
+                id: "partsOfSpeech",
+                title: "1. 8품사 (The 8 Parts of Speech)",
+                subtitle: "문장을 구성하는 최소 단위의 재료 (Materials)",
+                items: [
+                    { term: "Noun (명사)", def: "사람, 사물, 장소, 개념의 이름", role: "주어(S), 목적어(O), 보어(C) 역할" },
+                    { term: "Pronoun (대명사)", def: "명사를 대신하여 부르는 말", role: "명사와 동일 (S, O, C)" },
+                    { term: "Verb (동사)", def: "주어의 동작이나 상태를 서술", role: "문장의 중심, 서술어(V)" },
+                    { term: "Adjective (형용사)", def: "명사의 성질이나 상태를 수식", role: "명사 수식, 보어(C)" },
+                    { term: "Adverb (부사)", def: "명사 이외의 것(동사, 형용사, 다른 부사, 문장 전체)을 수식", role: "수식어(M) - 문장 성분에 포함되지 않음" },
+                    { term: "Preposition (전치사)", def: "명사 앞에 놓여 시간, 장소, 방향 등을 나타냄", role: "전치사+명사 = 형용사구 또는 부사구" },
+                    { term: "Conjunction (접속사)", def: "단어와 단어, 구와 구, 절과 절을 연결", role: "연결 고리" },
+                    { term: "Interjection (감탄사)", def: "기쁨, 슬픔, 놀람 등의 감정 표현", role: "독립적으로 사용" }
+                ]
+            },
+            "components": {
+                id: "components",
+                title: "2. 문장 성분 (Sentence Components)",
+                subtitle: "재료(품사)가 문장 안에서 맡는 역할 (Roles)",
+                items: [
+                    { term: "Subject (주어 - S)", def: "동작의 주체 ('~은/는/이/가')", formula: "명사, 대명사, 명사구/절" },
+                    { term: "Verb (동사/서술어 - V)", def: "주어의 동작이나 상태 ('~하다/이다')", formula: "동사" },
+                    { term: "Object (목적어 - O)", def: "동작의 대상 ('~을/를')", formula: "명사, 대명사" },
+                    { term: "Complement (보어 - C)", def: "주어나 목적어를 보충 설명", formula: "명사(동격), 형용사(상태)" },
+                    { term: "Modifier (수식어 - M)", def: "문장의 필수 성분은 아니지만 의미를 풍부하게 함", formula: "형용사, 부사, 전명구" }
+                ]
+            },
+            "structures": {
+                id: "structures",
+                title: "3. 문장의 5형식 (The 5 Sentence Structures)",
+                subtitle: "영어 문장이 조립되는 5가지 절대 공식 (Formulas)",
+                items: [
+                    { term: "1형식", def: "완전 자동사", formula: "S + V (+ M)", note: "주어와 동사만으로 말이 됨. (ex. Birds fly.)" },
+                    { term: "2형식", def: "불완전 자동사", formula: "S + V + C", note: "주어를 보충하는 말이 필요함. (ex. I am a student / happy.)" },
+                    { term: "3형식", def: "완전 타동사", formula: "S + V + O", note: "대상(목적어)이 필요함. (ex. I love you.)" },
+                    { term: "4형식", def: "수여 동사", formula: "S + V + I.O + D.O", note: "~에게(I.O) ~을(D.O) 주다. (ex. He gave me a book.)" },
+                    { term: "5형식", def: "불완전 타동사", formula: "S + V + O + O.C", note: "목적어의 상태/동작 보충. (ex. You make me happy.)" }
+                ]
+            },
+            "units": {
+                id: "units",
+                title: "4. 구와 절 (Phrase & Clause)",
+                subtitle: "단어의 확장 단위 (Extended Units)",
+                items: [
+                    { term: "Phrase (구)", def: "두 개 이상의 단어가 모여 하나의 품사 역할. (주어+동사 없음)", example: "in the room (전명구), to study hard (투부정사구)" },
+                    { term: "Clause (절)", def: "두 개 이상의 단어가 모여 하나의 품사 역할. (주어+동사 있음)", example: "that he is rich (명사절), when I was young (부사절)" }
+                ]
+            }
+        };
+
+        /**
+         * [State Management]
+         * 앱의 현재 상태를 관리하는 변수입니다.
+         */
+        let appState = {
+            activeTab: "partsOfSpeech", // 현재 선택된 탭
+            memorizationMode: false,    // 암기 모드 활성화 여부
+            revealedItems: {}           // 암기 모드에서 정답이 공개된 항목들
+        };
+
+        /**
+         * [Functions] 
+         * 로직 처리 함수들
+         */
+        
+        // 상태를 업데이트하고 화면을 다시 그리는 함수
+        function updateState(newState) {
+            appState = { ...appState, ...newState };
+            renderApp();
+        }
+
+        // 탭 변경
+        function switchTab(tabId) {
+            updateState({ 
+                activeTab: tabId, 
+                revealedItems: {} // 탭 변경 시 공개 상태 초기화
+            });
+        }
+
+        // 암기 모드 토글
+        function toggleMode() {
+            updateState({ 
+                memorizationMode: !appState.memorizationMode,
+                revealedItems: {} // 모드 변경 시 공개 상태 초기화
+            });
+        }
+
+        // 카드 클릭 시 정답 공개/비공개 토글
+        function toggleReveal(index) {
+            if (!appState.memorizationMode) return; // 학습 모드일 때는 클릭 무시
+
+            const newRevealed = { ...appState.revealedItems };
+            if (newRevealed[index]) {
+                delete newRevealed[index];
+            } else {
+                newRevealed[index] = true;
+            }
+            updateState({ revealedItems: newRevealed });
+        }
+
+        /**
+         * [Render]
+         * HTML UI를 생성하는 함수
+         */
+        function renderApp() {
+            const app = document.getElementById('app');
+            const currentData = grammarData[appState.activeTab];
+            const isDrillMode = appState.memorizationMode;
+
+            // 1. 헤더 생성
+            const headerHTML = `
+                <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-10 transition-colors">
+                    <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+                        <div class="flex items-center space-x-3">
+                            <div class="bg-blue-600 p-2 rounded-lg shadow-lg">
+                                <i data-lucide="calculator" class="text-white w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h1 class="text-xl font-bold leading-tight">English Grammar Formulas</h1>
+                                <p class="text-xs text-slate-400 font-mono">Prerequisite for Logic & Composition</p>
+                            </div>
+                        </div>
+                        
+                        <button onclick="toggleMode()" 
+                            class="flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 transform active:scale-95 ${isDrillMode ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-200 shadow-md' : 'bg-slate-700 hover:bg-slate-600 text-slate-200'}">
+                            <i data-lucide="${isDrillMode ? 'eye-off' : 'eye'}" class="w-4 h-4"></i>
+                            <span class="text-sm font-medium">${isDrillMode ? 'Drill Mode On' : 'Study Mode'}</span>
+                        </button>
+                    </div>
+                </header>
+            `;
+
+            // 2. 탭 버튼 생성
+            const tabsHTML = Object.values(grammarData).map(data => {
+                const isActive = appState.activeTab === data.id;
+                return `
+                    <button onclick="switchTab('${data.id}')"
+                        class="whitespace-nowrap px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${isActive ? 'bg-blue-600 text-white shadow-md transform scale-105' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'}">
+                        ${data.title.split('.')[1].trim()}
+                    </button>
+                `;
+            }).join('');
+
+            // 3. 메인 콘텐츠(카드) 생성
+            const cardsHTML = currentData.items.map((item, index) => {
+                const isRevealed = appState.revealedItems[index];
+                const showContent = !isDrillMode || isRevealed; // 학습 모드이거나, 이미 공개된 경우 내용 표시
+
+                // 카드 테두리 스타일 결정
+                let borderClass = "border-slate-100 shadow-sm hover:border-slate-300";
+                if (isDrillMode) {
+                    borderClass = isRevealed 
+                        ? "border-green-500 shadow-md" 
+                        : "border-slate-200 hover:border-blue-400 hover:shadow-lg cursor-pointer";
+                }
+
+                // 아이콘 결정
+                let iconHTML = '';
+                if (isDrillMode && !isRevealed) {
+                    iconHTML = `<span class="text-xs font-bold text-blue-500 bg-blue-50 px-2 py-1 rounded flex items-center gap-1"><i data-lucide="mouse-pointer-click" class="w-3 h-3"></i> Click</span>`;
+                } else if (isDrillMode && isRevealed) {
+                    iconHTML = `<i data-lucide="check-circle" class="text-green-500 w-5 h-5"></i>`;
+                }
+
+                // 카드 내부 내용 (정답/비공개 처리)
+                let contentHTML = '';
+                if (showContent) {
+                    const extraInfo = item.formula || item.role || item.example;
+                    const extraLabel = item.formula ? "Formula" : (item.role ? "Role" : "Example");
+                    
+                    contentHTML = `
+                        <div class="space-y-3 fade-in">
+                            <div>
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Definition</span>
+                                <p class="text-slate-700 font-medium break-keep leading-snug">${item.def}</p>
+                            </div>
+                            ${extraInfo ? `
+                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                    <span class="text-xs font-bold text-blue-600 uppercase tracking-wider block mb-1">${extraLabel}</span>
+                                    <p class="text-slate-900 font-mono text-sm break-keep">${extraInfo}</p>
+                                    ${item.note ? `<p class="text-slate-500 text-xs mt-1 border-t border-slate-200 pt-1">💡 ${item.note}</p>` : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    contentHTML = `
+                        <div class="flex flex-col items-center justify-center h-full text-slate-300 space-y-2 py-4">
+                            <i data-lucide="brain" class="w-8 h-8 opacity-50"></i>
+                            <span class="text-sm font-medium">Recall the Definition</span>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div onclick="toggleReveal(${index})" class="relative group bg-white rounded-xl border-2 transition-all overflow-hidden ${borderClass}">
+                        <div class="bg-slate-50 px-5 py-3 border-b border-slate-100 flex justify-between items-center">
+                            <span class="font-bold text-slate-800 text-lg">${item.term}</span>
+                            ${iconHTML}
+                        </div>
+                        <div class="p-5 min-h-[140px] flex flex-col justify-center">
+                            ${contentHTML}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // 4. HTML 조립 및 렌더링
+            app.innerHTML = `
+                ${headerHTML}
+                
+                <main class="max-w-4xl mx-auto px-4 mt-8">
+                    <!-- 가이드 박스 -->
+                    <div class="bg-white border-l-4 border-blue-600 rounded-r-lg shadow-sm p-6 mb-8">
+                        <h2 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
+                            <i data-lucide="book-open" class="w-5 h-5 text-blue-600"></i>
+                            교수님의 학습 가이드
+                        </h2>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            영어 문법은 <strong>수학 공식</strong>과 같습니다. 문장의 논리적 어순을 이해하기 전에, 
+                            이 페이지에 있는 <strong>기본 용어(Variables)</strong>와 <strong>공식(Functions)</strong>을 
+                            구구단처럼 먼저 암기해야 합니다. 우측 상단의 <strong class="text-slate-800">'Drill Mode'</strong>를 켜고 빈칸을 스스로 채워보세요.
+                        </p>
+                    </div>
+
+                    <!-- 탭 네비게이션 -->
+                    <div class="flex overflow-x-auto space-x-2 mb-6 pb-2 scrollbar-hide">
+                        ${tabsHTML}
+                    </div>
+
+                    <!-- 메인 그리드 -->
+                    <div class="fade-in">
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold text-slate-800">${currentData.title}</h2>
+                            <p class="text-slate-500 mt-1">${currentData.subtitle}</p>
+                        </div>
+                        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+                            ${cardsHTML}
+                        </div>
+                    </div>
+                </main>
+
+                <footer class="max-w-4xl mx-auto px-4 mt-12 text-center text-slate-400 text-sm pb-8">
+                    <p>© 2026. Designed for Logical Grammar Learning.</p>
+                    <p class="mt-1 text-xs">Based on Principles of Engineering & Computer Science</p>
+                </footer>
+            `;
+
+            // 5. 아이콘 렌더링 실행
+            lucide.createIcons();
+        }
+
+        // 초기 실행
+        renderApp();
+
+    </script>
+</body>
+</html>
